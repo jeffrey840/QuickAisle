@@ -33,8 +33,28 @@ describe("scoreT1", () => {
     assert.equal(s.found, 1);
     assert.equal(s.recall, 0.25);
     assert.equal(s.aisleAccuracy, 0);
+    assert.equal(s.rowAccuracy, 0);
     assert.deepEqual(s.extras, ["Unicorn Steak"]);
     assert.equal(s.missing.length, 3);
+    assert.equal(s.mismatches.length, 4);
+  });
+  it("excludes known conflicts from denominators and failures", () => {
+    const s = scoreT1(
+      gold,
+      [
+        { name: "Cereal", aisle: "3" },
+        { name: "Q-Tips", aisle: "14" },
+        { name: "Batteries", aisle: "End Cap" },
+        { name: "Rice", aisle: "6" },
+      ],
+      ["Rice"],
+    );
+    assert.equal(s.total, 3);
+    assert.equal(s.rowAccuracy, 1);
+    assert.equal(s.mismatches.length, 0);
+    assert.equal(s.conflicts.length, 1);
+    assert.equal(s.conflicts[0]!.name, "Rice");
+    assert.equal(s.conflicts[0]!.gotAisle, "6");
   });
 });
 

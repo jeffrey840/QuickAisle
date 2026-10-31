@@ -14,44 +14,82 @@ export interface T1GoldItem {
   name: string;
   aisle: string;
 }
+export interface T1Mismatch {
+  name: string;
+  expectedAisle: string;
+  /** model answer, or null when the row is missing entirely */
+  gotAisle: string | null;
+}
+
 export interface T1Score {
   recall: number;
   found: number;
   total: number;
   aisleAccuracy: number;
   aisleCorrect: number;
+  /** rows with name found AND aisle right, over total */
+  rowAccuracy: number;
+  rowCorrect: number;
   extras: string[];
   missing: string[];
+  mismatches: T1Mismatch[];
+  /** known map-vs-directory conflicts, reported apart — never failures */
+  conflicts: T1Mismatch[];
 }
 
+/**
+ * Score directory extraction. `conflictNames` (gold.known_conflicts) are
+ * excluded from every denominator and reported in `conflicts` instead.
+ */
 export function scoreT1(
   gold: T1GoldItem[],
   answer: Array<{ name: string; aisle: string }>,
+  conflictNames: string[] = [],
 ): T1Score {
+  const conflictKeys = new Set(conflictNames.map(normName));
+  const scored = gold.filter((g) => !conflictKeys.has(normName(g.name)));
+  const conflicted = gold.filter((g) => conflictKeys.has(normName(g.name)));
   const goldByName = new Map(gold.map((g) => [normName(g.name), g]));
-  const seen = new Set<string>();
-  let aisleCorrect = 0;
+  const seen = new Map<string, string>(); // norm name -> answered aisle
   const extras: string[] = [];
   for (const row of answer) {
     const key = normName(row.name);
     if (seen.has(key)) continue;
-    seen.add(key);
-    const g = goldByName.get(key);
-    if (!g) {
-      extras.push(row.name);
-      continue;
-    }
-    if (normAisle(row.aisle) === normAisle(g.aisle)) aisleCorrect++;
+    seen.set(key, row.aisle);
+    if (!goldByName.has(key)) extras.push(row.name);
   }
-  const found = gold.filter((g) => seen.has(normName(g.name))).length;
+  let aisleCorrect = 0;
+  const mismatches: T1Mismatch[] = [];
+  const missing: string[] = [];
+  for (const g of scored) {
+    const got = seen.get(normName(g.name));
+    if (got === undefined) {
+      missing.push(g.name);
+      mismatches.push({ name: g.name, expectedAisle: g.aisle, gotAisle: null });
+    } else if (normAisle(got) === normAisle(g.aisle)) {
+      aisleCorrect++;
+    } else {
+      mismatches.push({ name: g.name, expectedAisle: g.aisle, gotAisle: got });
+    }
+  }
+  const found = scored.length - missing.length;
+  const conflicts: T1Mismatch[] = conflicted.map((g) => ({
+    name: g.name,
+    expectedAisle: g.aisle,
+    gotAisle: seen.get(normName(g.name)) ?? null,
+  }));
   return {
-    recall: gold.length ? found / gold.length : 0,
+    recall: scored.length ? found / scored.length : 0,
     found,
-    total: gold.length,
+    total: scored.length,
     aisleAccuracy: found ? aisleCorrect / found : 0,
     aisleCorrect,
+    rowAccuracy: scored.length ? aisleCorrect / scored.length : 0,
+    rowCorrect: aisleCorrect,
     extras,
-    missing: gold.filter((g) => !seen.has(normName(g.name))).map((g) => g.name),
+    missing,
+    mismatches,
+    conflicts,
   };
 }
 

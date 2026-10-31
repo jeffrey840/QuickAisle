@@ -316,15 +316,22 @@ brute force on random ≤ 7-stop lists.
 - `POST /explain` (optional) — "why this order" text from the computed route (never changes it).
 - `GET /health`
 
-**Provider layer**
-```
-llm.resolveItems → Meta Model API (Muse Spark)        ⇢ fallback: Baseten (Llama)
-llm.readStore    → Meta Model API (vision + SAM 3.1)  ⇢ fallback: Baseten (Llama vision)
-```
-Default: Meta Model API primary so the newest Meta models are what judges see — **final choice per job comes from the §10 accuracy test**; Baseten keeps the demo alive
-if it's slow or down. Both are Meta models, so Stage 1 holds either way.
-One env var selects primary provider; fallback on error/timeout (~15 s for text, ~45 s for vision).
-Keys only in Cloudflare secrets / `server/.dev.vars`.
+**Provider layer** (`server/src/providers/`; verified live Oct 31)
+- Meta (primary): `POST https://api.meta.ai/v1/chat/completions`, model `muse-spark-1.3`,
+  strict `json_schema` mode, `reasoning_effort: "low"`, ≤50 images (≤50 MB each).
+- Baseten (backup): `POST https://inference.baseten.co/v1/chat/completions`,
+  model `meta-models/muse-spark-open-1026`, prompted JSON (no JSON mode) + fence-strip
+  + Zod + 1 retry, `reasoning_effort: "low"`, `max_tokens: 8000`, ≤8 images (≤10 MB each).
+- `chat()` tries Meta, falls back to Baseten on timeout (15 s text / 45 s vision),
+  429/5xx, network error, or schema validation still failing after 1 retry.
+- Per-task policy: list/directory reading (T1-type, `/read-list`, `/resolve`) → Baseten;
+  map ingest (T2-type, `/ingest`) → no fallback, clear error instead.
+- Server route only: `authFallback` also falls back on Meta 401/403, so an expired key
+  can't break the live demo. The eval runner never sets it — bad keys stay loud there.
+- Dev/eval-only: `META_BASE_URL` override gated by `ALLOW_URL_OVERRIDE=1` (for
+  `--fallback-test`); never set either in `wrangler.toml` or secrets.
+- Keys only in Cloudflare secrets / `server/.dev.vars`. Both providers serve Meta
+  models, so Stage 1 holds either way.
 
 **Demo safety net:** a `DEMO_MODE` flag that replays saved model responses for the exact demo inputs
 (the handwritten list, the recipe, the second store's photos). Live judging never hinges on an API
@@ -378,6 +385,9 @@ the user adjusts on the review screen. Either way `/ingest` ships.
 - [ ] `/ingest`: directory photo → item list; map photo → SAM 3.1 segments → labeled store graph
 - [ ] "Add a store" + review/fix screen in the app
 - [ ] Test it on the H-E-B images: the draft should come close to the hand-built `store.json`
+- Day 3 T2 plan (from the Oct 31 eval: Meta T2 agree 0%, xErr 43–72px): write the `t2-v2`
+  prompt, run Meta 2–3× and merge by majority, review screen required before saving any
+  AI-built store. Whether temperature is supported: needs verification.
 - **Done when:** a store built from photos produces a working route.
 
 **Day 4 (Nov 2–3) — live product, polish, repo**
@@ -501,13 +511,15 @@ npm run eval -- --task t1|t2|t3|t4|all --provider meta|baseten|both --runs 3
 
 | Test | Metric | Meta Model API | Baseten (Llama) |
 |---|---|---|---|
-| T1 | item recall / aisle acc. | – | – |
-| T2 | aisles right / route A,B match | – | – |
+| T1 | row acc. | 100% ×3, agree 100%, max 12.1s | 100/99.4/100% (Condiments 7 vs 3; tok to 3977/4000), max 13.5s |
+| T2 | composite | 75/98/100%, agree 0%, xErr 43–72px, max 14.2s | ~70% every run (4–5/14 depts, xErr 120–175px, retry every run: empty attempt 0) |
 | T3 | top-1 / clarify / invented | – | – |
 | T4 | recall / precision | – | – |
-| all | JSON valid · p95 latency · $/run · consistency | – | – |
+| all | JSON valid · max latency · $/run · consistency | valid post-retry · see above · $ n/a · T1 100%, T2 0% | valid post-retry · see above · $ n/a · T1 high, T2 n/a |
 
-Commit the summary — it's good README and video material ("we measured both providers").
+Measured Oct 31, runs=1 then runs=3 (raw in `eval/results/`, gitignored). Primary per
+decision rules: Meta for T1 (within 3pp → faster wins) and T2 (higher score); Baseten
+is backup. Commit the summary — it's good README and video material ("we measured both providers").
 
 ### Decision rules (per job)
 1. **Primary** = higher main score (T1 aisle accuracy, T2 route match, T3 top-1, T4 recall).

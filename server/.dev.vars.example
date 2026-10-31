@@ -1,5 +1,12 @@
 # Local dev secrets — NEVER commit. Copy to .dev.vars and fill in.
 # Production uses `wrangler secret put` instead.
-BASETEN_API_KEY=
-BASETEN_MODEL=
 MODEL_API_KEY=
+BASETEN_API_KEY=
+# Optional: Baseten model override (default: meta-models/muse-spark-open-1026).
+#BASETEN_MODEL=
+# Optional: DEMO_MODE=1 replays recorded fixtures with zero network (dev/eval only).
+#DEMO_MODE=
+# Optional: dev/eval-only Meta base-URL override for --fallback-test.
+# Honored ONLY together with ALLOW_URL_OVERRIDE=1. Never set in wrangler.
+#META_BASE_URL=
+#ALLOW_URL_OVERRIDE=

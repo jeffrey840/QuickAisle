@@ -15,7 +15,8 @@
     "test:routing": "npm run test --workspace=@quickaisle/routing",
     "test:eval": "node --test eval/score.test.ts",
     "validate-store": "node scripts/validate-store.ts",
-    "eval": "node eval/run.ts"
+    "eval": "node eval/run.ts",
+    "eval:record": "node eval/run.ts --record --task=t1,t2 --provider=both --runs=1"
   },
   "devDependencies": {
     "@types/node": "^26.6.6",
