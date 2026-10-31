@@ -1,0 +1,559 @@
+{
+ "note": "Expected values are directory names (eval/gold/directory.json) or department names from store.json: Produce, Bakery, Market Deli, Sushi, Seafood, Market, Milk, Eggs, Dairy, Frozen Foods, Deli, Pharmacy, Floral, Checkstands. The runner maps names to product IDs.",
+ "cases": [
+  {
+   "input": "cerial",
+   "expect": {
+    "any_of": [
+     "Cereal"
+    ]
+   },
+   "kind": "spelling"
+  },
+  {
+   "input": "bananna",
+   "expect": {
+    "any_of": [
+     "Produce"
+    ]
+   },
+   "kind": "spelling"
+  },
+  {
+   "input": "mayo",
+   "expect": {
+    "any_of": [
+     "Mayonnaise"
+    ]
+   },
+   "kind": "short form"
+  },
+  {
+   "input": "jello",
+   "expect": {
+    "any_of": [
+     "Jell-O"
+    ]
+   },
+   "kind": "punctuation"
+  },
+  {
+   "input": "qtips",
+   "expect": {
+    "any_of": [
+     "Q-Tips"
+    ]
+   },
+   "kind": "punctuation"
+  },
+  {
+   "input": "band aids",
+   "expect": {
+    "any_of": [
+     "Band-Aids"
+    ]
+   },
+   "kind": "punctuation"
+  },
+  {
+   "input": "pickle",
+   "expect": {
+    "any_of": [
+     "Pickles"
+    ]
+   },
+   "kind": "plural"
+  },
+  {
+   "input": "toilet paper",
+   "expect": {
+    "any_of": [
+     "Bath Tissue"
+    ]
+   },
+   "kind": "synonym"
+  },
+  {
+   "input": "tissues",
+   "expect": {
+    "any_of": [
+     "Facial Tissue"
+    ]
+   },
+   "kind": "synonym"
+  },
+  {
+   "input": "kitty litter",
+   "expect": {
+    "any_of": [
+     "Cat Litter"
+    ]
+   },
+   "kind": "synonym"
+  },
+  {
+   "input": "oatmeal",
+   "expect": {
+    "any_of": [
+     "Cereal (Hot)"
+    ]
+   },
+   "kind": "synonym"
+  },
+  {
+   "input": "hot chocolate",
+   "expect": {
+    "any_of": [
+     "Hot Cocoa"
+    ]
+   },
+   "kind": "synonym"
+  },
+  {
+   "input": "garbage bags",
+   "expect": {
+    "any_of": [
+     "Trash Bags"
+    ]
+   },
+   "kind": "synonym"
+  },
+  {
+   "input": "paper plates",
+   "expect": {
+    "any_of": [
+     "Plates/Cups"
+    ]
+   },
+   "kind": "synonym"
+  },
+  {
+   "input": "spaghetti",
+   "expect": {
+    "any_of": [
+     "Pasta (Dry)"
+    ]
+   },
+   "kind": "synonym"
+  },
+  {
+   "input": "toothpaste",
+   "expect": {
+    "any_of": [
+     "Dental/Oral Care"
+    ]
+   },
+   "kind": "category"
+  },
+  {
+   "input": "shampoo",
+   "expect": {
+    "any_of": [
+     "Shampoo/Conditioner"
+    ]
+   },
+   "kind": "category"
+  },
+  {
+   "input": "tampons",
+   "expect": {
+    "any_of": [
+     "Feminine Hygiene"
+    ]
+   },
+   "kind": "category"
+  },
+  {
+   "input": "multivitamin",
+   "expect": {
+    "any_of": [
+     "Vitamins"
+    ]
+   },
+   "kind": "category"
+  },
+  {
+   "input": "protein bars",
+   "expect": {
+    "any_of": [
+     "Nutritional Aids/Bars"
+    ]
+   },
+   "kind": "category"
+  },
+  {
+   "input": "birthday card",
+   "expect": {
+    "any_of": [
+     "Greeting Cards"
+    ]
+   },
+   "kind": "category"
+  },
+  {
+   "input": "balloons",
+   "expect": {
+    "any_of": [
+     "Party Supplies",
+     "Seasonal Items"
+    ]
+   },
+   "kind": "category"
+  },
+  {
+   "input": "lightbulbs",
+   "expect": {
+    "any_of": [
+     "Light Bulbs"
+    ]
+   },
+   "kind": "category"
+  },
+  {
+   "input": "aa batteries",
+   "expect": {
+    "any_of": [
+     "Batteries"
+    ]
+   },
+   "kind": "category"
+  },
+  {
+   "input": "pepper",
+   "expect": {
+    "any_of": [
+     "Spices"
+    ]
+   },
+   "kind": "category"
+  },
+  {
+   "input": "maple syrup",
+   "expect": {
+    "any_of": [
+     "Syrup"
+    ]
+   },
+   "kind": "category"
+  },
+  {
+   "input": "ramen",
+   "expect": {
+    "any_of": [
+     "Asian Foods",
+     "Soup"
+    ]
+   },
+   "kind": "category"
+  },
+  {
+   "input": "tortilla chips",
+   "expect": {
+    "any_of": [
+     "Chips"
+    ]
+   },
+   "kind": "near-miss: not Tortillas"
+  },
+  {
+   "input": "tortillas",
+   "expect": {
+    "any_of": [
+     "Tortillas"
+    ]
+   },
+   "kind": "near-miss: not Chips"
+  },
+  {
+   "input": "pop tarts",
+   "expect": {
+    "any_of": [
+     "Pop Tarts",
+     "Toaster Pastries"
+    ]
+   },
+   "kind": "duplicate entries"
+  },
+  {
+   "input": "ziploc bags",
+   "expect": {
+    "any_of": [
+     "Bags/Wrap",
+     "Food Wrap/Containers"
+    ]
+   },
+   "kind": "brand"
+  },
+  {
+   "input": "dawn",
+   "expect": {
+    "any_of": [
+     "Dish Soap"
+    ]
+   },
+   "kind": "brand"
+  },
+  {
+   "input": "tide",
+   "expect": {
+    "any_of": [
+     "Laundry Detergent"
+    ]
+   },
+   "kind": "brand"
+  },
+  {
+   "input": "coke",
+   "expect": {
+    "any_of": [
+     "Sodas"
+    ]
+   },
+   "kind": "brand"
+  },
+  {
+   "input": "gatorade",
+   "expect": {
+    "any_of": [
+     "Sports Drinks"
+    ]
+   },
+   "kind": "brand"
+  },
+  {
+   "input": "kleenex",
+   "expect": {
+    "any_of": [
+     "Facial Tissue"
+    ]
+   },
+   "kind": "brand"
+  },
+  {
+   "input": "advil",
+   "expect": {
+    "clarify": true,
+    "options_any_of": [
+     "Cough/Cold",
+     "First Aid"
+    ]
+   },
+   "kind": "brand, pain relief not a directory category"
+  },
+  {
+   "input": "headache stuff",
+   "expect": {
+    "any_of": [
+     "Cough/Cold",
+     "First Aid"
+    ]
+   },
+   "kind": "vague"
+  },
+  {
+   "input": "something for the dog",
+   "expect": {
+    "any_of": [
+     "Dog Food",
+     "Pet Supplies"
+    ]
+   },
+   "kind": "vague"
+  },
+  {
+   "input": "apples",
+   "expect": {
+    "any_of": [
+     "Produce"
+    ]
+   },
+   "kind": "department"
+  },
+  {
+   "input": "eggs",
+   "expect": {
+    "any_of": [
+     "Eggs"
+    ]
+   },
+   "kind": "department"
+  },
+  {
+   "input": "sushi",
+   "expect": {
+    "any_of": [
+     "Sushi"
+    ]
+   },
+   "kind": "department"
+  },
+  {
+   "input": "prescriptions",
+   "expect": {
+    "any_of": [
+     "Pharmacy"
+    ]
+   },
+   "kind": "service"
+  },
+  {
+   "input": "ice",
+   "expect": {
+    "any_of": [
+     "Ice"
+    ]
+   },
+   "kind": "checkstands"
+  },
+  {
+   "input": "frozen pizza",
+   "expect": {
+    "any_of": [
+     "Frozen Foods"
+    ]
+   },
+   "kind": "department"
+  },
+  {
+   "input": "ice cream",
+   "expect": {
+    "any_of": [
+     "Frozen Foods"
+    ]
+   },
+   "kind": "department"
+  },
+  {
+   "input": "cheese",
+   "expect": {
+    "clarify": true,
+    "options_any_of": [
+     "Dairy",
+     "Deli"
+    ]
+   },
+   "kind": "multi-location"
+  },
+  {
+   "input": "chicken",
+   "expect": {
+    "clarify": true,
+    "options_any_of": [
+     "Market",
+     "Deli",
+     "Frozen Foods"
+    ]
+   },
+   "kind": "multi-location"
+  },
+  {
+   "input": "bread",
+   "expect": {
+    "clarify": true,
+    "options_any_of": [
+     "Bread",
+     "Bakery"
+    ]
+   },
+   "kind": "multi-location"
+  },
+  {
+   "input": "milk",
+   "expect": {
+    "any_of": [
+     "Milk"
+    ]
+   },
+   "kind": "default fresh, NOT Milk (Canned/Powdered)"
+  },
+  {
+   "input": "leche",
+   "expect": {
+    "any_of": [
+     "Milk"
+    ]
+   },
+   "kind": "spanish"
+  },
+  {
+   "input": "huevos",
+   "expect": {
+    "any_of": [
+     "Eggs"
+    ]
+   },
+   "kind": "spanish"
+  },
+  {
+   "input": "frijoles",
+   "expect": {
+    "any_of": [
+     "Beans (Canned)",
+     "Beans (Dry)",
+     "Goya"
+    ]
+   },
+   "kind": "spanish"
+  },
+  {
+   "input": "taco night",
+   "expect": {
+    "expand_includes": [
+     [
+      "Tortillas"
+     ],
+     [
+      "Salsa",
+      "Picante Sauce"
+     ],
+     [
+      "Market"
+     ],
+     [
+      "Produce"
+     ]
+    ]
+   },
+   "kind": "expansion"
+  },
+  {
+   "input": "pancake breakfast",
+   "expect": {
+    "expand_includes": [
+     [
+      "Pancake Mix"
+     ],
+     [
+      "Syrup"
+     ],
+     [
+      "Eggs",
+      "Milk"
+     ]
+    ]
+   },
+   "kind": "expansion"
+  },
+  {
+   "input": "asdfgh",
+   "expect": {
+    "none": true
+   },
+   "kind": "garbage"
+  },
+  {
+   "input": "unicorn steak",
+   "expect": {
+    "none": true
+   },
+   "kind": "not sold"
+  },
+  {
+   "input": "a new car",
+   "expect": {
+    "none": true
+   },
+   "kind": "not sold (do NOT map to Auto Supplies)"
+  }
+ ]
+}

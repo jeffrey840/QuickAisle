@@ -1,0 +1,24 @@
+{
+  "name": "quickaisle",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "workspaces": [
+    "apps/mobile",
+    "packages/*",
+    "server"
+  ],
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "build:store": "node scripts/build-store.ts",
+    "test": "npm run test --workspaces --if-present",
+    "test:routing": "npm run test --workspace=@quickaisle/routing",
+    "test:eval": "node --test eval/score.test.ts",
+    "validate-store": "node scripts/validate-store.ts",
+    "eval": "node eval/run.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^5.6.3"
+  }
+}

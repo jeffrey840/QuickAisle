@@ -1,0 +1,5 @@
+name = "quickaisle"
+compatibility_date = "2026-10-01"
+
+[vars]
+PRIMARY_PROVIDER = "meta"

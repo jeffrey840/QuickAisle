@@ -1,0 +1,19 @@
+node_modules/
+dist/
+build/
+.expo/
+*.log
+
+# secrets — never commit
+server/.dev.vars
+**/.env*
+!**/.env.example
+apps/mobile/.env.local
+server/.wrangler/
+**/.wrangler/
+
+# eval outputs (keep summaries, ignore raw)
+/eval/results/*.json
+!/eval/results/*-summary.md
+
+.DS_Store

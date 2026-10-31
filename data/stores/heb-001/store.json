@@ -1,0 +1,4649 @@
+{
+ "storeId": "heb-001",
+ "version": 1,
+ "mapImage": "map.png",
+ "imageSize": [
+  1268,
+  1048
+ ],
+ "nodes": [
+  {
+   "id": "ent_L",
+   "xy": [
+    387,
+    925
+   ],
+   "type": "entrance"
+  },
+  {
+   "id": "ent_R",
+   "xy": [
+    598,
+    930
+   ],
+   "type": "entrance"
+  },
+  {
+   "id": "j_ent_L",
+   "xy": [
+    387,
+    835
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "entry_W",
+   "xy": [
+    300,
+    800
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "front_W",
+   "xy": [
+    300,
+    660
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "back_W",
+   "xy": [
+    300,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "step_W",
+   "xy": [
+    794,
+    660
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "step_E",
+   "xy": [
+    794,
+    685
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "front_E",
+   "xy": [
+    1182,
+    685
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "back_E",
+   "xy": [
+    1182,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "wall_T",
+   "xy": [
+    1182,
+    180
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "wall_S",
+   "xy": [
+    1182,
+    745
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "cs_J",
+   "xy": [
+    660,
+    660
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "conn_J",
+   "xy": [
+    900,
+    685
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "mdeli_J",
+   "xy": [
+    580,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "sushi_J",
+   "xy": [
+    778,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "mkt_J",
+   "xy": [
+    965,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "milk_J",
+   "xy": [
+    1155,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "bak_J",
+   "xy": [
+    365,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "low_W",
+   "xy": [
+    650,
+    830
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "low_M",
+   "xy": [
+    900,
+    830
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "low_E",
+   "xy": [
+    1060,
+    830
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "pharm",
+   "xy": [
+    1140,
+    840
+   ],
+   "type": "counter"
+  },
+  {
+   "id": "bakery",
+   "xy": [
+    365,
+    110
+   ],
+   "type": "counter"
+  },
+  {
+   "id": "seafood",
+   "xy": [
+    775,
+    140
+   ],
+   "type": "counter"
+  },
+  {
+   "id": "market",
+   "xy": [
+    965,
+    175
+   ],
+   "type": "counter"
+  },
+  {
+   "id": "milk",
+   "xy": [
+    1155,
+    95
+   ],
+   "type": "counter"
+  },
+  {
+   "id": "deli",
+   "xy": [
+    265,
+    875
+   ],
+   "type": "counter"
+  },
+  {
+   "id": "cs",
+   "xy": [
+    660,
+    705
+   ],
+   "type": "counter"
+  },
+  {
+   "id": "f1",
+   "xy": [
+    327,
+    660
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "b1",
+   "xy": [
+    327,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "f2",
+   "xy": [
+    380,
+    660
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "b2",
+   "xy": [
+    380,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "f3",
+   "xy": [
+    427,
+    660
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "b3",
+   "xy": [
+    427,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "f4",
+   "xy": [
+    476,
+    660
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "b4",
+   "xy": [
+    476,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "f5",
+   "xy": [
+    521,
+    660
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "b5",
+   "xy": [
+    521,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "f6",
+   "xy": [
+    572,
+    660
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "b6",
+   "xy": [
+    572,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "f7",
+   "xy": [
+    622,
+    660
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "b7",
+   "xy": [
+    622,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "f8",
+   "xy": [
+    671,
+    660
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "b8",
+   "xy": [
+    671,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "f9",
+   "xy": [
+    723,
+    660
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "b9",
+   "xy": [
+    723,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "f10",
+   "xy": [
+    773,
+    660
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "b10",
+   "xy": [
+    773,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "f11",
+   "xy": [
+    815,
+    685
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "b11",
+   "xy": [
+    815,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "c11",
+   "xy": [
+    815,
+    460
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "f12",
+   "xy": [
+    865,
+    685
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "b12",
+   "xy": [
+    865,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "c12",
+   "xy": [
+    865,
+    460
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "f13",
+   "xy": [
+    910,
+    685
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "b13",
+   "xy": [
+    910,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "c13",
+   "xy": [
+    910,
+    460
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "f14",
+   "xy": [
+    962,
+    685
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "b14",
+   "xy": [
+    962,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "c14",
+   "xy": [
+    962,
+    460
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "f15",
+   "xy": [
+    1015,
+    685
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "b15",
+   "xy": [
+    1015,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "c15",
+   "xy": [
+    1015,
+    460
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "f16",
+   "xy": [
+    1097,
+    685
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "b16",
+   "xy": [
+    1097,
+    210
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "f17",
+   "xy": [
+    1172,
+    685
+   ],
+   "type": "junction"
+  },
+  {
+   "id": "b17",
+   "xy": [
+    1172,
+    210
+   ],
+   "type": "junction"
+  }
+ ],
+ "edges": [
+  {
+   "a": "ent_L",
+   "b": "j_ent_L",
+   "len": 90
+  },
+  {
+   "a": "j_ent_L",
+   "b": "entry_W",
+   "len": 94
+  },
+  {
+   "a": "entry_W",
+   "b": "front_W",
+   "len": 140
+  },
+  {
+   "a": "front_W",
+   "b": "back_W",
+   "len": 450
+  },
+  {
+   "a": "front_W",
+   "b": "f1",
+   "len": 27
+  },
+  {
+   "a": "f1",
+   "b": "f2",
+   "len": 53
+  },
+  {
+   "a": "f2",
+   "b": "f3",
+   "len": 47
+  },
+  {
+   "a": "f3",
+   "b": "f4",
+   "len": 49
+  },
+  {
+   "a": "f4",
+   "b": "f5",
+   "len": 45
+  },
+  {
+   "a": "f5",
+   "b": "f6",
+   "len": 51
+  },
+  {
+   "a": "f6",
+   "b": "f7",
+   "len": 50
+  },
+  {
+   "a": "f7",
+   "b": "cs_J",
+   "len": 38
+  },
+  {
+   "a": "cs_J",
+   "b": "f8",
+   "len": 11
+  },
+  {
+   "a": "f8",
+   "b": "f9",
+   "len": 52
+  },
+  {
+   "a": "f9",
+   "b": "f10",
+   "len": 50
+  },
+  {
+   "a": "f10",
+   "b": "step_W",
+   "len": 21
+  },
+  {
+   "a": "step_W",
+   "b": "step_E",
+   "len": 25
+  },
+  {
+   "a": "step_E",
+   "b": "f11",
+   "len": 21
+  },
+  {
+   "a": "f11",
+   "b": "f12",
+   "len": 50
+  },
+  {
+   "a": "f12",
+   "b": "conn_J",
+   "len": 35
+  },
+  {
+   "a": "conn_J",
+   "b": "f13",
+   "len": 10
+  },
+  {
+   "a": "f13",
+   "b": "f14",
+   "len": 52
+  },
+  {
+   "a": "f14",
+   "b": "f15",
+   "len": 53
+  },
+  {
+   "a": "f15",
+   "b": "f16",
+   "len": 82
+  },
+  {
+   "a": "f16",
+   "b": "f17",
+   "len": 75
+  },
+  {
+   "a": "f17",
+   "b": "front_E",
+   "len": 10
+  },
+  {
+   "a": "back_W",
+   "b": "b1",
+   "len": 27
+  },
+  {
+   "a": "b1",
+   "b": "bak_J",
+   "len": 38
+  },
+  {
+   "a": "bak_J",
+   "b": "b2",
+   "len": 15
+  },
+  {
+   "a": "b2",
+   "b": "b3",
+   "len": 47
+  },
+  {
+   "a": "b3",
+   "b": "b4",
+   "len": 49
+  },
+  {
+   "a": "b4",
+   "b": "b5",
+   "len": 45
+  },
+  {
+   "a": "b5",
+   "b": "b6",
+   "len": 51
+  },
+  {
+   "a": "b6",
+   "b": "mdeli_J",
+   "len": 8
+  },
+  {
+   "a": "mdeli_J",
+   "b": "b7",
+   "len": 42
+  },
+  {
+   "a": "b7",
+   "b": "b8",
+   "len": 49
+  },
+  {
+   "a": "b8",
+   "b": "b9",
+   "len": 52
+  },
+  {
+   "a": "b9",
+   "b": "b10",
+   "len": 50
+  },
+  {
+   "a": "b10",
+   "b": "sushi_J",
+   "len": 5
+  },
+  {
+   "a": "sushi_J",
+   "b": "b11",
+   "len": 37
+  },
+  {
+   "a": "b11",
+   "b": "b12",
+   "len": 50
+  },
+  {
+   "a": "b12",
+   "b": "b13",
+   "len": 45
+  },
+  {
+   "a": "b13",
+   "b": "b14",
+   "len": 52
+  },
+  {
+   "a": "b14",
+   "b": "mkt_J",
+   "len": 3
+  },
+  {
+   "a": "mkt_J",
+   "b": "b15",
+   "len": 50
+  },
+  {
+   "a": "b15",
+   "b": "b16",
+   "len": 82
+  },
+  {
+   "a": "b16",
+   "b": "milk_J",
+   "len": 58
+  },
+  {
+   "a": "milk_J",
+   "b": "b17",
+   "len": 17
+  },
+  {
+   "a": "b17",
+   "b": "back_E",
+   "len": 10
+  },
+  {
+   "a": "c11",
+   "b": "c12",
+   "len": 50
+  },
+  {
+   "a": "c12",
+   "b": "c13",
+   "len": 45
+  },
+  {
+   "a": "c13",
+   "b": "c14",
+   "len": 52
+  },
+  {
+   "a": "c14",
+   "b": "c15",
+   "len": 53
+  },
+  {
+   "a": "f1",
+   "b": "b1",
+   "len": 450
+  },
+  {
+   "a": "f2",
+   "b": "b2",
+   "len": 450
+  },
+  {
+   "a": "f3",
+   "b": "b3",
+   "len": 450
+  },
+  {
+   "a": "f4",
+   "b": "b4",
+   "len": 450
+  },
+  {
+   "a": "f5",
+   "b": "b5",
+   "len": 450
+  },
+  {
+   "a": "f6",
+   "b": "b6",
+   "len": 450
+  },
+  {
+   "a": "f7",
+   "b": "b7",
+   "len": 450
+  },
+  {
+   "a": "f8",
+   "b": "b8",
+   "len": 450
+  },
+  {
+   "a": "f9",
+   "b": "b9",
+   "len": 450
+  },
+  {
+   "a": "f10",
+   "b": "b10",
+   "len": 450
+  },
+  {
+   "a": "f11",
+   "b": "c11",
+   "len": 225
+  },
+  {
+   "a": "c11",
+   "b": "b11",
+   "len": 250
+  },
+  {
+   "a": "f12",
+   "b": "c12",
+   "len": 225
+  },
+  {
+   "a": "c12",
+   "b": "b12",
+   "len": 250
+  },
+  {
+   "a": "f13",
+   "b": "c13",
+   "len": 225
+  },
+  {
+   "a": "c13",
+   "b": "b13",
+   "len": 250
+  },
+  {
+   "a": "f14",
+   "b": "c14",
+   "len": 225
+  },
+  {
+   "a": "c14",
+   "b": "b14",
+   "len": 250
+  },
+  {
+   "a": "f15",
+   "b": "c15",
+   "len": 225
+  },
+  {
+   "a": "c15",
+   "b": "b15",
+   "len": 250
+  },
+  {
+   "a": "f16",
+   "b": "b16",
+   "len": 475
+  },
+  {
+   "a": "f17",
+   "b": "b17",
+   "len": 475
+  },
+  {
+   "a": "wall_T",
+   "b": "back_E",
+   "len": 30
+  },
+  {
+   "a": "back_E",
+   "b": "front_E",
+   "len": 475
+  },
+  {
+   "a": "front_E",
+   "b": "wall_S",
+   "len": 60
+  },
+  {
+   "a": "low_W",
+   "b": "low_M",
+   "len": 250
+  },
+  {
+   "a": "low_M",
+   "b": "low_E",
+   "len": 160
+  },
+  {
+   "a": "ent_R",
+   "b": "low_W",
+   "len": 113
+  },
+  {
+   "a": "conn_J",
+   "b": "low_M",
+   "len": 145
+  },
+  {
+   "a": "low_E",
+   "b": "pharm",
+   "len": 81
+  },
+  {
+   "a": "wall_S",
+   "b": "pharm",
+   "len": 104
+  },
+  {
+   "a": "bak_J",
+   "b": "bakery",
+   "len": 100
+  },
+  {
+   "a": "sushi_J",
+   "b": "seafood",
+   "len": 70
+  },
+  {
+   "a": "mkt_J",
+   "b": "market",
+   "len": 35
+  },
+  {
+   "a": "milk_J",
+   "b": "milk",
+   "len": 115
+  },
+  {
+   "a": "entry_W",
+   "b": "deli",
+   "len": 83
+  },
+  {
+   "a": "cs_J",
+   "b": "cs",
+   "len": 45
+  }
+ ],
+ "locations": [
+  {
+   "id": "loc-a-c-filters-0",
+   "edge": [
+    "f13",
+    "c13"
+   ],
+   "t": 0.5054,
+   "side": "C"
+  },
+  {
+   "id": "loc-air-freshener-1",
+   "edge": [
+    "f11",
+    "c11"
+   ],
+   "t": 0.7562,
+   "side": "C"
+  },
+  {
+   "id": "loc-aluminum-foil-2",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.7826,
+   "side": "C"
+  },
+  {
+   "id": "loc-appliances-3",
+   "edge": [
+    "f7",
+    "b7"
+   ],
+   "t": 0.3134,
+   "side": "C"
+  },
+  {
+   "id": "loc-asian-foods-4",
+   "edge": [
+    "f4",
+    "b4"
+   ],
+   "t": 0.2012,
+   "side": "C"
+  },
+  {
+   "id": "loc-auto-supplies-5",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.6974,
+   "side": "C"
+  },
+  {
+   "id": "loc-baby-accessories-6",
+   "edge": [
+    "f9",
+    "b9"
+   ],
+   "t": 0.6962,
+   "side": "C"
+  },
+  {
+   "id": "loc-baby-food-7",
+   "edge": [
+    "f9",
+    "b9"
+   ],
+   "t": 0.317,
+   "side": "C"
+  },
+  {
+   "id": "loc-baby-formula-8",
+   "edge": [
+    "f9",
+    "b9"
+   ],
+   "t": 0.4466,
+   "side": "C"
+  },
+  {
+   "id": "loc-baby-medication-9",
+   "edge": [
+    "f9",
+    "b9"
+   ],
+   "t": 0.5816,
+   "side": "C"
+  },
+  {
+   "id": "loc-baby-wipes-10",
+   "edge": [
+    "f9",
+    "b9"
+   ],
+   "t": 0.551,
+   "side": "C"
+  },
+  {
+   "id": "loc-bags-wrap-11",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.6434,
+   "side": "C"
+  },
+  {
+   "id": "loc-bakeware-12",
+   "edge": [
+    "f6",
+    "b6"
+   ],
+   "t": 0.587,
+   "side": "C"
+  },
+  {
+   "id": "loc-band-aids-13",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.4076,
+   "side": "C"
+  },
+  {
+   "id": "loc-barbecue-sauce-14",
+   "edge": [
+    "f3",
+    "b3"
+   ],
+   "t": 0.7118,
+   "side": "C"
+  },
+  {
+   "id": "loc-bath-soap-15",
+   "edge": [
+    "f11",
+    "c11"
+   ],
+   "t": 0.2594,
+   "side": "C"
+  },
+  {
+   "id": "loc-bath-tissue-16",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.209,
+   "side": "C"
+  },
+  {
+   "id": "loc-batteries",
+   "edge": [
+    "f13",
+    "f14"
+   ],
+   "t": 0.8,
+   "side": "C"
+  },
+  {
+   "id": "loc-beans-canned-17",
+   "edge": [
+    "f4",
+    "b4"
+   ],
+   "t": 0.3296,
+   "side": "C"
+  },
+  {
+   "id": "loc-beans-dry-18",
+   "edge": [
+    "f6",
+    "b6"
+   ],
+   "t": 0.74,
+   "side": "C"
+  },
+  {
+   "id": "loc-beer-19",
+   "edge": [
+    "f10",
+    "b10"
+   ],
+   "t": 0.593,
+   "side": "C"
+  },
+  {
+   "id": "loc-birdseed-20",
+   "edge": [
+    "f12",
+    "c12"
+   ],
+   "t": 0.6002,
+   "side": "C"
+  },
+  {
+   "id": "loc-biscuit-mix-21",
+   "edge": [
+    "f5",
+    "b5"
+   ],
+   "t": 0.6932,
+   "side": "C"
+  },
+  {
+   "id": "loc-bleach-22",
+   "edge": [
+    "f13",
+    "c13"
+   ],
+   "t": 0.6524,
+   "side": "C"
+  },
+  {
+   "id": "loc-boxed-dinners-23",
+   "edge": [
+    "f6",
+    "b6"
+   ],
+   "t": 0.6788,
+   "side": "C"
+  },
+  {
+   "id": "loc-bread-24",
+   "edge": [
+    "f2",
+    "b2"
+   ],
+   "t": 0.5198,
+   "side": "C"
+  },
+  {
+   "id": "loc-bread-bakery",
+   "edge": [
+    "bak_J",
+    "bakery"
+   ],
+   "t": 1,
+   "side": "C"
+  },
+  {
+   "id": "loc-brooms-mops-25",
+   "edge": [
+    "f13",
+    "c13"
+   ],
+   "t": 0.7214,
+   "side": "C"
+  },
+  {
+   "id": "loc-cake-mixes-26",
+   "edge": [
+    "f5",
+    "b5"
+   ],
+   "t": 0.677,
+   "side": "C"
+  },
+  {
+   "id": "loc-candles-27",
+   "edge": [
+    "f9",
+    "b9"
+   ],
+   "t": 0.5222,
+   "side": "C"
+  },
+  {
+   "id": "loc-candy-28",
+   "edge": [
+    "f7",
+    "b7"
+   ],
+   "t": 0.7364,
+   "side": "C"
+  },
+  {
+   "id": "loc-candy-cs",
+   "edge": [
+    "cs_J",
+    "cs"
+   ],
+   "t": 1,
+   "side": "C"
+  },
+  {
+   "id": "loc-candy-sz",
+   "edge": [
+    "f10",
+    "b10"
+   ],
+   "t": 0.5,
+   "side": "C"
+  },
+  {
+   "id": "loc-canned-chili-29",
+   "edge": [
+    "f6",
+    "b6"
+   ],
+   "t": 0.6158,
+   "side": "C"
+  },
+  {
+   "id": "loc-canned-fish-30",
+   "edge": [
+    "f6",
+    "b6"
+   ],
+   "t": 0.5852,
+   "side": "C"
+  },
+  {
+   "id": "loc-canned-fruit-31",
+   "edge": [
+    "f3",
+    "b3"
+   ],
+   "t": 0.4268,
+   "side": "C"
+  },
+  {
+   "id": "loc-canned-meat-32",
+   "edge": [
+    "f6",
+    "b6"
+   ],
+   "t": 0.605,
+   "side": "C"
+  },
+  {
+   "id": "loc-canned-tomatoes-33",
+   "edge": [
+    "f4",
+    "b4"
+   ],
+   "t": 0.4268,
+   "side": "C"
+  },
+  {
+   "id": "loc-canned-vegetables-34",
+   "edge": [
+    "f4",
+    "b4"
+   ],
+   "t": 0.6848,
+   "side": "C"
+  },
+  {
+   "id": "loc-canning-supplies-35",
+   "edge": [
+    "f7",
+    "b7"
+   ],
+   "t": 0.3284,
+   "side": "C"
+  },
+  {
+   "id": "loc-cat-food-36",
+   "edge": [
+    "f12",
+    "c12"
+   ],
+   "t": 0.7142,
+   "side": "C"
+  },
+  {
+   "id": "loc-cat-litter-37",
+   "edge": [
+    "f12",
+    "c12"
+   ],
+   "t": 0.6806,
+   "side": "C"
+  },
+  {
+   "id": "loc-cereal-38",
+   "edge": [
+    "f3",
+    "b3"
+   ],
+   "t": 0.5111,
+   "side": "L"
+  },
+  {
+   "id": "loc-cereal-hot-39",
+   "edge": [
+    "f3",
+    "b3"
+   ],
+   "t": 0.689,
+   "side": "C"
+  },
+  {
+   "id": "loc-charcoal",
+   "edge": [
+    "f1",
+    "b1"
+   ],
+   "t": 0.08,
+   "side": "C"
+  },
+  {
+   "id": "loc-chips-40",
+   "edge": [
+    "f8",
+    "b8"
+   ],
+   "t": 0.7256,
+   "side": "C"
+  },
+  {
+   "id": "loc-cleaners-cleansers-41",
+   "edge": [
+    "f13",
+    "c13"
+   ],
+   "t": 0.6674,
+   "side": "C"
+  },
+  {
+   "id": "loc-closet-items-42",
+   "edge": [
+    "f13",
+    "c13"
+   ],
+   "t": 0.6038,
+   "side": "C"
+  },
+  {
+   "id": "loc-coffee-43",
+   "edge": [
+    "f3",
+    "b3"
+   ],
+   "t": 0.3302,
+   "side": "C"
+  },
+  {
+   "id": "loc-coffee-creamer-44",
+   "edge": [
+    "f3",
+    "b3"
+   ],
+   "t": 0.3656,
+   "side": "C"
+  },
+  {
+   "id": "loc-coffee-filters-45",
+   "edge": [
+    "f3",
+    "b3"
+   ],
+   "t": 0.6236,
+   "side": "C"
+  },
+  {
+   "id": "loc-condiments-46",
+   "edge": [
+    "f3",
+    "b3"
+   ],
+   "t": 0.7622,
+   "side": "C"
+  },
+  {
+   "id": "loc-cookies-47",
+   "edge": [
+    "f7",
+    "b7"
+   ],
+   "t": 0.4,
+   "side": "L"
+  },
+  {
+   "id": "loc-cosmetics-48",
+   "edge": [
+    "f11",
+    "c11"
+   ],
+   "t": 0.7466,
+   "side": "C"
+  },
+  {
+   "id": "loc-cotton-balls-49",
+   "edge": [
+    "f11",
+    "c11"
+   ],
+   "t": 0.572,
+   "side": "C"
+  },
+  {
+   "id": "loc-cough-cold-50",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.5864,
+   "side": "C"
+  },
+  {
+   "id": "loc-crackers-51",
+   "edge": [
+    "f7",
+    "b7"
+   ],
+   "t": 0.7202,
+   "side": "C"
+  },
+  {
+   "id": "loc-dental-oral-care-52",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.581,
+   "side": "C"
+  },
+  {
+   "id": "loc-deodorant-53",
+   "edge": [
+    "c13",
+    "b13"
+   ],
+   "t": 0.3734,
+   "side": "C"
+  },
+  {
+   "id": "loc-diapers-54",
+   "edge": [
+    "f9",
+    "b9"
+   ],
+   "t": 0.4622,
+   "side": "C"
+  },
+  {
+   "id": "loc-diet-aids",
+   "edge": [
+    "f15",
+    "f16"
+   ],
+   "t": 0.2,
+   "side": "C"
+  },
+  {
+   "id": "loc-dish-soap-55",
+   "edge": [
+    "f13",
+    "c13"
+   ],
+   "t": 0.5552,
+   "side": "C"
+  },
+  {
+   "id": "loc-dog-food-56",
+   "edge": [
+    "f12",
+    "c12"
+   ],
+   "t": 0.3698,
+   "side": "C"
+  },
+  {
+   "id": "loc-dried-fruit-57",
+   "edge": [
+    "f3",
+    "b3"
+   ],
+   "t": 0.4598,
+   "side": "C"
+  },
+  {
+   "id": "loc-electrical-lighting-58",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.3104,
+   "side": "C"
+  },
+  {
+   "id": "loc-eye-care-59",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.3914,
+   "side": "C"
+  },
+  {
+   "id": "loc-fabric-softener-60",
+   "edge": [
+    "f13",
+    "c13"
+   ],
+   "t": 0.5912,
+   "side": "C"
+  },
+  {
+   "id": "loc-facial-care-61",
+   "edge": [
+    "f11",
+    "c11"
+   ],
+   "t": 0.4724,
+   "side": "C"
+  },
+  {
+   "id": "loc-facial-tissue-62",
+   "edge": [
+    "f15",
+    "c15"
+   ],
+   "t": 0.5432,
+   "side": "C"
+  },
+  {
+   "id": "loc-feminine-hygiene-63",
+   "edge": [
+    "f12",
+    "c12"
+   ],
+   "t": 0.3134,
+   "side": "C"
+  },
+  {
+   "id": "loc-first-aid-64",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.3842,
+   "side": "C"
+  },
+  {
+   "id": "loc-floor-wax-65",
+   "edge": [
+    "f13",
+    "c13"
+   ],
+   "t": 0.6278,
+   "side": "C"
+  },
+  {
+   "id": "loc-flour-66",
+   "edge": [
+    "f5",
+    "b5"
+   ],
+   "t": 0.3386,
+   "side": "C"
+  },
+  {
+   "id": "loc-foil-bakeware-67",
+   "edge": [
+    "f5",
+    "b5"
+   ],
+   "t": 0.7598,
+   "side": "C"
+  },
+  {
+   "id": "loc-food-wrap-containers-68",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.2144,
+   "side": "C"
+  },
+  {
+   "id": "loc-foot-care-69",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.4076,
+   "side": "C"
+  },
+  {
+   "id": "loc-fruit-snacks-70",
+   "edge": [
+    "f9",
+    "b9"
+   ],
+   "t": 0.5,
+   "side": "C"
+  },
+  {
+   "id": "loc-gift-cards",
+   "edge": [
+    "cs_J",
+    "cs"
+   ],
+   "t": 1,
+   "side": "C"
+  },
+  {
+   "id": "loc-glue-71",
+   "edge": [
+    "f9",
+    "b9"
+   ],
+   "t": 0.6392,
+   "side": "C"
+  },
+  {
+   "id": "loc-goya-72",
+   "edge": [
+    "f4",
+    "b4"
+   ],
+   "t": 0.6686,
+   "side": "C"
+  },
+  {
+   "id": "loc-gravy-mixes-73",
+   "edge": [
+    "f5",
+    "b5"
+   ],
+   "t": 0.56,
+   "side": "C"
+  },
+  {
+   "id": "loc-greeting-cards-74",
+   "edge": [
+    "f9",
+    "b9"
+   ],
+   "t": 0.3398,
+   "side": "C"
+  },
+  {
+   "id": "loc-hair-accessories-75",
+   "edge": [
+    "f12",
+    "c12"
+   ],
+   "t": 0.7874,
+   "side": "C"
+  },
+  {
+   "id": "loc-hair-care-76",
+   "edge": [
+    "f12",
+    "c12"
+   ],
+   "t": 0.7244,
+   "side": "C"
+  },
+  {
+   "id": "loc-hair-color-77",
+   "edge": [
+    "f12",
+    "c12"
+   ],
+   "t": 0.7724,
+   "side": "C"
+  },
+  {
+   "id": "loc-hardware-78",
+   "edge": [
+    "f13",
+    "c13"
+   ],
+   "t": 0.2534,
+   "side": "C"
+  },
+  {
+   "id": "loc-hispanic-foods-4",
+   "edge": [
+    "f4",
+    "b4"
+   ],
+   "t": 0.4356,
+   "side": "C"
+  },
+  {
+   "id": "loc-hispanic-foods-5",
+   "edge": [
+    "f5",
+    "b5"
+   ],
+   "t": 0.664,
+   "side": "C"
+  },
+  {
+   "id": "loc-honey-79",
+   "edge": [
+    "f2",
+    "b2"
+   ],
+   "t": 0.5912,
+   "side": "C"
+  },
+  {
+   "id": "loc-hosiery-80",
+   "edge": [
+    "f12",
+    "c12"
+   ],
+   "t": 0.7004,
+   "side": "C"
+  },
+  {
+   "id": "loc-hot-cocoa-81",
+   "edge": [
+    "f3",
+    "b3"
+   ],
+   "t": 0.269,
+   "side": "C"
+  },
+  {
+   "id": "loc-ice",
+   "edge": [
+    "cs_J",
+    "cs"
+   ],
+   "t": 1,
+   "side": "C"
+  },
+  {
+   "id": "loc-incontinence-82",
+   "edge": [
+    "f12",
+    "c12"
+   ],
+   "t": 0.326,
+   "side": "C"
+  },
+  {
+   "id": "loc-insecticides-83",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.464,
+   "side": "C"
+  },
+  {
+   "id": "loc-instant-breakfast-84",
+   "edge": [
+    "f3",
+    "b3"
+   ],
+   "t": 0.593,
+   "side": "C"
+  },
+  {
+   "id": "loc-jam-jelly-85",
+   "edge": [
+    "f2",
+    "b2"
+   ],
+   "t": 0.4808,
+   "side": "C"
+  },
+  {
+   "id": "loc-jell-o-86",
+   "edge": [
+    "f2",
+    "b2"
+   ],
+   "t": 0.656,
+   "side": "C"
+  },
+  {
+   "id": "loc-juice-87",
+   "edge": [
+    "f7",
+    "b7"
+   ],
+   "t": 0.5066,
+   "side": "C"
+  },
+  {
+   "id": "loc-ketchup-88",
+   "edge": [
+    "f3",
+    "b3"
+   ],
+   "t": 0.6398,
+   "side": "C"
+  },
+  {
+   "id": "loc-kitchen-gadgets-89",
+   "edge": [
+    "f7",
+    "b7"
+   ],
+   "t": 0.3788,
+   "side": "C"
+  },
+  {
+   "id": "loc-kool-aid-90",
+   "edge": [
+    "f1",
+    "b1"
+   ],
+   "t": 0.5522,
+   "side": "C"
+  },
+  {
+   "id": "loc-kosher-foods-91",
+   "edge": [
+    "f4",
+    "b4"
+   ],
+   "t": 0.662,
+   "side": "C"
+  },
+  {
+   "id": "loc-laundry-detergent-92",
+   "edge": [
+    "f13",
+    "c13"
+   ],
+   "t": 0.5708,
+   "side": "C"
+  },
+  {
+   "id": "loc-laxatives-93",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.4592,
+   "side": "C"
+  },
+  {
+   "id": "loc-light-bulbs-94",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.389,
+   "side": "C"
+  },
+  {
+   "id": "loc-lotion-cream-95",
+   "edge": [
+    "f11",
+    "c11"
+   ],
+   "t": 0.5834,
+   "side": "C"
+  },
+  {
+   "id": "loc-macaroni-and-cheese-96",
+   "edge": [
+    "f5",
+    "b5"
+   ],
+   "t": 0.4328,
+   "side": "C"
+  },
+  {
+   "id": "loc-marshmallows-97",
+   "edge": [
+    "f8",
+    "b8"
+   ],
+   "t": 0.5606,
+   "side": "C"
+  },
+  {
+   "id": "loc-matches",
+   "edge": [
+    "f1",
+    "b1"
+   ],
+   "t": 0.11,
+   "side": "C"
+  },
+  {
+   "id": "loc-mayonnaise-98",
+   "edge": [
+    "f3",
+    "b3"
+   ],
+   "t": 0.635,
+   "side": "C"
+  },
+  {
+   "id": "loc-men-s-toiletries-99",
+   "edge": [
+    "c13",
+    "b13"
+   ],
+   "t": 0.4442,
+   "side": "C"
+  },
+  {
+   "id": "loc-microwaveable-food-100",
+   "edge": [
+    "f6",
+    "b6"
+   ],
+   "t": 0.4316,
+   "side": "C"
+  },
+  {
+   "id": "loc-milk-canned-powdered-101",
+   "edge": [
+    "f5",
+    "b5"
+   ],
+   "t": 0.5258,
+   "side": "C"
+  },
+  {
+   "id": "loc-mixers-102",
+   "edge": [
+    "f10",
+    "b10"
+   ],
+   "t": 0.6242,
+   "side": "C"
+  },
+  {
+   "id": "loc-mustard-103",
+   "edge": [
+    "f3",
+    "b3"
+   ],
+   "t": 0.2702,
+   "side": "C"
+  },
+  {
+   "id": "loc-napkins-104",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.2162,
+   "side": "C"
+  },
+  {
+   "id": "loc-nutritional-aids-bars",
+   "edge": [
+    "f15",
+    "f16"
+   ],
+   "t": 0.8,
+   "side": "L"
+  },
+  {
+   "id": "loc-nuts-baking-105",
+   "edge": [
+    "f8",
+    "b8"
+   ],
+   "t": 0.3692,
+   "side": "C"
+  },
+  {
+   "id": "loc-nuts-snacking-106",
+   "edge": [
+    "f8",
+    "b8"
+   ],
+   "t": 0.5708,
+   "side": "C"
+  },
+  {
+   "id": "loc-oil-shortening-107",
+   "edge": [
+    "f5",
+    "b5"
+   ],
+   "t": 0.6098,
+   "side": "C"
+  },
+  {
+   "id": "loc-olives-108",
+   "edge": [
+    "f6",
+    "b6"
+   ],
+   "t": 0.395,
+   "side": "C"
+  },
+  {
+   "id": "loc-pancake-mix-109",
+   "edge": [
+    "f2",
+    "b2"
+   ],
+   "t": 0.602,
+   "side": "C"
+  },
+  {
+   "id": "loc-paper-towels-110",
+   "edge": [
+    "f15",
+    "c15"
+   ],
+   "t": 0.581,
+   "side": "C"
+  },
+  {
+   "id": "loc-party-supplies-111",
+   "edge": [
+    "f9",
+    "b9"
+   ],
+   "t": 0.3236,
+   "side": "C"
+  },
+  {
+   "id": "loc-pasta-canned-112",
+   "edge": [
+    "f6",
+    "b6"
+   ],
+   "t": 0.7328,
+   "side": "C"
+  },
+  {
+   "id": "loc-pasta-dry-113",
+   "edge": [
+    "f6",
+    "b6"
+   ],
+   "t": 0.3416,
+   "side": "C"
+  },
+  {
+   "id": "loc-pastries-114",
+   "edge": [
+    "f2",
+    "b2"
+   ],
+   "t": 0.3104,
+   "side": "C"
+  },
+  {
+   "id": "loc-peanut-butter-115",
+   "edge": [
+    "f2",
+    "b2"
+   ],
+   "t": 0.662,
+   "side": "C"
+  },
+  {
+   "id": "loc-pet-supplies-116",
+   "edge": [
+    "f12",
+    "c12"
+   ],
+   "t": 0.6158,
+   "side": "C"
+  },
+  {
+   "id": "loc-picante-sauce-117",
+   "edge": [
+    "f4",
+    "b4"
+   ],
+   "t": 0.7928,
+   "side": "C"
+  },
+  {
+   "id": "loc-pickles-118",
+   "edge": [
+    "f6",
+    "b6"
+   ],
+   "t": 0.3667,
+   "side": "R"
+  },
+  {
+   "id": "loc-pimentos-119",
+   "edge": [
+    "f5",
+    "b5"
+   ],
+   "t": 0.5672,
+   "side": "C"
+  },
+  {
+   "id": "loc-plates-cups-120",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.26,
+   "side": "C"
+  },
+  {
+   "id": "loc-pop-tarts-121",
+   "edge": [
+    "f2",
+    "b2"
+   ],
+   "t": 0.602,
+   "side": "C"
+  },
+  {
+   "id": "loc-popcorn-122",
+   "edge": [
+    "f8",
+    "b8"
+   ],
+   "t": 0.71,
+   "side": "C"
+  },
+  {
+   "id": "loc-potatoes-stuffing-123",
+   "edge": [
+    "f6",
+    "b6"
+   ],
+   "t": 0.335,
+   "side": "C"
+  },
+  {
+   "id": "loc-powdered-drink-mix-124",
+   "edge": [
+    "f1",
+    "b1"
+   ],
+   "t": 0.5126,
+   "side": "C"
+  },
+  {
+   "id": "loc-pudding-pie-filling-125",
+   "edge": [
+    "f2",
+    "b2"
+   ],
+   "t": 0.308,
+   "side": "C"
+  },
+  {
+   "id": "loc-q-tips-126",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.371,
+   "side": "C"
+  },
+  {
+   "id": "loc-religious-candles-127",
+   "edge": [
+    "f9",
+    "b9"
+   ],
+   "t": 0.7244,
+   "side": "C"
+  },
+  {
+   "id": "loc-rice-128",
+   "edge": [
+    "f6",
+    "b6"
+   ],
+   "t": 0.656,
+   "side": "C"
+  },
+  {
+   "id": "loc-rice-cakes-129",
+   "edge": [
+    "f8",
+    "b8"
+   ],
+   "t": 0.323,
+   "side": "C"
+  },
+  {
+   "id": "loc-salad-dressing-130",
+   "edge": [
+    "f6",
+    "b6"
+   ],
+   "t": 0.7898,
+   "side": "C"
+  },
+  {
+   "id": "loc-salsa-131",
+   "edge": [
+    "f2",
+    "b2"
+   ],
+   "t": 0.6314,
+   "side": "C"
+  },
+  {
+   "id": "loc-salt-132",
+   "edge": [
+    "f5",
+    "b5"
+   ],
+   "t": 0.5558,
+   "side": "C"
+  },
+  {
+   "id": "loc-sauce-gravy-mix-133",
+   "edge": [
+    "f6",
+    "b6"
+   ],
+   "t": 0.6632,
+   "side": "C"
+  },
+  {
+   "id": "loc-school-office-supplies-134",
+   "edge": [
+    "f9",
+    "b9"
+   ],
+   "t": 0.287,
+   "side": "C"
+  },
+  {
+   "id": "loc-seasonal-items-135",
+   "edge": [
+    "f10",
+    "b10"
+   ],
+   "t": 0.695,
+   "side": "C"
+  },
+  {
+   "id": "loc-sewing-needs-136",
+   "edge": [
+    "f12",
+    "c12"
+   ],
+   "t": 0.4538,
+   "side": "C"
+  },
+  {
+   "id": "loc-shampoo-conditioner-137",
+   "edge": [
+    "f12",
+    "c12"
+   ],
+   "t": 0.6914,
+   "side": "C"
+  },
+  {
+   "id": "loc-shaving-needs-138",
+   "edge": [
+    "f12",
+    "c12"
+   ],
+   "t": 0.5556,
+   "side": "C"
+  },
+  {
+   "id": "loc-shoe-care-139",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.3722,
+   "side": "C"
+  },
+  {
+   "id": "loc-skin-care-140",
+   "edge": [
+    "f11",
+    "c11"
+   ],
+   "t": 0.2294,
+   "side": "C"
+  },
+  {
+   "id": "loc-snacks-141",
+   "edge": [
+    "f8",
+    "b8"
+   ],
+   "t": 0.3356,
+   "side": "C"
+  },
+  {
+   "id": "loc-sodas-142",
+   "edge": [
+    "f8",
+    "b8"
+   ],
+   "t": 0.7862,
+   "side": "C"
+  },
+  {
+   "id": "loc-soup-143",
+   "edge": [
+    "f4",
+    "b4"
+   ],
+   "t": 0.254,
+   "side": "C"
+  },
+  {
+   "id": "loc-spices-144",
+   "edge": [
+    "f5",
+    "b5"
+   ],
+   "t": 0.6524,
+   "side": "C"
+  },
+  {
+   "id": "loc-sports-drinks-145",
+   "edge": [
+    "f1",
+    "b1"
+   ],
+   "t": 0.767,
+   "side": "C"
+  },
+  {
+   "id": "loc-starch-146",
+   "edge": [
+    "f13",
+    "c13"
+   ],
+   "t": 0.4316,
+   "side": "C"
+  },
+  {
+   "id": "loc-sugar-147",
+   "edge": [
+    "f5",
+    "b5"
+   ],
+   "t": 0.539,
+   "side": "C"
+  },
+  {
+   "id": "loc-syrup-148",
+   "edge": [
+    "f2",
+    "b2"
+   ],
+   "t": 0.2312,
+   "side": "C"
+  },
+  {
+   "id": "loc-tea-149",
+   "edge": [
+    "f3",
+    "b3"
+   ],
+   "t": 0.7958,
+   "side": "C"
+  },
+  {
+   "id": "loc-toaster-pastries-150",
+   "edge": [
+    "f2",
+    "b2"
+   ],
+   "t": 0.2096,
+   "side": "C"
+  },
+  {
+   "id": "loc-toothpicks-151",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.5846,
+   "side": "C"
+  },
+  {
+   "id": "loc-tortillas-152",
+   "edge": [
+    "f2",
+    "b2"
+   ],
+   "t": 0.7046,
+   "side": "C"
+  },
+  {
+   "id": "loc-toys-153",
+   "edge": [
+    "f7",
+    "b7"
+   ],
+   "t": 0.2984,
+   "side": "C"
+  },
+  {
+   "id": "loc-trash-bags-154",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.308,
+   "side": "C"
+  },
+  {
+   "id": "loc-vinegar-155",
+   "edge": [
+    "f6",
+    "b6"
+   ],
+   "t": 0.7502,
+   "side": "C"
+  },
+  {
+   "id": "loc-vitamins-156",
+   "edge": [
+    "f14",
+    "c14"
+   ],
+   "t": 0.3188,
+   "side": "C"
+  },
+  {
+   "id": "loc-water",
+   "edge": [
+    "f1",
+    "b1"
+   ],
+   "t": 0.05,
+   "side": "C"
+  },
+  {
+   "id": "loc-wine-157",
+   "edge": [
+    "f10",
+    "b10"
+   ],
+   "t": 0.7064,
+   "side": "C"
+  },
+  {
+   "id": "loc-produce",
+   "edge": [
+    "back_W",
+    "front_W"
+   ],
+   "t": 0.4222,
+   "side": "C"
+  },
+  {
+   "id": "loc-bakery",
+   "edge": [
+    "bak_J",
+    "bakery"
+   ],
+   "t": 1,
+   "side": "C"
+  },
+  {
+   "id": "loc-market-deli",
+   "edge": [
+    "b6",
+    "mdeli_J"
+   ],
+   "t": 1,
+   "side": "C"
+  },
+  {
+   "id": "loc-sushi",
+   "edge": [
+    "b10",
+    "sushi_J"
+   ],
+   "t": 1,
+   "side": "C"
+  },
+  {
+   "id": "loc-seafood",
+   "edge": [
+    "sushi_J",
+    "seafood"
+   ],
+   "t": 1,
+   "side": "C"
+  },
+  {
+   "id": "loc-market",
+   "edge": [
+    "mkt_J",
+    "market"
+   ],
+   "t": 1,
+   "side": "C"
+  },
+  {
+   "id": "loc-milk-fresh",
+   "edge": [
+    "milk_J",
+    "milk"
+   ],
+   "t": 1,
+   "side": "C"
+  },
+  {
+   "id": "loc-eggs",
+   "edge": [
+    "wall_T",
+    "back_E"
+   ],
+   "t": 0.15,
+   "side": "C"
+  },
+  {
+   "id": "loc-dairy",
+   "edge": [
+    "back_E",
+    "front_E"
+   ],
+   "t": 0.2526,
+   "side": "C"
+  },
+  {
+   "id": "loc-frozen",
+   "edge": [
+    "f16",
+    "b16"
+   ],
+   "t": 0.5053,
+   "side": "C"
+  },
+  {
+   "id": "loc-deli",
+   "edge": [
+    "entry_W",
+    "deli"
+   ],
+   "t": 1,
+   "side": "C"
+  },
+  {
+   "id": "loc-pharmacy",
+   "edge": [
+    "low_E",
+    "pharm"
+   ],
+   "t": 1,
+   "side": "C"
+  },
+  {
+   "id": "loc-floral",
+   "edge": [
+    "entry_W",
+    "j_ent_L"
+   ],
+   "t": 0.5,
+   "side": "C"
+  },
+  {
+   "id": "loc-checkstands",
+   "edge": [
+    "cs_J",
+    "cs"
+   ],
+   "t": 1,
+   "side": "C"
+  }
+ ],
+ "products": [
+  {
+   "id": "a-c-filters",
+   "name": "A/C Filters",
+   "aliases": [],
+   "locations": [
+    "loc-a-c-filters-0"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 13B"
+  },
+  {
+   "id": "air-freshener",
+   "name": "Air Freshener",
+   "aliases": [],
+   "locations": [
+    "loc-air-freshener-1"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 11"
+  },
+  {
+   "id": "aluminum-foil",
+   "name": "Aluminum Foil",
+   "aliases": [],
+   "locations": [
+    "loc-aluminum-foil-2"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14B"
+  },
+  {
+   "id": "appliances",
+   "name": "Appliances",
+   "aliases": [],
+   "locations": [
+    "loc-appliances-3"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 7"
+  },
+  {
+   "id": "asian-foods",
+   "name": "Asian Foods",
+   "aliases": [],
+   "locations": [
+    "loc-asian-foods-4"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 4"
+  },
+  {
+   "id": "auto-supplies",
+   "name": "Auto Supplies",
+   "aliases": [],
+   "locations": [
+    "loc-auto-supplies-5"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "baby-accessories",
+   "name": "Baby Accessories",
+   "aliases": [],
+   "locations": [
+    "loc-baby-accessories-6"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 9"
+  },
+  {
+   "id": "baby-food",
+   "name": "Baby Food",
+   "aliases": [],
+   "locations": [
+    "loc-baby-food-7"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 9"
+  },
+  {
+   "id": "baby-formula",
+   "name": "Baby Formula",
+   "aliases": [],
+   "locations": [
+    "loc-baby-formula-8"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 9"
+  },
+  {
+   "id": "baby-medication",
+   "name": "Baby Medication",
+   "aliases": [],
+   "locations": [
+    "loc-baby-medication-9"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 9"
+  },
+  {
+   "id": "baby-wipes",
+   "name": "Baby Wipes",
+   "aliases": [],
+   "locations": [
+    "loc-baby-wipes-10"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 9"
+  },
+  {
+   "id": "bags-wrap",
+   "name": "Bags/Wrap",
+   "aliases": [],
+   "locations": [
+    "loc-bags-wrap-11"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "bakeware",
+   "name": "Bakeware",
+   "aliases": [],
+   "locations": [
+    "loc-bakeware-12"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 6"
+  },
+  {
+   "id": "band-aids",
+   "name": "Band-Aids",
+   "aliases": [],
+   "locations": [
+    "loc-band-aids-13"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "barbecue-sauce",
+   "name": "Barbecue Sauce",
+   "aliases": [],
+   "locations": [
+    "loc-barbecue-sauce-14"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 3"
+  },
+  {
+   "id": "bath-soap",
+   "name": "Bath Soap",
+   "aliases": [],
+   "locations": [
+    "loc-bath-soap-15"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 11"
+  },
+  {
+   "id": "bath-tissue",
+   "name": "Bath Tissue",
+   "aliases": [],
+   "locations": [
+    "loc-bath-tissue-16"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "batteries",
+   "name": "Batteries",
+   "aliases": [],
+   "locations": [
+    "loc-batteries"
+   ],
+   "tags": [],
+   "aisleLabel": "End cap near aisle 14"
+  },
+  {
+   "id": "beans-canned",
+   "name": "Beans (Canned)",
+   "aliases": [],
+   "locations": [
+    "loc-beans-canned-17"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 4"
+  },
+  {
+   "id": "beans-dry",
+   "name": "Beans (Dry)",
+   "aliases": [],
+   "locations": [
+    "loc-beans-dry-18"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 6"
+  },
+  {
+   "id": "beer",
+   "name": "Beer",
+   "aliases": [],
+   "locations": [
+    "loc-beer-19"
+   ],
+   "tags": [
+    "heavy",
+    "fragile"
+   ],
+   "aisleLabel": "Aisle 10"
+  },
+  {
+   "id": "birdseed",
+   "name": "Birdseed",
+   "aliases": [],
+   "locations": [
+    "loc-birdseed-20"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 12"
+  },
+  {
+   "id": "biscuit-mix",
+   "name": "Biscuit Mix",
+   "aliases": [],
+   "locations": [
+    "loc-biscuit-mix-21"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 5"
+  },
+  {
+   "id": "bleach",
+   "name": "Bleach",
+   "aliases": [],
+   "locations": [
+    "loc-bleach-22"
+   ],
+   "tags": [
+    "heavy"
+   ],
+   "aisleLabel": "Aisle 13"
+  },
+  {
+   "id": "boxed-dinners",
+   "name": "Boxed Dinners",
+   "aliases": [],
+   "locations": [
+    "loc-boxed-dinners-23"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 6"
+  },
+  {
+   "id": "bread",
+   "name": "Bread",
+   "aliases": [],
+   "locations": [
+    "loc-bread-24",
+    "loc-bread-bakery"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 2 (+ bakery fresh)"
+  },
+  {
+   "id": "brooms-mops",
+   "name": "Brooms/Mops",
+   "aliases": [],
+   "locations": [
+    "loc-brooms-mops-25"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 13"
+  },
+  {
+   "id": "cake-mixes",
+   "name": "Cake Mixes",
+   "aliases": [],
+   "locations": [
+    "loc-cake-mixes-26"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 5"
+  },
+  {
+   "id": "candles",
+   "name": "Candles",
+   "aliases": [],
+   "locations": [
+    "loc-candles-27"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 9"
+  },
+  {
+   "id": "candy",
+   "name": "Candy",
+   "aliases": [],
+   "locations": [
+    "loc-candy-28",
+    "loc-candy-cs",
+    "loc-candy-sz"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 7 (+ checkstands)"
+  },
+  {
+   "id": "canned-chili",
+   "name": "Canned Chili",
+   "aliases": [],
+   "locations": [
+    "loc-canned-chili-29"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 6"
+  },
+  {
+   "id": "canned-fish",
+   "name": "Canned Fish",
+   "aliases": [],
+   "locations": [
+    "loc-canned-fish-30"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 6"
+  },
+  {
+   "id": "canned-fruit",
+   "name": "Canned Fruit",
+   "aliases": [],
+   "locations": [
+    "loc-canned-fruit-31"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 3"
+  },
+  {
+   "id": "canned-meat",
+   "name": "Canned Meat",
+   "aliases": [],
+   "locations": [
+    "loc-canned-meat-32"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 6"
+  },
+  {
+   "id": "canned-tomatoes",
+   "name": "Canned Tomatoes",
+   "aliases": [],
+   "locations": [
+    "loc-canned-tomatoes-33"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 4"
+  },
+  {
+   "id": "canned-vegetables",
+   "name": "Canned Vegetables",
+   "aliases": [],
+   "locations": [
+    "loc-canned-vegetables-34"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 4"
+  },
+  {
+   "id": "canning-supplies",
+   "name": "Canning Supplies",
+   "aliases": [],
+   "locations": [
+    "loc-canning-supplies-35"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 7"
+  },
+  {
+   "id": "cat-food",
+   "name": "Cat Food",
+   "aliases": [],
+   "locations": [
+    "loc-cat-food-36"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 12"
+  },
+  {
+   "id": "cat-litter",
+   "name": "Cat Litter",
+   "aliases": [],
+   "locations": [
+    "loc-cat-litter-37"
+   ],
+   "tags": [
+    "heavy"
+   ],
+   "aisleLabel": "Aisle 12"
+  },
+  {
+   "id": "cereal",
+   "name": "Cereal",
+   "aliases": [],
+   "locations": [
+    "loc-cereal-38"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 3"
+  },
+  {
+   "id": "cereal-hot",
+   "name": "Cereal (Hot)",
+   "aliases": [],
+   "locations": [
+    "loc-cereal-hot-39"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 3"
+  },
+  {
+   "id": "charcoal",
+   "name": "Charcoal",
+   "aliases": [],
+   "locations": [
+    "loc-charcoal"
+   ],
+   "tags": [
+    "heavy"
+   ],
+   "aisleLabel": "By Produce (aisle 1 end)"
+  },
+  {
+   "id": "chips",
+   "name": "Chips",
+   "aliases": [],
+   "locations": [
+    "loc-chips-40"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 8"
+  },
+  {
+   "id": "cleaners-cleansers",
+   "name": "Cleaners/Cleansers",
+   "aliases": [],
+   "locations": [
+    "loc-cleaners-cleansers-41"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 13"
+  },
+  {
+   "id": "closet-items",
+   "name": "Closet Items",
+   "aliases": [],
+   "locations": [
+    "loc-closet-items-42"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 13"
+  },
+  {
+   "id": "coffee",
+   "name": "Coffee",
+   "aliases": [],
+   "locations": [
+    "loc-coffee-43"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 3"
+  },
+  {
+   "id": "coffee-creamer",
+   "name": "Coffee Creamer",
+   "aliases": [],
+   "locations": [
+    "loc-coffee-creamer-44"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 3"
+  },
+  {
+   "id": "coffee-filters",
+   "name": "Coffee Filters",
+   "aliases": [],
+   "locations": [
+    "loc-coffee-filters-45"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 3"
+  },
+  {
+   "id": "condiments",
+   "name": "Condiments",
+   "aliases": [],
+   "locations": [
+    "loc-condiments-46"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 3"
+  },
+  {
+   "id": "cookies",
+   "name": "Cookies",
+   "aliases": [],
+   "locations": [
+    "loc-cookies-47"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 7"
+  },
+  {
+   "id": "cosmetics",
+   "name": "Cosmetics",
+   "aliases": [],
+   "locations": [
+    "loc-cosmetics-48"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 11"
+  },
+  {
+   "id": "cotton-balls",
+   "name": "Cotton Balls",
+   "aliases": [],
+   "locations": [
+    "loc-cotton-balls-49"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 11"
+  },
+  {
+   "id": "cough-cold",
+   "name": "Cough/Cold",
+   "aliases": [],
+   "locations": [
+    "loc-cough-cold-50"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "crackers",
+   "name": "Crackers",
+   "aliases": [],
+   "locations": [
+    "loc-crackers-51"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 7"
+  },
+  {
+   "id": "dental-oral-care",
+   "name": "Dental/Oral Care",
+   "aliases": [],
+   "locations": [
+    "loc-dental-oral-care-52"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "deodorant",
+   "name": "Deodorant",
+   "aliases": [],
+   "locations": [
+    "loc-deodorant-53"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 13A"
+  },
+  {
+   "id": "diapers",
+   "name": "Diapers",
+   "aliases": [],
+   "locations": [
+    "loc-diapers-54"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 9"
+  },
+  {
+   "id": "diet-aids",
+   "name": "Diet Aids",
+   "aliases": [],
+   "locations": [
+    "loc-diet-aids"
+   ],
+   "tags": [],
+   "aisleLabel": "End of 15"
+  },
+  {
+   "id": "dish-soap",
+   "name": "Dish Soap",
+   "aliases": [],
+   "locations": [
+    "loc-dish-soap-55"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 13"
+  },
+  {
+   "id": "dog-food",
+   "name": "Dog Food",
+   "aliases": [],
+   "locations": [
+    "loc-dog-food-56"
+   ],
+   "tags": [
+    "heavy"
+   ],
+   "aisleLabel": "Aisle 12"
+  },
+  {
+   "id": "dried-fruit",
+   "name": "Dried Fruit",
+   "aliases": [],
+   "locations": [
+    "loc-dried-fruit-57"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 3"
+  },
+  {
+   "id": "electrical-lighting",
+   "name": "Electrical/Lighting",
+   "aliases": [],
+   "locations": [
+    "loc-electrical-lighting-58"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "eye-care",
+   "name": "Eye Care",
+   "aliases": [],
+   "locations": [
+    "loc-eye-care-59"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "fabric-softener",
+   "name": "Fabric Softener",
+   "aliases": [],
+   "locations": [
+    "loc-fabric-softener-60"
+   ],
+   "tags": [
+    "heavy"
+   ],
+   "aisleLabel": "Aisle 13"
+  },
+  {
+   "id": "facial-care",
+   "name": "Facial Care",
+   "aliases": [],
+   "locations": [
+    "loc-facial-care-61"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 11"
+  },
+  {
+   "id": "facial-tissue",
+   "name": "Facial Tissue",
+   "aliases": [],
+   "locations": [
+    "loc-facial-tissue-62"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 15"
+  },
+  {
+   "id": "feminine-hygiene",
+   "name": "Feminine Hygiene",
+   "aliases": [],
+   "locations": [
+    "loc-feminine-hygiene-63"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 12"
+  },
+  {
+   "id": "first-aid",
+   "name": "First Aid",
+   "aliases": [],
+   "locations": [
+    "loc-first-aid-64"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "floor-wax",
+   "name": "Floor Wax",
+   "aliases": [],
+   "locations": [
+    "loc-floor-wax-65"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 13"
+  },
+  {
+   "id": "flour",
+   "name": "Flour",
+   "aliases": [],
+   "locations": [
+    "loc-flour-66"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 5"
+  },
+  {
+   "id": "foil-bakeware",
+   "name": "Foil Bakeware",
+   "aliases": [],
+   "locations": [
+    "loc-foil-bakeware-67"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 5"
+  },
+  {
+   "id": "food-wrap-containers",
+   "name": "Food Wrap/Containers",
+   "aliases": [],
+   "locations": [
+    "loc-food-wrap-containers-68"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14 (directory says 20)"
+  },
+  {
+   "id": "foot-care",
+   "name": "Foot Care",
+   "aliases": [],
+   "locations": [
+    "loc-foot-care-69"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "fruit-snacks",
+   "name": "Fruit Snacks",
+   "aliases": [],
+   "locations": [
+    "loc-fruit-snacks-70"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 9"
+  },
+  {
+   "id": "gift-cards",
+   "name": "Gift Cards",
+   "aliases": [],
+   "locations": [
+    "loc-gift-cards"
+   ],
+   "tags": [],
+   "aisleLabel": "Checkstands"
+  },
+  {
+   "id": "glue",
+   "name": "Glue",
+   "aliases": [],
+   "locations": [
+    "loc-glue-71"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 9"
+  },
+  {
+   "id": "goya",
+   "name": "Goya",
+   "aliases": [],
+   "locations": [
+    "loc-goya-72"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 4"
+  },
+  {
+   "id": "gravy-mixes",
+   "name": "Gravy Mixes",
+   "aliases": [],
+   "locations": [
+    "loc-gravy-mixes-73"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 5"
+  },
+  {
+   "id": "greeting-cards",
+   "name": "Greeting Cards",
+   "aliases": [],
+   "locations": [
+    "loc-greeting-cards-74"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 9"
+  },
+  {
+   "id": "hair-accessories",
+   "name": "Hair Accessories",
+   "aliases": [],
+   "locations": [
+    "loc-hair-accessories-75"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 12"
+  },
+  {
+   "id": "hair-care",
+   "name": "Hair Care",
+   "aliases": [],
+   "locations": [
+    "loc-hair-care-76"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 12"
+  },
+  {
+   "id": "hair-color",
+   "name": "Hair Color",
+   "aliases": [],
+   "locations": [
+    "loc-hair-color-77"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 12"
+  },
+  {
+   "id": "hardware",
+   "name": "Hardware",
+   "aliases": [],
+   "locations": [
+    "loc-hardware-78"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 13B"
+  },
+  {
+   "id": "hispanic-foods",
+   "name": "Hispanic Foods",
+   "aliases": [],
+   "locations": [
+    "loc-hispanic-foods-4",
+    "loc-hispanic-foods-5"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisles 4–5"
+  },
+  {
+   "id": "honey",
+   "name": "Honey",
+   "aliases": [],
+   "locations": [
+    "loc-honey-79"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 2"
+  },
+  {
+   "id": "hosiery",
+   "name": "Hosiery",
+   "aliases": [],
+   "locations": [
+    "loc-hosiery-80"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 12"
+  },
+  {
+   "id": "hot-cocoa",
+   "name": "Hot Cocoa",
+   "aliases": [],
+   "locations": [
+    "loc-hot-cocoa-81"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 3 (directory says 16)"
+  },
+  {
+   "id": "ice",
+   "name": "Ice",
+   "aliases": [],
+   "locations": [
+    "loc-ice"
+   ],
+   "tags": [
+    "frozen"
+   ],
+   "aisleLabel": "Checkstands"
+  },
+  {
+   "id": "incontinence",
+   "name": "Incontinence",
+   "aliases": [],
+   "locations": [
+    "loc-incontinence-82"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 12"
+  },
+  {
+   "id": "insecticides",
+   "name": "Insecticides",
+   "aliases": [],
+   "locations": [
+    "loc-insecticides-83"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "instant-breakfast",
+   "name": "Instant Breakfast",
+   "aliases": [],
+   "locations": [
+    "loc-instant-breakfast-84"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 3"
+  },
+  {
+   "id": "jam-jelly",
+   "name": "Jam/Jelly",
+   "aliases": [],
+   "locations": [
+    "loc-jam-jelly-85"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 2"
+  },
+  {
+   "id": "jell-o",
+   "name": "Jell-O",
+   "aliases": [],
+   "locations": [
+    "loc-jell-o-86"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 2"
+  },
+  {
+   "id": "juice",
+   "name": "Juice",
+   "aliases": [],
+   "locations": [
+    "loc-juice-87"
+   ],
+   "tags": [
+    "heavy"
+   ],
+   "aisleLabel": "Aisle 7"
+  },
+  {
+   "id": "ketchup",
+   "name": "Ketchup",
+   "aliases": [],
+   "locations": [
+    "loc-ketchup-88"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 3"
+  },
+  {
+   "id": "kitchen-gadgets",
+   "name": "Kitchen Gadgets",
+   "aliases": [],
+   "locations": [
+    "loc-kitchen-gadgets-89"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 7"
+  },
+  {
+   "id": "kool-aid",
+   "name": "Kool-Aid",
+   "aliases": [],
+   "locations": [
+    "loc-kool-aid-90"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 1"
+  },
+  {
+   "id": "kosher-foods",
+   "name": "Kosher Foods",
+   "aliases": [],
+   "locations": [
+    "loc-kosher-foods-91"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 4"
+  },
+  {
+   "id": "laundry-detergent",
+   "name": "Laundry Detergent",
+   "aliases": [],
+   "locations": [
+    "loc-laundry-detergent-92"
+   ],
+   "tags": [
+    "heavy"
+   ],
+   "aisleLabel": "Aisle 13"
+  },
+  {
+   "id": "laxatives",
+   "name": "Laxatives",
+   "aliases": [],
+   "locations": [
+    "loc-laxatives-93"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "light-bulbs",
+   "name": "Light Bulbs",
+   "aliases": [],
+   "locations": [
+    "loc-light-bulbs-94"
+   ],
+   "tags": [
+    "fragile"
+   ],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "lotion-cream",
+   "name": "Lotion/Cream",
+   "aliases": [],
+   "locations": [
+    "loc-lotion-cream-95"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 11"
+  },
+  {
+   "id": "macaroni-and-cheese",
+   "name": "Macaroni & Cheese",
+   "aliases": [],
+   "locations": [
+    "loc-macaroni-and-cheese-96"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 5"
+  },
+  {
+   "id": "marshmallows",
+   "name": "Marshmallows",
+   "aliases": [],
+   "locations": [
+    "loc-marshmallows-97"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 8"
+  },
+  {
+   "id": "matches",
+   "name": "Matches",
+   "aliases": [],
+   "locations": [
+    "loc-matches"
+   ],
+   "tags": [],
+   "aisleLabel": "By Produce (aisle 1 end)"
+  },
+  {
+   "id": "mayonnaise",
+   "name": "Mayonnaise",
+   "aliases": [],
+   "locations": [
+    "loc-mayonnaise-98"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 3"
+  },
+  {
+   "id": "men-s-toiletries",
+   "name": "Men's Toiletries",
+   "aliases": [],
+   "locations": [
+    "loc-men-s-toiletries-99"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 13A"
+  },
+  {
+   "id": "microwaveable-food",
+   "name": "Microwaveable Food",
+   "aliases": [],
+   "locations": [
+    "loc-microwaveable-food-100"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 6"
+  },
+  {
+   "id": "milk-canned-powdered",
+   "name": "Milk (Canned/Powdered)",
+   "aliases": [],
+   "locations": [
+    "loc-milk-canned-powdered-101"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 5"
+  },
+  {
+   "id": "mixers",
+   "name": "Mixers",
+   "aliases": [],
+   "locations": [
+    "loc-mixers-102"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 10"
+  },
+  {
+   "id": "mustard",
+   "name": "Mustard",
+   "aliases": [],
+   "locations": [
+    "loc-mustard-103"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 3"
+  },
+  {
+   "id": "napkins",
+   "name": "Napkins",
+   "aliases": [],
+   "locations": [
+    "loc-napkins-104"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "nutritional-aids-bars",
+   "name": "Nutritional Aids/Bars",
+   "aliases": [
+    "protein bars"
+   ],
+   "locations": [
+    "loc-nutritional-aids-bars"
+   ],
+   "tags": [],
+   "aisleLabel": "End of 16"
+  },
+  {
+   "id": "nuts-baking",
+   "name": "Nuts (Baking)",
+   "aliases": [],
+   "locations": [
+    "loc-nuts-baking-105"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 8"
+  },
+  {
+   "id": "nuts-snacking",
+   "name": "Nuts (Snacking)",
+   "aliases": [],
+   "locations": [
+    "loc-nuts-snacking-106"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 8"
+  },
+  {
+   "id": "oil-shortening",
+   "name": "Oil/Shortening",
+   "aliases": [],
+   "locations": [
+    "loc-oil-shortening-107"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 5"
+  },
+  {
+   "id": "olives",
+   "name": "Olives",
+   "aliases": [],
+   "locations": [
+    "loc-olives-108"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 6"
+  },
+  {
+   "id": "pancake-mix",
+   "name": "Pancake Mix",
+   "aliases": [],
+   "locations": [
+    "loc-pancake-mix-109"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 2"
+  },
+  {
+   "id": "paper-towels",
+   "name": "Paper Towels",
+   "aliases": [],
+   "locations": [
+    "loc-paper-towels-110"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 15"
+  },
+  {
+   "id": "party-supplies",
+   "name": "Party Supplies",
+   "aliases": [],
+   "locations": [
+    "loc-party-supplies-111"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 9"
+  },
+  {
+   "id": "pasta-canned",
+   "name": "Pasta (Canned)",
+   "aliases": [],
+   "locations": [
+    "loc-pasta-canned-112"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 6"
+  },
+  {
+   "id": "pasta-dry",
+   "name": "Pasta (Dry)",
+   "aliases": [],
+   "locations": [
+    "loc-pasta-dry-113"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 6"
+  },
+  {
+   "id": "pastries",
+   "name": "Pastries",
+   "aliases": [],
+   "locations": [
+    "loc-pastries-114"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 2"
+  },
+  {
+   "id": "peanut-butter",
+   "name": "Peanut Butter",
+   "aliases": [],
+   "locations": [
+    "loc-peanut-butter-115"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 2"
+  },
+  {
+   "id": "pet-supplies",
+   "name": "Pet Supplies",
+   "aliases": [],
+   "locations": [
+    "loc-pet-supplies-116"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 12"
+  },
+  {
+   "id": "picante-sauce",
+   "name": "Picante Sauce",
+   "aliases": [],
+   "locations": [
+    "loc-picante-sauce-117"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 4"
+  },
+  {
+   "id": "pickles",
+   "name": "Pickles",
+   "aliases": [],
+   "locations": [
+    "loc-pickles-118"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 6"
+  },
+  {
+   "id": "pimentos",
+   "name": "Pimentos",
+   "aliases": [],
+   "locations": [
+    "loc-pimentos-119"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 5"
+  },
+  {
+   "id": "plates-cups",
+   "name": "Plates/Cups",
+   "aliases": [],
+   "locations": [
+    "loc-plates-cups-120"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "pop-tarts",
+   "name": "Pop Tarts",
+   "aliases": [],
+   "locations": [
+    "loc-pop-tarts-121"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 2 (directory says 10)"
+  },
+  {
+   "id": "popcorn",
+   "name": "Popcorn",
+   "aliases": [],
+   "locations": [
+    "loc-popcorn-122"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 8"
+  },
+  {
+   "id": "potatoes-stuffing",
+   "name": "Potatoes/Stuffing",
+   "aliases": [],
+   "locations": [
+    "loc-potatoes-stuffing-123"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 6"
+  },
+  {
+   "id": "powdered-drink-mix",
+   "name": "Powdered Drink Mix",
+   "aliases": [],
+   "locations": [
+    "loc-powdered-drink-mix-124"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 1"
+  },
+  {
+   "id": "pudding-pie-filling",
+   "name": "Pudding/Pie Filling",
+   "aliases": [],
+   "locations": [
+    "loc-pudding-pie-filling-125"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 2"
+  },
+  {
+   "id": "q-tips",
+   "name": "Q-Tips",
+   "aliases": [],
+   "locations": [
+    "loc-q-tips-126"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "religious-candles",
+   "name": "Religious Candles",
+   "aliases": [],
+   "locations": [
+    "loc-religious-candles-127"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 9"
+  },
+  {
+   "id": "rice",
+   "name": "Rice",
+   "aliases": [],
+   "locations": [
+    "loc-rice-128"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 6 (directory says 4)"
+  },
+  {
+   "id": "rice-cakes",
+   "name": "Rice Cakes",
+   "aliases": [],
+   "locations": [
+    "loc-rice-cakes-129"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 8"
+  },
+  {
+   "id": "salad-dressing",
+   "name": "Salad Dressing",
+   "aliases": [],
+   "locations": [
+    "loc-salad-dressing-130"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 6"
+  },
+  {
+   "id": "salsa",
+   "name": "Salsa",
+   "aliases": [],
+   "locations": [
+    "loc-salsa-131"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 2"
+  },
+  {
+   "id": "salt",
+   "name": "Salt",
+   "aliases": [],
+   "locations": [
+    "loc-salt-132"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 5"
+  },
+  {
+   "id": "sauce-gravy-mix",
+   "name": "Sauce/Gravy Mix",
+   "aliases": [],
+   "locations": [
+    "loc-sauce-gravy-mix-133"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 6"
+  },
+  {
+   "id": "school-office-supplies",
+   "name": "School/Office Supplies",
+   "aliases": [],
+   "locations": [
+    "loc-school-office-supplies-134"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 9"
+  },
+  {
+   "id": "seasonal-items",
+   "name": "Seasonal Items",
+   "aliases": [],
+   "locations": [
+    "loc-seasonal-items-135"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 10"
+  },
+  {
+   "id": "sewing-needs",
+   "name": "Sewing Needs",
+   "aliases": [],
+   "locations": [
+    "loc-sewing-needs-136"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 12"
+  },
+  {
+   "id": "shampoo-conditioner",
+   "name": "Shampoo/Conditioner",
+   "aliases": [],
+   "locations": [
+    "loc-shampoo-conditioner-137"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 12"
+  },
+  {
+   "id": "shaving-needs",
+   "name": "Shaving Needs",
+   "aliases": [
+    "razor",
+    "razors",
+    "shaving"
+   ],
+   "locations": [
+    "loc-shaving-needs-138"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 12"
+  },
+  {
+   "id": "shoe-care",
+   "name": "Shoe Care",
+   "aliases": [],
+   "locations": [
+    "loc-shoe-care-139"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "skin-care",
+   "name": "Skin Care",
+   "aliases": [],
+   "locations": [
+    "loc-skin-care-140"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 11"
+  },
+  {
+   "id": "snacks",
+   "name": "Snacks",
+   "aliases": [],
+   "locations": [
+    "loc-snacks-141"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 8"
+  },
+  {
+   "id": "sodas",
+   "name": "Sodas",
+   "aliases": [],
+   "locations": [
+    "loc-sodas-142"
+   ],
+   "tags": [
+    "heavy"
+   ],
+   "aisleLabel": "Aisle 8"
+  },
+  {
+   "id": "soup",
+   "name": "Soup",
+   "aliases": [],
+   "locations": [
+    "loc-soup-143"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 4"
+  },
+  {
+   "id": "spices",
+   "name": "Spices",
+   "aliases": [],
+   "locations": [
+    "loc-spices-144"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 5"
+  },
+  {
+   "id": "sports-drinks",
+   "name": "Sports Drinks",
+   "aliases": [],
+   "locations": [
+    "loc-sports-drinks-145"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 1"
+  },
+  {
+   "id": "starch",
+   "name": "Starch",
+   "aliases": [],
+   "locations": [
+    "loc-starch-146"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 13"
+  },
+  {
+   "id": "sugar",
+   "name": "Sugar",
+   "aliases": [],
+   "locations": [
+    "loc-sugar-147"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 5"
+  },
+  {
+   "id": "syrup",
+   "name": "Syrup",
+   "aliases": [],
+   "locations": [
+    "loc-syrup-148"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 2"
+  },
+  {
+   "id": "tea",
+   "name": "Tea",
+   "aliases": [],
+   "locations": [
+    "loc-tea-149"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 3"
+  },
+  {
+   "id": "toaster-pastries",
+   "name": "Toaster Pastries",
+   "aliases": [],
+   "locations": [
+    "loc-toaster-pastries-150"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 2"
+  },
+  {
+   "id": "toothpicks",
+   "name": "Toothpicks",
+   "aliases": [],
+   "locations": [
+    "loc-toothpicks-151"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 19? ask staff — trying 14"
+  },
+  {
+   "id": "tortillas",
+   "name": "Tortillas",
+   "aliases": [],
+   "locations": [
+    "loc-tortillas-152"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 2"
+  },
+  {
+   "id": "toys",
+   "name": "Toys",
+   "aliases": [],
+   "locations": [
+    "loc-toys-153"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 7"
+  },
+  {
+   "id": "trash-bags",
+   "name": "Trash Bags",
+   "aliases": [],
+   "locations": [
+    "loc-trash-bags-154"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "vinegar",
+   "name": "Vinegar",
+   "aliases": [],
+   "locations": [
+    "loc-vinegar-155"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 6"
+  },
+  {
+   "id": "vitamins",
+   "name": "Vitamins",
+   "aliases": [],
+   "locations": [
+    "loc-vitamins-156"
+   ],
+   "tags": [],
+   "aisleLabel": "Aisle 14"
+  },
+  {
+   "id": "water",
+   "name": "Water",
+   "aliases": [],
+   "locations": [
+    "loc-water"
+   ],
+   "tags": [
+    "heavy"
+   ],
+   "aisleLabel": "By Produce (aisle 1 end)"
+  },
+  {
+   "id": "wine",
+   "name": "Wine",
+   "aliases": [],
+   "locations": [
+    "loc-wine-157"
+   ],
+   "tags": [
+    "heavy",
+    "fragile"
+   ],
+   "aisleLabel": "Aisle 10"
+  },
+  {
+   "id": "produce",
+   "name": "Produce",
+   "aliases": [
+    "apple",
+    "banana",
+    "orange",
+    "grape",
+    "lettuce",
+    "tomato",
+    "onion",
+    "avocado",
+    "lemon",
+    "lime",
+    "carrot",
+    "celery",
+    "broccoli",
+    "spinach",
+    "strawberry",
+    "blueberry",
+    "melon",
+    "peach",
+    "pear",
+    "pineapple",
+    "cucumber",
+    "cabbage",
+    "garlic",
+    "ginger",
+    "cilantro",
+    "mushroom"
+   ],
+   "locations": [
+    "loc-produce"
+   ],
+   "tags": [],
+   "aisleLabel": "Produce"
+  },
+  {
+   "id": "bakery",
+   "name": "Bakery",
+   "aliases": [
+    "croissant",
+    "donut",
+    "bagel",
+    "fresh bread",
+    "bakery"
+   ],
+   "locations": [
+    "loc-bakery"
+   ],
+   "tags": [],
+   "aisleLabel": "Bakery"
+  },
+  {
+   "id": "market-deli",
+   "name": "Market Deli",
+   "aliases": [
+    "deli meat",
+    "cold cuts"
+   ],
+   "locations": [
+    "loc-market-deli"
+   ],
+   "tags": [
+    "cold"
+   ],
+   "aisleLabel": "Market Deli"
+  },
+  {
+   "id": "sushi",
+   "name": "Sushi",
+   "aliases": [],
+   "locations": [
+    "loc-sushi"
+   ],
+   "tags": [
+    "cold"
+   ],
+   "aisleLabel": "Sushi"
+  },
+  {
+   "id": "seafood",
+   "name": "Seafood",
+   "aliases": [
+    "fish",
+    "shrimp",
+    "salmon"
+   ],
+   "locations": [
+    "loc-seafood"
+   ],
+   "tags": [
+    "cold"
+   ],
+   "aisleLabel": "Seafood"
+  },
+  {
+   "id": "market",
+   "name": "Market",
+   "aliases": [
+    "meat",
+    "beef",
+    "pork",
+    "steak",
+    "ground beef"
+   ],
+   "locations": [
+    "loc-market"
+   ],
+   "tags": [
+    "cold"
+   ],
+   "aisleLabel": "Market (meat)"
+  },
+  {
+   "id": "milk",
+   "name": "Milk",
+   "aliases": [
+    "dairy milk"
+   ],
+   "locations": [
+    "loc-milk-fresh"
+   ],
+   "tags": [
+    "cold"
+   ],
+   "aisleLabel": "Milk (back-right corner)"
+  },
+  {
+   "id": "eggs",
+   "name": "Eggs",
+   "aliases": [],
+   "locations": [
+    "loc-eggs"
+   ],
+   "tags": [
+    "cold",
+    "fragile"
+   ],
+   "aisleLabel": "Eggs (top of dairy wall)"
+  },
+  {
+   "id": "dairy",
+   "name": "Dairy",
+   "aliases": [
+    "butter",
+    "yogurt",
+    "sour cream",
+    "cream cheese"
+   ],
+   "locations": [
+    "loc-dairy"
+   ],
+   "tags": [
+    "cold"
+   ],
+   "aisleLabel": "Dairy wall"
+  },
+  {
+   "id": "frozen-foods",
+   "name": "Frozen Foods",
+   "aliases": [
+    "frozen",
+    "frozen food",
+    "ice cream",
+    "frozen pizza",
+    "frozen vegetables"
+   ],
+   "locations": [
+    "loc-frozen"
+   ],
+   "tags": [
+    "frozen"
+   ],
+   "aisleLabel": "Frozen (aisle 16)"
+  },
+  {
+   "id": "deli",
+   "name": "Deli",
+   "aliases": [
+    "hot food",
+    "rotisserie"
+   ],
+   "locations": [
+    "loc-deli"
+   ],
+   "tags": [
+    "hot"
+   ],
+   "aisleLabel": "Deli (hot food, front-left)"
+  },
+  {
+   "id": "pharmacy",
+   "name": "Pharmacy",
+   "aliases": [
+    "prescription",
+    "prescriptions"
+   ],
+   "locations": [
+    "loc-pharmacy"
+   ],
+   "tags": [
+    "service"
+   ],
+   "aisleLabel": "Pharmacy"
+  },
+  {
+   "id": "floral",
+   "name": "Floral",
+   "aliases": [
+    "flowers"
+   ],
+   "locations": [
+    "loc-floral"
+   ],
+   "tags": [],
+   "aisleLabel": "Floral"
+  },
+  {
+   "id": "checkstands",
+   "name": "Checkstands",
+   "aliases": [],
+   "locations": [
+    "loc-checkstands"
+   ],
+   "tags": [],
+   "aisleLabel": "Checkstands"
+  },
+  {
+   "id": "cheese",
+   "name": "Cheese",
+   "aliases": [],
+   "locations": [
+    "loc-dairy",
+    "loc-deli"
+   ],
+   "tags": [
+    "cold"
+   ],
+   "aisleLabel": "Dairy (or deli sliced)"
+  },
+  {
+   "id": "chicken",
+   "name": "Chicken",
+   "aliases": [
+    "chicken breast",
+    "rotisserie chicken"
+   ],
+   "locations": [
+    "loc-market",
+    "loc-deli",
+    "loc-frozen"
+   ],
+   "tags": [
+    "cold"
+   ],
+   "aisleLabel": "Market (or deli / frozen)"
+  }
+ ],
+ "services": [
+  {
+   "id": "pharmacy",
+   "node": "pharm",
+   "mode": "dropoff_pickup"
+  }
+ ]
+}

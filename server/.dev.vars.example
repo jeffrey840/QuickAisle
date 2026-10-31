@@ -1,0 +1,5 @@
+# Local dev secrets — NEVER commit. Copy to .dev.vars and fill in.
+# Production uses `wrangler secret put` instead.
+BASETEN_API_KEY=
+BASETEN_MODEL=
+MODEL_API_KEY=
