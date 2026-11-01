@@ -11,7 +11,14 @@ type Bindings = {
 const app = new Hono<{ Bindings: Bindings }>();
 
 app.get("/health", (c) =>
-  c.json({ ok: true, day: 1, primary: c.env.PRIMARY_PROVIDER ?? "meta" }),
+  c.json({
+    ok: true,
+    day: 1,
+    primary: c.env.PRIMARY_PROVIDER ?? "meta",
+    // presence only — never values, lengths, or prefixes
+    hasModelKey: !!c.env.MODEL_API_KEY,
+    hasBasetenKey: !!c.env.BASETEN_API_KEY,
+  }),
 );
 
 app.post("/resolve", async (c) => {

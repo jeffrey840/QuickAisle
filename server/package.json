@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "wrangler dev --ip 0.0.0.0",
     "deploy": "wrangler deploy",
-    "test": "node --test src/resolve.test.ts src/providers/hedge.test.ts src/providers/policy.test.ts"
+    "test": "node --test src/index.test.ts src/resolve.test.ts src/providers/hedge.test.ts src/providers/policy.test.ts"
   },
   "dependencies": {
     "@quickaisle/matching": "0.1.0",
