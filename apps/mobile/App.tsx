@@ -145,6 +145,7 @@ export default function App() {
   const [resolving, setResolving] = useState(false);
   const [notes, setNotes] = useState<string[]>([]);
   const [reading, setReading] = useState(false);
+  const [photoReason, setPhotoReason] = useState<string | null>(null);
 
   const plan = async () => {
     setError(null);
@@ -204,6 +205,7 @@ export default function App() {
 
   const readPhoto = async (fromCamera: boolean) => {
     setError(null);
+    setPhotoReason(null);
     if (!API_URL) {
       setError("Couldn't read the photo — type your list instead.");
       return;
@@ -224,7 +226,7 @@ export default function App() {
       }
       const picked = fromCamera
         ? await ImagePicker.launchCameraAsync({ quality: 1 })
-        : await ImagePicker.launchMediaLibraryAsync({ quality: 1 });
+        : await ImagePicker.launchImageLibraryAsync({ quality: 1 });
       if (picked.canceled || picked.assets.length === 0) return;
       const asset = picked.assets[0]!;
       const longest = Math.max(asset.width, asset.height);
@@ -258,10 +260,13 @@ export default function App() {
       } finally {
         setReading(false);
       }
-    } catch {
-      // Text box untouched on any failure.
+    } catch (e) {
+      // Text box untouched on any failure. Short reason for diagnosis —
+      // never image data (errors here never contain it).
       setReading(false);
       setError("Couldn't read the photo — type your list instead.");
+      const reason = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+      setPhotoReason(`(${reason.slice(0, 80)})`);
     }
   };
 
@@ -295,6 +300,7 @@ export default function App() {
         {resolving ? <Text style={styles.hint}>Resolving with AI…</Text> : null}
         {reading ? <Text style={styles.hint}>Reading list…</Text> : null}
         {error ? <Text style={styles.error}>{error}</Text> : null}
+        {photoReason ? <Text style={styles.hint}>{photoReason}</Text> : null}
         {unmatched.length > 0 ? (
           <Text style={styles.unmatched}>No match: {unmatched.join(", ")}</Text>
         ) : null}

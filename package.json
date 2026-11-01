@@ -9,7 +9,8 @@
     "server"
   ],
   "scripts": {
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && npm run typecheck:mobile",
+    "typecheck:mobile": "tsc -p apps/mobile --noEmit",
     "build:store": "node scripts/build-store.ts",
     "test": "npm run test --workspaces --if-present",
     "test:routing": "npm run test --workspace=@quickaisle/routing",
