@@ -18,10 +18,16 @@ import Animated, {
 import Svg, { Circle, Polyline, Text as SvgText } from "react-native-svg";
 import { StoreDoc, type StoreDoc as StoreDocType } from "@quickaisle/schema";
 import { planRoute, type RouteResult } from "@quickaisle/routing";
-import { resolveListExact } from "@quickaisle/matching";
+import { resolveLocal } from "@quickaisle/matching";
+import { deviceAliases, saveLearnedAliases } from "./src/aliasStore";
+import { postResolve } from "./src/api";
 import storeJson from "../../data/stores/heb-001/store.json";
 
 const store: StoreDocType = StoreDoc.parse(storeJson);
+const STORE_ID = store.storeId;
+const PRODUCT_IDS = new Set(store.products.map((p) => p.id));
+const API_URL = process.env.EXPO_PUBLIC_API_URL;
+const MAX_ONLINE_TERMS = 30;
 const MAP_W = store.imageSize[0];
 const MAP_H = store.imageSize[1];
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -134,8 +140,9 @@ export default function App() {
   const [route, setRoute] = useState<RouteResult | null>(null);
   const [unmatched, setUnmatched] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [resolving, setResolving] = useState(false);
 
-  const plan = () => {
+  const plan = async () => {
     setError(null);
     try {
       const terms = parseList(text);
@@ -143,7 +150,37 @@ export default function App() {
         setError("Type at least one item.");
         return;
       }
-      const { matched, unmatched: noMatch } = resolveListExact(terms, store.products);
+      // Local first (exact → learned alias → fuzzy). Alias-store failure
+      // degrades to no learned aliases, never to an error.
+      const local = await resolveLocal(terms, store.products, {
+        storeId: STORE_ID,
+        aliases: deviceAliases,
+      }).catch(() => resolveLocal(terms, store.products));
+      const matched = local.matched.map((m) => ({ term: m.term, productId: m.productId }));
+      let noMatch = local.needAi.map((n) => n.term);
+      // Online top-up for the leftovers. Any failure (no server, timeout,
+      // bad response) keeps the local-only result — offline behavior is
+      // identical to before this change.
+      if (noMatch.length > 0 && API_URL) {
+        setResolving(true);
+        try {
+          const online = await postResolve(API_URL, STORE_ID, noMatch.slice(0, MAX_ONLINE_TERMS));
+          const fixed = new Set<string>();
+          for (const a of online.answers) {
+            const top = !a.needsClarification ? a.matches[0] : undefined;
+            if (top && PRODUCT_IDS.has(top.productId)) {
+              matched.push({ term: a.input, productId: top.productId });
+              fixed.add(a.input);
+            }
+          }
+          noMatch = noMatch.filter((t) => !fixed.has(t));
+          await saveLearnedAliases(STORE_ID, online.learnedAliases).catch(() => {});
+        } catch {
+          // keep local-only result
+        } finally {
+          setResolving(false);
+        }
+      }
       setUnmatched(noMatch);
       if (matched.length === 0) {
         setError("Nothing matched. Try Test A or Test B.");
@@ -179,8 +216,9 @@ export default function App() {
             <Text>Rx ready</Text>
             <Switch value={rxReady} onValueChange={setRxReady} />
           </View>
-          <Button title="Plan route" onPress={plan} />
+          <Button title="Plan route" onPress={plan} disabled={resolving} />
         </View>
+        {resolving ? <Text style={styles.hint}>Resolving with AI…</Text> : null}
         {error ? <Text style={styles.error}>{error}</Text> : null}
         {unmatched.length > 0 ? (
           <Text style={styles.unmatched}>No match: {unmatched.join(", ")}</Text>

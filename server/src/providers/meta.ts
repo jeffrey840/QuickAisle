@@ -37,6 +37,7 @@ function chatUrl(env: ProviderEnv): string {
 export async function chatMeta<S extends z.ZodTypeAny>(
   args: ChatArgs<S>,
   env: ProviderEnv,
+  opts?: { signal?: AbortSignal },
 ): Promise<ChatResult<z.infer<S>>> {
   const key = env.MODEL_API_KEY;
   if (!key) throw new ConfigError("MODEL_API_KEY is missing");
@@ -50,7 +51,7 @@ export async function chatMeta<S extends z.ZodTypeAny>(
       throw new ConfigError(`meta image exceeds 50 MB (${bytes} bytes)`);
     }
   }
-  const timeoutMs = images.length > 0 ? VISION_TIMEOUT_MS : TEXT_TIMEOUT_MS;
+  const timeoutMs = args.timeoutMs ?? (images.length > 0 ? VISION_TIMEOUT_MS : TEXT_TIMEOUT_MS);
   const jsonSchema = zodToJsonSchema(args.schema);
   const name = args.name ?? "response";
   const base = {
@@ -69,7 +70,7 @@ export async function chatMeta<S extends z.ZodTypeAny>(
   let lastDetail = "";
   for (let attempt = 0; attempt < 2; attempt++) {
     if (attempt === 1) messages = appendRetryMessage(messages, lastDetail);
-    const { status, json } = await postJson(url, key, { ...base, messages }, timeoutMs);
+    const { status, json } = await postJson(url, key, { ...base, messages }, timeoutMs, opts?.signal);
     if (status !== 200) {
       throw new HttpError(status, `meta chat failed with status ${status}`);
     }

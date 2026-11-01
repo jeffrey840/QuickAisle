@@ -1,4 +1,4 @@
-import type { ChatImage } from "./types.ts";
+import type { ChatImage, ProviderName } from "./types.ts";
 
 /** Config bug (missing key, over image limits) — never falls back, fails loud. */
 export class ConfigError extends Error {
@@ -88,9 +88,16 @@ export async function postJson(
   key: string,
   body: unknown,
   timeoutMs: number,
+  /** outer abort (hedge loser). Timeout still applies on top of it. */
+  signal?: AbortSignal,
 ): Promise<{ status: number; json: unknown }> {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  const onOuterAbort = (): void => ctrl.abort();
+  if (signal) {
+    if (signal.aborted) ctrl.abort();
+    else signal.addEventListener("abort", onOuterAbort, { once: true });
+  }
   try {
     const res = await fetch(url, {
       method: "POST",
@@ -116,6 +123,7 @@ export async function postJson(
     throw new NetworkError("network", e instanceof Error ? e.message : String(e));
   } finally {
     clearTimeout(timer);
+    signal?.removeEventListener("abort", onOuterAbort);
   }
 }
 
@@ -135,11 +143,13 @@ export function isFallbackable(e: unknown): boolean {
 }
 
 /** Short fallback reason. Never bodies or headers. */
-export function fallbackReasonFor(e: unknown): string {
-  if (e instanceof HttpError) return `meta ${e.status}`;
-  if (e instanceof NetworkError) return e.code === "timeout" ? "meta timeout" : "meta network-error";
-  if (e instanceof ValidationError) return "meta invalid-response";
-  return "meta error";
+export function fallbackReasonFor(e: unknown, primary: ProviderName = "meta"): string {
+  if (e instanceof HttpError) return `${primary} ${e.status}`;
+  if (e instanceof NetworkError) {
+    return e.code === "timeout" ? `${primary} timeout` : `${primary} network-error`;
+  }
+  if (e instanceof ValidationError) return `${primary} invalid-response`;
+  return `${primary} error`;
 }
 
 interface RawUsage {

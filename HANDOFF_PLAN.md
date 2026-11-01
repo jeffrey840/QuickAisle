@@ -85,7 +85,7 @@ video is the product in the final — budget real time for it.
 | Local storage | Bundled `store.json` + a simple key-value store (AsyncStorage) for lists, learned aliases, saved stores | Must work on **web too** — avoid `expo-sqlite` (its web support needs extra setup) |
 | Fuzzy match | Fuse.js (or trigram) | |
 | Server | **TypeScript + Hono on Cloudflare Workers** | Shares packages with the app. Local: `wrangler dev --ip 0.0.0.0` and point the phone at the laptop's **LAN IP** (not localhost) |
-| Server storage | **Workers KV** (free) | Learned aliases + per-device rate-limit counters. Uploaded photos are **not stored** — processed and discarded |
+| Server storage | **Workers KV** (free) | Per-device rate-limit counters (Day 4). Learned aliases are device-only for now — see §6. Uploaded photos are **not stored** — processed and discarded |
 | AI providers | **Baseten** (Meta open-weights / Llama, OpenAI-compatible API — verify in docs) and **Meta Model API** (Muse Spark / vision / SAM 3.1) | Provider abstraction with fallback |
 | Schema validation | Zod (shared) | Validate store.json and every LLM response |
 | Hosting (all free) | **Cloudflare Workers** (server) · **Cloudflare Pages** (Expo web build = judges' live link) · **GitHub Releases** (APK) | Free plan, no credit card; Workers don't sleep, so no cold-start stalls in the demo. API keys stored with `wrangler secret put`, never in the repo. Local `wrangler dev` for Days 1–2 |
@@ -295,6 +295,9 @@ brute force on random ≤ 7-stop lists.
 - `POST /resolve` — unresolved terms + compact catalog (ids + names) → strict JSON:
   `{ input, matches:[{productId, confidence}], needsClarification, question, tags }`.
   Server rejects any productId not in the catalog. Successful answers saved as new aliases.
+  Aliases are device-only for now (AsyncStorage behind the `AliasStore` interface in
+  `packages/matching`); a future shared store should use a promotion rule (an alias goes
+  shared only after ≥3 different devices learn the same mapping).
 - `POST /read-list` (**Day 2**) — a photo instead of typing. Meta vision model returns
   `{ items: [{ text, quantity? }], source: "handwritten|screenshot|recipe|product" }` (strict JSON, validated),
   then the items go through the same matching pipeline as typed text. Handles:
@@ -317,17 +320,22 @@ brute force on random ≤ 7-stop lists.
 - `GET /health`
 
 **Provider layer** (`server/src/providers/`; verified live Oct 31)
-- Meta (primary): `POST https://api.meta.ai/v1/chat/completions`, model `muse-spark-1.3`,
+- Meta: `POST https://api.meta.ai/v1/chat/completions`, model `muse-spark-1.3`,
   strict `json_schema` mode, `reasoning_effort: "low"`, ≤50 images (≤50 MB each).
-- Baseten (backup): `POST https://inference.baseten.co/v1/chat/completions`,
+  Primary by default; fallback for `/resolve`.
+- Baseten: `POST https://inference.baseten.co/v1/chat/completions`,
   model `meta-models/muse-spark-open-1026`, prompted JSON (no JSON mode) + fence-strip
   + Zod + 1 retry, `reasoning_effort: "low"`, `max_tokens: 8000`, ≤8 images (≤10 MB each).
-- `chat()` tries Meta, falls back to Baseten on timeout (15 s text / 45 s vision),
-  429/5xx, network error, or schema validation still failing after 1 retry.
-- Per-task policy: list/directory reading (T1-type, `/read-list`, `/resolve`) → Baseten;
+  Primary for `/resolve`; backup elsewhere.
+- `chat()` tries the policy primary (Meta by default), falls back to the other on
+  timeout (15 s text / 45 s vision unless overridden), 429/5xx, network error,
+  or schema validation still failing after 1 retry.
+- Per-task policy: `/resolve` → Baseten primary, Meta fallback, 30 s text timeout,
+  hedge at 12 s (§10); vision tasks (T1-type, `/read-list`) → Meta primary;
   map ingest (T2-type, `/ingest`) → no fallback, clear error instead.
-- Server route only: `authFallback` also falls back on Meta 401/403, so an expired key
-  can't break the live demo. The eval runner never sets it — bad keys stay loud there.
+- Server route only: `authFallback` also falls back on the primary's 401/403, so an
+  expired key can't break the live demo. The eval runner never sets it — bad keys
+  stay loud there.
 - Dev/eval-only: `META_BASE_URL` override gated by `ALLOW_URL_OVERRIDE=1` (for
   `--fallback-test`); never set either in `wrangler.toml` or secrets.
 - Keys only in Cloudflare secrets / `server/.dev.vars`. Both providers serve Meta
@@ -505,7 +513,7 @@ cost per run (tokens × price), and **consistency** — run each case **3 times*
 ```
 npm run eval -- --task t1|t2|t3|t4|all --provider meta|baseten|both --runs 3
 ```
-- Lives in `eval/run.ts`; calls the **same** `llm.*` provider layer the server uses (so we test the
+- Lives in `eval/run.ts`; calls the **same** `server/src/providers` layer the server uses (so we test the
   real code path, prompts included).
 - Writes `eval/results/<date>-<task>.json` (raw answers) and `eval/results/<date>-summary.md`:
 
@@ -513,13 +521,17 @@ npm run eval -- --task t1|t2|t3|t4|all --provider meta|baseten|both --runs 3
 |---|---|---|---|
 | T1 | row acc. | 100% ×3, agree 100%, max 12.1s | 100/99.4/100% (Condiments 7 vs 3; tok to 3977/4000), max 13.5s |
 | T2 | composite | 75/98/100%, agree 0%, xErr 43–72px, max 14.2s | ~70% every run (4–5/14 depts, xErr 120–175px, retry every run: empty attempt 0) |
-| T3 | top-1 / clarify / invented | – | – |
+| T3 | top-1 / clarify / invented | v1: 90.8% p50 13.2s, invented 0; v2: 88.8% + 1 timeout | v1: 93.7% p50 7.4s, invented 0; v2: 87.9% |
 | T4 | recall / precision | – | – |
 | all | JSON valid · max latency · $/run · consistency | valid post-retry · see above · $ n/a · T1 100%, T2 0% | valid post-retry · see above · $ n/a · T1 high, T2 n/a |
 
 Measured Oct 31, runs=1 then runs=3 (raw in `eval/results/`, gitignored). Primary per
 decision rules: Meta for T1 (within 3pp → faster wins) and T2 (higher score); Baseten
-is backup. Commit the summary — it's good README and video material ("we measured both providers").
+is backup. For T3: Baseten primary, Meta fallback — higher top-1 (93.7 vs 90.8) and
+faster (p50 7.4 s vs 13.2 s); both pass the 85% bar. resolve-v1 stays the active
+prompt: v2 regressed top-1 on both providers (its ask-less rule killed needed
+clarifications: 0/4 vs 3/4 on cheese/chicken/bread/advil). Commit the summary — it's
+good README and video material ("we measured both providers").
 
 ### Decision rules (per job)
 1. **Primary** = higher main score (T1 aisle accuracy, T2 route match, T3 top-1, T4 recall).
@@ -532,15 +544,16 @@ is backup. Commit the summary — it's good README and video material ("we measu
 ### Backup plan — when to switch, and what's next in line
 | Job | Primary | 1st backup | 2nd backup (no AI) |
 |---|---|---|---|
-| List text (T3) | winner of T3 | the other provider | local fuzzy match + "did you mean" picker |
+| List text (T3) | Baseten (T3 93.7%) | Meta | local fuzzy match + "did you mean" picker |
 | List photo (T4) | winner of T4 | the other provider | ask the user to type the list |
 | Directory photo (T1) | winner of T1 | the other provider | user types/edits rows on the review screen |
 | Map photo (T2) | winner of T2 (SAM 3.1 path) | vision-only layout → grid the user adjusts (§6) | pick a preloaded store |
 | Live demo | live calls | `DEMO_MODE` replay of saved responses | pre-recorded video segment |
 
-**Switch to the backup automatically when:** request times out (15 s text / 45 s vision), HTTP 429 or
-5xx, or the answer fails schema validation after **one** retry. Log which provider answered each
-request; show a small "answered by: Meta / Baseten" tag in a debug view (useful in the video).
+**Switch to the backup automatically when:** request times out (15 s text / 45 s vision;
+`/resolve`: 30 s text, hedge at 12 s), HTTP 429 or 5xx, or the answer fails schema
+validation after **one** retry. Log which provider answered each request; show a small
+"answered by: Meta / Baseten" tag in a debug view (useful in the video).
 
 ### When to run it
 - **Day 1 evening** (replaces the plain spike): T1 + T2 on both providers → tells us early whether

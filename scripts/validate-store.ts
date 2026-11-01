@@ -8,6 +8,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { StoreDoc } from "@quickaisle/schema";
+import { HEB_CATALOG } from "../server/src/catalogs/heb-001.ts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const raw = JSON.parse(
@@ -84,6 +85,15 @@ const gold = JSON.parse(
 const names = new Set(store.products.map((p) => p.name));
 for (const item of gold.items) {
   if (!names.has(item.name)) errors.push(`gold item missing from store: ${item.name}`);
+}
+
+// server catalog sync: generated /resolve catalog matches store.json
+{
+  const want = store.products.map((p) => `${p.id}|${p.name}`);
+  const got = HEB_CATALOG.map((c) => `${c.id}|${c.name}`);
+  if (want.length !== got.length || want.some((w, i) => w !== got[i])) {
+    errors.push("server/src/catalogs/heb-001.ts is out of sync — rerun npm run build:store");
+  }
 }
 
 if (errors.length) {

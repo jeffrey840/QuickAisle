@@ -5,10 +5,9 @@
   "scripts": {
     "dev": "wrangler dev --ip 0.0.0.0",
     "deploy": "wrangler deploy",
-    "test": "echo \"no tests\""
+    "test": "node --test src/resolve.test.ts src/providers/hedge.test.ts src/providers/policy.test.ts"
   },
   "dependencies": {
-    "@quickaisle/llm": "0.1.0",
     "@quickaisle/matching": "0.1.0",
     "@quickaisle/routing": "0.1.0",
     "@quickaisle/schema": "0.1.0",

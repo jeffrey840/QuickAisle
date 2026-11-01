@@ -2,6 +2,7 @@
  * §10 provider accuracy runner.
  *
  *   npm run eval -- --task=t1,t2 --provider=meta|baseten|both [--runs=3] [--record] [--save-raw]
+ *   npm run eval -- --task=t3 --provider=both [--resolve-version=v1|v2] [--runs=3]
  *   META_BASE_URL=http://127.0.0.1:9 ALLOW_URL_OVERRIDE=1 npm run eval -- --fallback-test
  *
  * T1/T2 call each provider DIRECTLY (no fallback) for a fair comparison,
@@ -16,7 +17,6 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { ZodTypeAny } from "zod";
 import { StoreDoc } from "@quickaisle/schema";
-import { getProvider, NotConfigured } from "@quickaisle/llm";
 import {
   chat,
   chatMeta,
@@ -41,6 +41,12 @@ import {
 } from "./score.ts";
 import { T1Schema, T2Schema } from "./schemas.ts";
 import { T1_PROMPT, T2_PROMPT } from "./prompts.ts";
+import {
+  RESOLVE_PROMPT_V1,
+  RESOLVE_PROMPT_V2,
+  ResolveSchema,
+  type ResolvePromptDef,
+} from "../server/src/resolve-contract.ts";
 import { loadFixtures, saveFixture } from "./fixtures.ts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -308,7 +314,6 @@ async function taskT1(providers: RunnerProvider[], runs: number, ctx: TaskCtx): 
         }
         maybeRecord(ctx, name, key, res.raw, res.latencyMs);
       } catch (e) {
-        if (e instanceof NotConfigured) throw e;
         const msg = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
         records.push({
           provider: name, task: "t1", run: r, ms: Date.now() - t0,
@@ -388,7 +393,6 @@ async function taskT2(providers: RunnerProvider[], runs: number, ctx: TaskCtx): 
         // Day 3: end-to-end — build store.json from the layout, run routing A/B.
         maybeRecord(ctx, name, key, res.raw, res.latencyMs);
       } catch (e) {
-        if (e instanceof NotConfigured) throw e;
         const msg = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
         records.push({
           provider: name, task: "t2", run: r, ms: Date.now() - t0,
@@ -401,7 +405,20 @@ async function taskT2(providers: RunnerProvider[], runs: number, ctx: TaskCtx): 
   }
 }
 
-async function taskT3(providers: RunnerProvider[], runs: number): Promise<void> {
+function resolvePromptForArg(raw: string): ResolvePromptDef {
+  if (raw === "v1" || raw === "resolve-v1") return RESOLVE_PROMPT_V1;
+  if (raw === "v2" || raw === "resolve-v2") return RESOLVE_PROMPT_V2;
+  console.error(`unknown --resolve-version "${raw}" (want v1|v2)`);
+  process.exit(2);
+  throw new Error("unreachable");
+}
+
+async function taskT3(
+  providers: RunnerProvider[],
+  runs: number,
+  ctx: TaskCtx,
+  prompt: ResolvePromptDef,
+): Promise<void> {
   const live = providers.filter((p) => p !== "mock");
   if (live.length < providers.length) {
     summary.push("T3 mock skipped: mock supports t1/t2 only.");
@@ -409,19 +426,38 @@ async function taskT3(providers: RunnerProvider[], runs: number): Promise<void> 
   const cases = JSON.parse(
     readFileSync(join(root, "eval/cases/resolve.json"), "utf8"),
   ) as { cases: Array<{ input: string; expect: T3Expect }> };
+  const inputs = cases.cases.map((c) => c.input);
   for (const name of live) {
-    // Day 2: rewire to server/src/providers chat() with a resolve prompt.
-    const p = getProvider(name as "meta" | "baseten", loadDevVars());
+    const key = `t3-${name}-${prompt.version}`;
     for (let r = 0; r < runs; r++) {
       const t0 = Date.now();
       try {
-        const { answers } = await p.resolveItems(
-          cases.cases.map((c) => c.input),
-          catalog,
-        );
+        const res = await directChat({
+          provider: name,
+          system: prompt.system,
+          user: prompt.user(inputs, catalog),
+          images: [],
+          schema: ResolveSchema,
+          name: "resolve_terms",
+          key,
+          env: ctx.env,
+          fixtures: ctx.fixtures,
+        });
+        const v = ResolveSchema.safeParse(res.data);
+        if (!v.success) throw new Error("response failed resolve schema validation");
+        const byInput = new Map(v.data.answers.map((a) => [a.input, a]));
         let correct = 0;
         let invented = 0;
-        answers.forEach((a, i) => {
+        let askedShould = 0;
+        let askedShouldTotal = 0;
+        let askedNot = 0;
+        const misses: string[] = [];
+        for (const c of cases.cases) {
+          const a = byInput.get(c.input);
+          if (!a) {
+            misses.push(`NO ANSWER for "${c.input}"`);
+            continue;
+          }
           const topNames: string[] = [];
           const bad: string[] = [];
           for (const m of a.matches) {
@@ -430,26 +466,50 @@ async function taskT3(providers: RunnerProvider[], runs: number): Promise<void> 
             else bad.push(m.productId);
           }
           invented += bad.length;
-          const s = scoreT3Case(cases.cases[i]!.expect, {
+          const s = scoreT3Case(c.expect, {
             topNames,
             needsClarification: a.needsClarification,
             invented: bad,
           });
           if (s.correct) correct++;
-        });
-        const score = { top1: correct / cases.cases.length, correct, total: cases.cases.length, invented };
-        if (score.top1 === 0) {
+          else {
+            misses.push(
+              `"${c.input}" → [${topNames.join(", ") || "none"}]` +
+                (a.needsClarification ? " (asked)" : "") +
+                (bad.length ? ` invented:${bad.join(",")}` : ""),
+            );
+          }
+          if (s.askedWhenShould !== null) {
+            askedShouldTotal++;
+            if (s.askedWhenShould) askedShould++;
+          }
+          if (s.askedWhenShouldNot) askedNot++;
+        }
+        const top1 = correct / cases.cases.length;
+        if (top1 === 0) {
           throw new Error("scored 0% — counting as failure");
         }
         records.push({
           provider: name, task: "t3", run: r, ms: Date.now() - t0,
-          accuracy: score.top1, score, retries: 0, fp: fpOf(answers),
+          accuracy: top1,
+          score: {
+            top1, correct, total: cases.cases.length, invented,
+            askedShould, askedShouldTotal, askedNot,
+          },
+          retries: res.retries,
+          fp: fpOf(v.data.answers),
+          ...(ctx.saveRaw ? { raw: res.raw } : {}),
+          attempts: res.attempts,
         });
         summary.push(
-          `T3 ${name} run${r}: top-1 ${pct(score.top1)} (${correct}/${cases.cases.length}), invented ${invented}`,
+          `T3 ${name} run${r} [${prompt.version}]: top-1 ${pct(top1)} ` +
+            `(${correct}/${cases.cases.length}) invented ${invented} ` +
+            `asked ${askedShould}/${askedShouldTotal} misasked ${askedNot} ` +
+            `retries=${res.retries} ${res.latencyMs}ms${usageStr(res.usage)}${attemptsStr(res.attempts)}`,
         );
+        for (const m of misses) summary.push(`  T3MISS ${name} run${r}: ${m}`);
+        maybeRecord(ctx, name, key, res.raw, res.latencyMs);
       } catch (e) {
-        if (e instanceof NotConfigured) throw e;
         const msg = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
         records.push({
           provider: name, task: "t3", run: r, ms: Date.now() - t0,
@@ -570,22 +630,11 @@ async function main(): Promise<void> {
   const fixtures = env.DEMO_MODE === "1" ? loadFixtures(FIXTURE_DIR) : null;
   const ctx: TaskCtx = { record, saveRaw, env, fixtures };
 
-  let blocked = false;
-  const runOne = async (t: string, fn: () => Promise<void>): Promise<void> => {
-    try {
-      await fn();
-    } catch (e) {
-      if (e instanceof NotConfigured) {
-        summary.push(`${t.toUpperCase()} blocked: ${(e as Error).message}`);
-        blocked = true;
-        return;
-      }
-      throw e;
-    }
-  };
-  if (runTask("t1")) await runOne("t1", () => taskT1(providers, runs, ctx));
-  if (runTask("t2")) await runOne("t2", () => taskT2(providers, runs, ctx));
-  if (runTask("t3")) await runOne("t3", () => taskT3(providers, runs));
+  if (runTask("t1")) await taskT1(providers, runs, ctx);
+  if (runTask("t2")) await taskT2(providers, runs, ctx);
+  if (runTask("t3")) {
+    await taskT3(providers, runs, ctx, resolvePromptForArg(arg("resolve-version", "v1")));
+  }
   if (runTask("t4")) await taskT4();
 
   const table = printTable();
@@ -607,10 +656,6 @@ async function main(): Promise<void> {
 
   if (records.some((r) => r.error?.startsWith("ConfigError"))) {
     console.log("Hint: fill MODEL_API_KEY / BASETEN_API_KEY in server/.dev.vars and re-run.");
-    process.exitCode = 2;
-  }
-  if (blocked) {
-    console.log("Some tasks are blocked (see above).");
     process.exitCode = 2;
   }
 }

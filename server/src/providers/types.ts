@@ -17,6 +17,11 @@ export interface ChatArgs<S extends z.ZodTypeAny> {
    * defaults to "response".
    */
   name?: string;
+  /**
+   * Per-call timeout override (ms) for both providers. Defaults to
+   * 15 s text / 45 s vision. /resolve sets 30 s (§10).
+   */
+  timeoutMs?: number;
 }
 
 export interface UsageInfo {
@@ -82,17 +87,26 @@ export interface DemoOptions {
 }
 
 /**
- * Per-task fallback policy for chat().
- * - List/directory reading (T1-type, /read-list, /resolve) → "baseten".
- * - Map ingest (T2-type, /ingest) → "none" with noFallbackMessage set to
- *   "couldn't read the map, try again".
+ * Per-task provider policy for chat().
+ * - /resolve (T3 winner) → primary "baseten", Meta is the fallback.
+ * - Vision tasks (directory, /read-list, /ingest) → primary "meta".
+ * - Map ingest (T2-type, /ingest) → fallback false with
+ *   noFallbackMessage "couldn't read the map, try again".
  * The eval runner calls providers directly and never sets a policy.
  */
 export interface ChatPolicy {
-  /** also fall back on Meta 401/403 (server route only). Default false. */
+  /** which provider goes first. Default "meta". */
+  primary?: ProviderName;
+  /** fall back to the other provider on failure. Default true. */
+  fallback?: boolean;
+  /** also fall back on the primary's 401/403 (server route only). Default false. */
   authFallback?: boolean;
-  /** default "baseten" */
-  fallback?: "baseten" | "none";
-  /** message thrown when fallback is "none" and Meta fails */
+  /** message thrown when fallback is false and the primary fails */
   noFallbackMessage?: string;
+  /**
+   * Start Baseten if Meta hasn't answered within this many ms; first
+   * valid answer wins, the loser is aborted. Server route only — the
+   * eval runner calls providers directly and never sets it.
+   */
+  hedgeMs?: number;
 }

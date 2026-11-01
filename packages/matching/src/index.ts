@@ -1,34 +1,10 @@
 import type { StoreProduct } from "@quickaisle/schema";
+import { FUZZY_ACCEPT, FUZZY_GRAY, buildFuzzyIndex, fuzzyMatch } from "./fuzzy.ts";
+import type { FuzzyHit } from "./fuzzy.ts";
+import { normalize } from "./normalize.ts";
 
-const UNITS = new Set([
-  "oz", "ounce", "ounces", "lb", "lbs", "pound", "pounds", "g", "gram", "grams",
-  "kg", "ml", "l", "liter", "liters", "ct", "count", "pk", "pack", "packs",
-  "gal", "gallon", "gallons", "qt", "pint", "pints", "cup", "cups",
-]);
-
-/** lowercase, strip quantities/units/punctuation, naive singularize */
-export function normalize(raw: string): string {
-  let s = raw.toLowerCase().trim();
-  s = s.replace(/['']/g, "");
-  const kept: string[] = [];
-  for (const tok of s.split(/[^a-z0-9/+-]+/)) {
-    if (!tok) continue;
-    if (/^\d+(\.\d+)?$/.test(tok)) continue;
-    if (/^\d+\s*(x|-)\s*\d+/.test(tok)) continue;
-    if (UNITS.has(tok)) continue;
-    kept.push(tok);
-  }
-  s = kept.join(" ").trim();
-  return singularize(s);
-}
-
-function singularize(s: string): string {
-  if (/(shoes|glasses|chips|nachos|oats)$/.test(s)) return s;
-  if (s.endsWith("ies") && s.length > 4) return s.slice(0, -3) + "y";
-  if (s.endsWith("ses") || s.endsWith("xes") || s.endsWith("zes")) return s.slice(0, -2);
-  if (s.endsWith("s") && !s.endsWith("ss") && s.length > 3) return s.slice(0, -1);
-  return s;
-}
+export { FUZZY_ACCEPT, FUZZY_GRAY, buildFuzzyIndex, fuzzyMatch, normalize };
+export type { FuzzyHit };
 
 export interface MatchResult {
   productId: string;
@@ -64,4 +40,80 @@ export function resolveListExact(terms: string[], products: StoreProduct[]): Lis
     else unmatched.push(t);
   }
   return matched.length || unmatched.length ? { matched, unmatched } : { matched, unmatched };
+}
+
+/** A term→product mapping learned from an accepted AI answer. */
+export interface LearnedAlias {
+  productId: string;
+  confidence: number;
+  ts: number;
+}
+
+/**
+ * Alias storage. Device-only for now (AsyncStorage implementation in the
+ * app); a future shared store should promote an alias only after ≥3
+ * different devices learn the same mapping (see HANDOFF_PLAN.md §6).
+ */
+export interface AliasStore {
+  get(storeId: string, term: string): Promise<LearnedAlias | null>;
+  save(storeId: string, term: string, productId: string, confidence: number): Promise<void>;
+}
+
+export interface LocalMatch {
+  term: string;
+  productId: string;
+  via: "exact" | "alias" | "fuzzy";
+}
+
+export interface NeedAi {
+  term: string;
+  /** gray-zone fuzzy candidates (similarity ≥ FUZZY_GRAY), best first */
+  suggestions: FuzzyHit[];
+}
+
+export interface LocalResolve {
+  matched: LocalMatch[];
+  needAi: NeedAi[];
+}
+
+/**
+ * Local pipeline (plan §6): exact → catalog alias → learned alias →
+ * fuzzy-accept (≥ FUZZY_ACCEPT) → AI. Learned aliases whose productId is
+ * gone from the catalog are ignored. Terms that normalize to empty are
+ * skipped.
+ */
+export async function resolveLocal(
+  terms: string[],
+  products: StoreProduct[],
+  opts?: { storeId?: string; aliases?: AliasStore },
+): Promise<LocalResolve> {
+  const ids = new Set(products.map((p) => p.id));
+  const fuse = buildFuzzyIndex(products);
+  const matched: LocalMatch[] = [];
+  const needAi: NeedAi[] = [];
+  for (const term of terms) {
+    if (!normalize(term)) continue;
+    const ex = exactMatch(term, products);
+    if (ex) {
+      matched.push({ term, productId: ex.productId, via: ex.via });
+      continue;
+    }
+    if (opts?.aliases && opts.storeId) {
+      const learned = await opts.aliases.get(opts.storeId, normalize(term));
+      if (learned && ids.has(learned.productId)) {
+        matched.push({ term, productId: learned.productId, via: "alias" });
+        continue;
+      }
+    }
+    const hits = fuzzyMatch(term, fuse, 3);
+    if (hits.length > 0 && hits[0]!.similarity >= FUZZY_ACCEPT) {
+      matched.push({ term, productId: hits[0]!.productId, via: "fuzzy" });
+      continue;
+    }
+    needAi.push({
+      term,
+      suggestions: hits.filter((h) => h.similarity >= FUZZY_GRAY),
+    });
+  }
+  return { matched, needAi };
 }

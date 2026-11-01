@@ -9,6 +9,7 @@ import type {
 } from "./types.ts";
 import { stripFences } from "./jsonschema.ts";
 import { HttpError, isFallbackable, shortError, fallbackReasonFor } from "./http.ts";
+import { hedged } from "./hedge.ts";
 import { chatMeta } from "./meta.ts";
 import { chatBaseten } from "./baseten.ts";
 
@@ -65,14 +66,35 @@ export function replayFixture<S extends z.ZodTypeAny>(
   };
 }
 
+type ChatFn = typeof chatMeta;
+
 /**
- * Meta first, Baseten fallback. Falls back on timeout (15 s text / 45 s
- * vision), 429/5xx, network errors, and schema validation still failing
- * after 1 retry. Config errors (missing keys, over image limits) and other
- * 4xx fail loud with no fallback — except 401/403 when policy.authFallback
- * is set (server route only; the eval runner never sets it, so bad keys
- * stay loud there). With policy.fallback "none", a would-be fallback
- * instead throws policy.noFallbackMessage (map ingest). Logs provider +
+ * First/second provider for a policy (exported for the offline test).
+ * Default primary is Meta; /resolve sets primary "baseten" (§10).
+ */
+export function providerOrder(policy?: ChatPolicy): {
+  first: ChatFn;
+  second: ChatFn;
+  firstName: ProviderName;
+  secondName: ProviderName;
+} {
+  if ((policy?.primary ?? "meta") === "baseten") {
+    return { first: chatBaseten, second: chatMeta, firstName: "baseten", secondName: "meta" };
+  }
+  return { first: chatMeta, second: chatBaseten, firstName: "meta", secondName: "baseten" };
+}
+
+/**
+ * Primary first, the other provider as fallback. Falls back on timeout
+ * (15 s text / 45 s vision unless args.timeoutMs overrides), 429/5xx,
+ * network errors, and schema validation still failing after 1 retry.
+ * Config errors (missing keys, over image limits) and other 4xx fail
+ * loud with no fallback — except 401/403 when policy.authFallback is set
+ * (server route only; the eval runner never sets it, so bad keys stay
+ * loud there). With policy.fallback false, a would-be fallback instead
+ * throws policy.noFallbackMessage (map ingest). With policy.hedgeMs set
+ * (and fallback enabled), the second provider starts early if the
+ * primary is slow and the first valid answer wins. Logs provider +
  * latency + reason, never the key.
  */
 export async function chat<S extends z.ZodTypeAny>(
@@ -85,9 +107,13 @@ export async function chat<S extends z.ZodTypeAny>(
     if (!opts) throw new Error("DEMO_MODE=1 needs {key, fixtures}");
     return replayFixture(args, opts);
   }
+  if (policy?.hedgeMs !== undefined && (policy?.fallback ?? true)) {
+    return hedgedChat(args, env, policy, policy.hedgeMs);
+  }
+  const { first, second, firstName, secondName } = providerOrder(policy);
   try {
-    const r = await chatMeta(args, env);
-    log("meta", r.latencyMs, r.retries);
+    const r = await first(args, env);
+    log(firstName, r.latencyMs, r.retries);
     return r;
   } catch (e) {
     const authFailure =
@@ -95,20 +121,66 @@ export async function chat<S extends z.ZodTypeAny>(
       e instanceof HttpError &&
       (e.status === 401 || e.status === 403);
     if (!isFallbackable(e) && !authFailure) throw e;
-    if ((policy?.fallback ?? "baseten") === "none") {
+    if (!(policy?.fallback ?? true)) {
       throw new Error(
         policy?.noFallbackMessage ?? "request failed and fallback is disabled",
         { cause: e },
       );
     }
     if (authFailure) {
-      console.log("[providers] meta auth failed — CHECK KEYS, falling back to baseten");
+      console.log(`[providers] ${firstName} auth failed — CHECK KEYS, falling back to ${secondName}`);
     } else {
-      console.log(`[providers] meta failed (${shortError(e)}); falling back to baseten`);
+      console.log(`[providers] ${firstName} failed (${shortError(e)}); falling back to ${secondName}`);
     }
-    const r = await chatBaseten(args, env);
-    r.fallbackReason = fallbackReasonFor(e);
-    log("baseten", r.latencyMs, r.retries, `reason=${r.fallbackReason}`);
+    const r = await second(args, env);
+    r.fallbackReason = fallbackReasonFor(e, firstName);
+    log(secondName, r.latencyMs, r.retries, `reason=${r.fallbackReason}`);
     return r;
   }
+}
+
+/**
+ * Hedged variant of chat(): the second provider starts if the primary
+ * hasn't answered within hedgeMs. Same fallback triggers as the
+ * sequential path; a pure slow-primary loss reports reason
+ * "<primary> slow (hedged)".
+ */
+async function hedgedChat<S extends z.ZodTypeAny>(
+  args: ChatArgs<S>,
+  env: ProviderEnv,
+  policy: ChatPolicy,
+  hedgeMs: number,
+): Promise<ChatResult<z.infer<S>>> {
+  const { first, second, firstName, secondName } = providerOrder(policy);
+  const isAuthFailure = (e: unknown): boolean =>
+    policy.authFallback === true &&
+    e instanceof HttpError &&
+    (e.status === 401 || e.status === 403);
+  let primaryError: unknown = null;
+  const out = await hedged(
+    (signal) =>
+      first(args, env, { signal }).catch((e: unknown) => {
+        primaryError = e;
+        throw e;
+      }),
+    (signal) => second(args, env, { signal }),
+    hedgeMs,
+    (e) => isFallbackable(e) || isAuthFailure(e),
+  );
+  const r = out.value;
+  if (out.winner === "backup") {
+    r.fallbackReason =
+      primaryError !== null
+        ? fallbackReasonFor(primaryError, firstName)
+        : `${firstName} slow (hedged)`;
+    if (primaryError !== null && isAuthFailure(primaryError)) {
+      console.log(`[providers] ${firstName} auth failed — CHECK KEYS, falling back to ${secondName}`);
+    } else {
+      console.log(`[providers] hedged: ${secondName} won (${r.fallbackReason})`);
+    }
+    log(secondName, r.latencyMs, r.retries, `reason=${r.fallbackReason}`);
+  } else {
+    log(firstName, r.latencyMs, r.retries, out.backupStarted ? "hedge=backup-cancelled" : "");
+  }
+  return r;
 }

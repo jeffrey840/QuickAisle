@@ -28,6 +28,7 @@ const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 export async function chatBaseten<S extends z.ZodTypeAny>(
   args: ChatArgs<S>,
   env: ProviderEnv,
+  opts?: { signal?: AbortSignal },
 ): Promise<ChatResult<z.infer<S>>> {
   const key = env.BASETEN_API_KEY;
   if (!key) throw new ConfigError("BASETEN_API_KEY is missing");
@@ -41,7 +42,7 @@ export async function chatBaseten<S extends z.ZodTypeAny>(
       throw new ConfigError(`baseten image exceeds 10 MB (${bytes} bytes)`);
     }
   }
-  const timeoutMs = images.length > 0 ? VISION_TIMEOUT_MS : TEXT_TIMEOUT_MS;
+  const timeoutMs = args.timeoutMs ?? (images.length > 0 ? VISION_TIMEOUT_MS : TEXT_TIMEOUT_MS);
   const jsonSchema = zodToJsonSchema(args.schema);
   const user =
     `${args.user}\n\nRespond with JSON ONLY (no markdown fences, no commentary) ` +
@@ -58,7 +59,7 @@ export async function chatBaseten<S extends z.ZodTypeAny>(
   let lastDetail = "";
   for (let attempt = 0; attempt < 2; attempt++) {
     if (attempt === 1) messages = appendRetryMessage(messages, lastDetail);
-    const { status, json } = await postJson(URL, key, { ...base, messages }, timeoutMs);
+    const { status, json } = await postJson(URL, key, { ...base, messages }, timeoutMs, opts?.signal);
     if (status !== 200) {
       throw new HttpError(status, `baseten chat failed with status ${status}`);
     }

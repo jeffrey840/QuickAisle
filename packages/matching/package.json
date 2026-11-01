@@ -6,9 +6,10 @@
   "types": "src/index.ts",
   "scripts": {
     "build": "tsc -b",
-    "test": "echo \"no tests\""
+    "test": "node --test src/fuzzy.test.ts src/resolveLocal.test.ts"
   },
   "dependencies": {
-    "@quickaisle/schema": "0.1.0"
+    "@quickaisle/schema": "0.1.0",
+    "fuse.js": "^7.5.0"
   }
 }
