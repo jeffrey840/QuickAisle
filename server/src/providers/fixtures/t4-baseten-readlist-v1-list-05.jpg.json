@@ -1,0 +1,7 @@
+{
+ "key": "t4-baseten-readlist-v1-list-05.jpg",
+ "provider": "baseten",
+ "content": "{\"items\":[{\"text\":\"rice\",\"quantity\":\"\"},{\"text\":\"hot cocoa\",\"quantity\":\"\"},{\"text\":\"pop tarts\",\"quantity\":\"\"},{\"text\":\"toothpicks\",\"quantity\":\"\"},{\"text\":\"Saran wrap\",\"quantity\":\"\"},{\"text\":\"taco shells\",\"quantity\":\"\"}],\"notes\":[]}",
+ "latencyMs": 8067,
+ "recordedAt": "2026-11-01T21:15:27.639Z"
+}

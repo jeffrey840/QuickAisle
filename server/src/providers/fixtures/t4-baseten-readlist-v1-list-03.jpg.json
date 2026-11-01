@@ -1,0 +1,7 @@
+{
+ "key": "t4-baseten-readlist-v1-list-03.jpg",
+ "provider": "baseten",
+ "content": "{\"items\":[{\"text\":\"2 doz eggs\",\"quantity\":\"2 doz\"},{\"text\":\"1 gal whole milk\",\"quantity\":\"1 gal\"},{\"text\":\"Cheerios x2\",\"quantity\":\"x2\"},{\"text\":\"3 lb ground beef\",\"quantity\":\"3 lb\"},{\"text\":\"Tide pods\",\"quantity\":\"\"},{\"text\":\"24pk Ozarka water\",\"quantity\":\"24pk\"}],\"notes\":[]}",
+ "latencyMs": 10453,
+ "recordedAt": "2026-11-01T21:15:13.386Z"
+}

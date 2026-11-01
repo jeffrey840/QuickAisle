@@ -1,0 +1,7 @@
+{
+ "key": "t4-baseten-readlist-v1-list-01.jpg",
+ "provider": "baseten",
+ "content": "{\"items\":[{\"text\":\"Eggs\",\"quantity\":\"\"},{\"text\":\"Milk\",\"quantity\":\"\"},{\"text\":\"Bread\",\"quantity\":\"\"},{\"text\":\"Bananas\",\"quantity\":\"\"},{\"text\":\"Cereal\",\"quantity\":\"\"},{\"text\":\"Chicken breast\",\"quantity\":\"\"}],\"notes\":[]}",
+ "latencyMs": 8808,
+ "recordedAt": "2026-11-01T21:14:53.028Z"
+}

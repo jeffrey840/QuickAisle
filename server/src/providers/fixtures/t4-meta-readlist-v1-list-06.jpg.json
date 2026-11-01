@@ -1,0 +1,7 @@
+{
+ "key": "t4-meta-readlist-v1-list-06.jpg",
+ "provider": "meta",
+ "content": "{\"items\": [{\"quantity\": \"\", \"text\": \"apples\"}, {\"quantity\": \"\", \"text\": \"cheese -> shredded\"}, {\"quantity\": \"\", \"text\": \"razors\"}, {\"quantity\": \"\", \"text\": \"pickles\"}, {\"quantity\": \"\", \"text\": \"sushi.\"}], \"notes\": [\"<- check price\"]}",
+ "latencyMs": 5126,
+ "recordedAt": "2026-11-01T21:14:33.944Z"
+}

@@ -1,0 +1,7 @@
+{
+ "key": "t4-meta-readlist-v1-list-03.jpg",
+ "provider": "meta",
+ "content": "{\"items\": [{\"quantity\": \"2 doz\", \"text\": \"2 doz eggs\"}, {\"quantity\": \"1 gal\", \"text\": \"1 gal whole milk\"}, {\"quantity\": \"x2\", \"text\": \"Cheerios x2\"}, {\"quantity\": \"3 lb\", \"text\": \"3 lb ground beef\"}, {\"quantity\": \"\", \"text\": \"Tide pods\"}, {\"quantity\": \"24pk\", \"text\": \"24pk Ozarka water\"}], \"notes\": []}",
+ "latencyMs": 2079,
+ "recordedAt": "2026-11-01T21:14:24.278Z"
+}

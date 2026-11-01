@@ -1,0 +1,7 @@
+{
+ "key": "t4-meta-readlist-v1-list-10.jpg",
+ "provider": "meta",
+ "content": "{\"items\": [{\"quantity\": \"\", \"text\": \"frozen peas\"}, {\"quantity\": \"\", \"text\": \"apples\"}, {\"quantity\": \"\", \"text\": \"shampoo\"}, {\"quantity\": \"\", \"text\": \"rice\"}, {\"quantity\": \"\", \"text\": \"ice\"}, {\"quantity\": \"\", \"text\": \"bread\"}, {\"quantity\": \"\", \"text\": \"paper towels\"}, {\"quantity\": \"\", \"text\": \"yogurt\"}, {\"quantity\": \"\", \"text\": \"chips\"}, {\"quantity\": \"\", \"text\": \"batteries\"}, {\"quantity\": \"\", \"text\": \"soup\"}, {\"quantity\": \"\", \"text\": \"pasta\"}, {\"quantity\": \"\", \"text\": \"ketchup\"}, {\"quantity\": \"\", \"text\": \"prescription pickup\"}], \"notes\": []}",
+ "latencyMs": 2159,
+ "recordedAt": "2026-11-01T21:14:44.215Z"
+}

@@ -1,0 +1,7 @@
+{
+ "key": "t4-baseten-readlist-v1-list-10.jpg",
+ "provider": "baseten",
+ "content": "{\"items\":[{\"text\":\"frozen peas\",\"quantity\":\"\"},{\"text\":\"apples\",\"quantity\":\"\"},{\"text\":\"shampoo\",\"quantity\":\"\"},{\"text\":\"rice\",\"quantity\":\"\"},{\"text\":\"ice\",\"quantity\":\"\"},{\"text\":\"bread\",\"quantity\":\"\"},{\"text\":\"paper towels\",\"quantity\":\"\"},{\"text\":\"yogurt\",\"quantity\":\"\"},{\"text\":\"chips\",\"quantity\":\"\"},{\"text\":\"batteries\",\"quantity\":\"\"},{\"text\":\"soup\",\"quantity\":\"\"},{\"text\":\"pasta\",\"quantity\":\"\"},{\"text\":\"ketchup\",\"quantity\":\"\"},{\"text\":\"prescription pickup\",\"quantity\":\"\"}],\"notes\":[]}",
+ "latencyMs": 9470,
+ "recordedAt": "2026-11-01T21:16:13.479Z"
+}

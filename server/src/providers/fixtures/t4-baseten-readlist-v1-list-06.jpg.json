@@ -1,0 +1,7 @@
+{
+ "key": "t4-baseten-readlist-v1-list-06.jpg",
+ "provider": "baseten",
+ "content": "{\"items\":[{\"text\":\"apples\",\"quantity\":\"\"},{\"text\":\"cheese\",\"quantity\":\"\"},{\"text\":\"razors\",\"quantity\":\"\"},{\"text\":\"pickles\",\"quantity\":\"\"},{\"text\":\"sushi.\",\"quantity\":\"\"}],\"notes\":[\"-> shredded\",\"<- check price\"]}",
+ "latencyMs": 8667,
+ "recordedAt": "2026-11-01T21:15:36.308Z"
+}

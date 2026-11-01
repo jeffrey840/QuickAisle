@@ -1,0 +1,7 @@
+{
+ "key": "t4-baseten-readlist-v1-list-07.jpg",
+ "provider": "baseten",
+ "content": "{\"items\":[{\"text\":\"eggs\",\"quantity\":\"\"},{\"text\":\"butter\",\"quantity\":\"\"},{\"text\":\"flour\",\"quantity\":\"\"},{\"text\":\"sugar\",\"quantity\":\"\"},{\"text\":\"foil\",\"quantity\":\"\"},{\"text\":\"band-aids\",\"quantity\":\"\"},{\"text\":\"baby wipes\",\"quantity\":\"\"},{\"text\":\"air freshener\",\"quantity\":\"\"}],\"notes\":[]}",
+ "latencyMs": 10327,
+ "recordedAt": "2026-11-01T21:15:46.638Z"
+}

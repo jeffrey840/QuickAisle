@@ -1,0 +1,7 @@
+{
+ "key": "t4-meta-readlist-v1-list-01.jpg",
+ "provider": "meta",
+ "content": "{\"items\": [{\"quantity\": \"\", \"text\": \"Eggs\"}, {\"quantity\": \"\", \"text\": \"Milk\"}, {\"quantity\": \"\", \"text\": \"Bread\"}, {\"quantity\": \"\", \"text\": \"Bananas\"}, {\"quantity\": \"\", \"text\": \"Cereal\"}, {\"quantity\": \"\", \"text\": \"Chicken breast\"}], \"notes\": []}",
+ "latencyMs": 2826,
+ "recordedAt": "2026-11-01T21:14:19.503Z"
+}

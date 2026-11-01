@@ -1,0 +1,7 @@
+{
+ "key": "t4-baseten-readlist-v1-list-08.jpg",
+ "provider": "baseten",
+ "content": "{\"items\":[{\"text\":\"tortillas\",\"quantity\":\"\"},{\"text\":\"ground beef\",\"quantity\":\"\"},{\"text\":\"shredded cheese\",\"quantity\":\"\"},{\"text\":\"salsa\",\"quantity\":\"\"},{\"text\":\"sour cream\",\"quantity\":\"\"},{\"text\":\"lettuce\",\"quantity\":\"\"}],\"notes\":[]}",
+ "latencyMs": 7763,
+ "recordedAt": "2026-11-01T21:15:54.404Z"
+}
