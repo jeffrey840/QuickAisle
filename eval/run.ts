@@ -218,7 +218,10 @@ function aggregate(task: string, provider: string): void {
   const rs = records.filter((r) => r.task === task && r.provider === provider);
   if (rs.length === 0) return;
   const ok = rs.filter((r) => !r.error);
-  const lat = ok.map((r) => r.ms).sort((a, b) => a - b);
+  const lat = (task === "t4"
+    ? ok.flatMap((r) => (r.lists ?? []).map((l) => Number(l.ms)).filter(Number.isFinite))
+    : ok.map((r) => r.ms)
+  ).sort((a, b) => a - b);
   const p50 = lat.length ? lat[Math.min(lat.length - 1, Math.floor(0.5 * lat.length))]! : 0;
   const max = lat.length ? lat[lat.length - 1]! : 0;
   const fps = ok.map((r) => r.fp ?? "");
@@ -679,7 +682,11 @@ function printTable(): string[] {
     const rs = records.filter((r) => r.provider === provider && r.task === task);
     const ok = rs.filter((r) => !r.error && r.accuracy !== null);
     const acc = ok.length ? ok.reduce((s, r) => s + r.accuracy!, 0) / ok.length : NaN;
-    const lat = ok.map((r) => r.ms).sort((a, b) => a - b);
+    // T4: per-list latencies (one record covers 10 photos), matching the detail lines.
+    const lat = (task === "t4"
+      ? ok.flatMap((r) => (r.lists ?? []).map((l) => Number(l.ms)).filter(Number.isFinite))
+      : ok.map((r) => r.ms)
+    ).sort((a, b) => a - b);
     const p50 = lat.length ? lat[Math.min(lat.length - 1, Math.floor(0.5 * lat.length))] : NaN;
     const max = lat.length ? lat[lat.length - 1] : NaN;
     const retries = rs.reduce((s, r) => s + r.retries, 0);

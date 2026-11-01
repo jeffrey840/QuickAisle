@@ -298,9 +298,11 @@ brute force on random ≤ 7-stop lists.
   Aliases are device-only for now (AsyncStorage behind the `AliasStore` interface in
   `packages/matching`); a future shared store should use a promotion rule (an alias goes
   shared only after ≥3 different devices learn the same mapping).
-- `POST /read-list` (**Day 2**) — a photo instead of typing. Meta vision model returns
-  `{ items: [{ text, quantity? }], source: "handwritten|screenshot|recipe|product" }` (strict JSON, validated),
-  then the items go through the same matching pipeline as typed text. Handles:
+- `POST /read-list` (**Day 2**, built) — a photo instead of typing. Returns
+  `{ items: [{ text, quantity? }], notes }` (strict JSON, validated, readlist-v1);
+  the app puts items in the text box for review, then they go through the same
+  matching pipeline as typed text. /read-list: Meta primary, hedge 8s, cap 30s,
+  30×60 caps, 1.5 MB. Handles:
   - handwritten lists (paper, fridge note, whiteboard) — messy handwriting and misspellings
   - screenshots (text messages, notes apps)
   - recipes (cookbook page, recipe site) → ingredients only, skipping pantry staples (salt, oil,
@@ -545,7 +547,7 @@ good README and video material ("we measured both providers").
 | Job | Primary | 1st backup | 2nd backup (no AI) |
 |---|---|---|---|
 | List text (T3) | Baseten (T3 93.7%) | Meta | local fuzzy match + "did you mean" picker |
-| List photo (T4) | winner of T4 | the other provider | ask the user to type the list |
+| List photo (T4) | Meta (T4 98.6%) | Baseten | ask the user to type the list |
 | Directory photo (T1) | winner of T1 | the other provider | user types/edits rows on the review screen |
 | Map photo (T2) | winner of T2 (SAM 3.1 path) | vision-only layout → grid the user adjusts (§6) | pick a preloaded store |
 | Live demo | live calls | `DEMO_MODE` replay of saved responses | pre-recorded video segment |

@@ -13,6 +13,52 @@ export interface ResolveResponseWire {
   fallbackReason?: string;
 }
 
+export interface ReadListImage {
+  mime: string;
+  b64: string;
+}
+
+export interface ReadListResponseWire {
+  items: Array<{ text: string; quantity?: string }>;
+  notes: string[];
+  provider: string;
+  fallbackReason?: string;
+}
+
+/** POST /read-list with a client timeout. Throws on any failure. */
+export async function postReadList(
+  apiUrl: string,
+  storeId: string,
+  image: ReadListImage,
+  timeoutMs = 45_000,
+): Promise<ReadListResponseWire> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(`${apiUrl.replace(/\/+$/, "")}/read-list`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ storeId, image }),
+      signal: ctrl.signal,
+    });
+    if (!res.ok) throw new Error(`/read-list failed with status ${res.status}`);
+    const json = (await res.json()) as Partial<ReadListResponseWire>;
+    if (!json || !Array.isArray(json.items)) {
+      throw new Error("bad /read-list response shape");
+    }
+    return {
+      items: json.items,
+      notes: Array.isArray(json.notes) ? json.notes : [],
+      provider: typeof json.provider === "string" ? json.provider : "?",
+      ...(typeof json.fallbackReason === "string"
+        ? { fallbackReason: json.fallbackReason }
+        : {}),
+    };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 /** POST /resolve with a client timeout. Throws on any failure. */
 export async function postResolve(
   apiUrl: string,

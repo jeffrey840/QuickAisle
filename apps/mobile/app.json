@@ -28,6 +28,15 @@
         "projectId": "45533791-60bf-4266-96ee-cb4313de7a3c"
       }
     },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "QuickAisle uses the camera to read your shopping list.",
+          "photosPermission": "QuickAisle uses your photo library to read your shopping list."
+        }
+      ]
+    ],
     "owner": "ie_ie"
   }
 }

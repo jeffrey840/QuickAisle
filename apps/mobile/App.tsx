@@ -16,11 +16,13 @@ import Animated, {
   withTiming,
 } from "react-native-reanimated";
 import Svg, { Circle, Polyline, Text as SvgText } from "react-native-svg";
+import * as ImagePicker from "expo-image-picker";
+import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 import { StoreDoc, type StoreDoc as StoreDocType } from "@quickaisle/schema";
 import { planRoute, type RouteResult } from "@quickaisle/routing";
 import { resolveLocal } from "@quickaisle/matching";
 import { deviceAliases, saveLearnedAliases } from "./src/aliasStore";
-import { postResolve } from "./src/api";
+import { postReadList, postResolve } from "./src/api";
 import storeJson from "../../data/stores/heb-001/store.json";
 
 const store: StoreDocType = StoreDoc.parse(storeJson);
@@ -141,6 +143,8 @@ export default function App() {
   const [unmatched, setUnmatched] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [resolving, setResolving] = useState(false);
+  const [notes, setNotes] = useState<string[]>([]);
+  const [reading, setReading] = useState(false);
 
   const plan = async () => {
     setError(null);
@@ -198,10 +202,77 @@ export default function App() {
     }
   };
 
+  const readPhoto = async (fromCamera: boolean) => {
+    setError(null);
+    if (!API_URL) {
+      setError("Couldn't read the photo — type your list instead.");
+      return;
+    }
+    try {
+      if (fromCamera) {
+        const perm = await ImagePicker.requestCameraPermissionsAsync();
+        if (!perm.granted) {
+          setError("Camera permission denied — type your list instead.");
+          return;
+        }
+      } else {
+        const perm = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (!perm.granted) {
+          setError("Photo library permission denied — type your list instead.");
+          return;
+        }
+      }
+      const picked = fromCamera
+        ? await ImagePicker.launchCameraAsync({ quality: 1 })
+        : await ImagePicker.launchMediaLibraryAsync({ quality: 1 });
+      if (picked.canceled || picked.assets.length === 0) return;
+      const asset = picked.assets[0]!;
+      const longest = Math.max(asset.width, asset.height);
+      const scale = longest > 1280 ? 1280 / longest : 1;
+      const small = await manipulateAsync(
+        asset.uri,
+        [{ resize: { width: Math.round(asset.width * scale), height: Math.round(asset.height * scale) } }],
+        { compress: 0.7, format: SaveFormat.JPEG, base64: true },
+      );
+      if (!small.base64) throw new Error("photo conversion failed");
+      setReading(true);
+      try {
+        const online = await postReadList(API_URL, STORE_ID, {
+          mime: "image/jpeg",
+          b64: small.base64,
+        });
+        if (online.items.length === 0) {
+          setError("No items found in that photo — try again or type your list.");
+          return;
+        }
+        const lines = online.items.map((i) => {
+          const q = (i.quantity ?? "").trim();
+          return q && !i.text.toLowerCase().includes(q.toLowerCase())
+            ? `${i.text} ${q}`
+            : i.text;
+        });
+        setText(lines.join("\n"));
+        setNotes(online.notes);
+        setUnmatched([]);
+        setRoute(null);
+      } finally {
+        setReading(false);
+      }
+    } catch {
+      // Text box untouched on any failure.
+      setReading(false);
+      setError("Couldn't read the photo — type your list instead.");
+    }
+  };
+
   return (
     <GestureHandlerRootView style={styles.root}>
       <View style={styles.container}>
         <Text style={styles.title}>QuickAisle — H-E-B demo</Text>
+        <View style={styles.row}>
+          <Button title="Snap list" onPress={() => void readPhoto(true)} disabled={reading} />
+          <Button title="Choose photo" onPress={() => void readPhoto(false)} disabled={reading} />
+        </View>
         <TextInput
           style={styles.input}
           multiline
@@ -209,16 +280,20 @@ export default function App() {
           onChangeText={setText}
           placeholder="milk, eggs, cereal…"
         />
+        {notes.length > 0 ? (
+          <Text style={styles.hint}>Note: {notes.join(" · ")}</Text>
+        ) : null}
         <View style={styles.row}>
-          <Button title="Test A" onPress={() => setText(TEST_A)} />
-          <Button title="Test B" onPress={() => setText(TEST_B)} />
+          <Button title="Test A" onPress={() => { setText(TEST_A); setNotes([]); }} />
+          <Button title="Test B" onPress={() => { setText(TEST_B); setNotes([]); }} />
           <View style={styles.rxRow}>
             <Text>Rx ready</Text>
             <Switch value={rxReady} onValueChange={setRxReady} />
           </View>
-          <Button title="Plan route" onPress={plan} disabled={resolving} />
+          <Button title="Plan route" onPress={plan} disabled={resolving || reading} />
         </View>
         {resolving ? <Text style={styles.hint}>Resolving with AI…</Text> : null}
+        {reading ? <Text style={styles.hint}>Reading list…</Text> : null}
         {error ? <Text style={styles.error}>{error}</Text> : null}
         {unmatched.length > 0 ? (
           <Text style={styles.unmatched}>No match: {unmatched.join(", ")}</Text>

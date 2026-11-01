@@ -8,6 +8,8 @@
     "@quickaisle/schema": "0.1.0",
     "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~58.0.21",
+    "expo-image-manipulator": "~58.0.16",
+    "expo-image-picker": "~58.0.10",
     "expo-status-bar": "~58.0.4",
     "react": "19.3.0",
     "react-native": "0.88.1",

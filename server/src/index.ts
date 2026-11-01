@@ -1,5 +1,6 @@
 import { Hono } from "hono";
 import { Resolve400, handleResolve } from "./resolve.ts";
+import { ReadListError, handleReadList } from "./readlist.ts";
 
 type Bindings = {
   PRIMARY_PROVIDER?: string;
@@ -38,7 +39,23 @@ app.post("/resolve", async (c) => {
   }
 });
 
-// Day 2: POST /read-list — list/recipe photo → items
+app.post("/read-list", async (c) => {
+  let body: unknown;
+  try {
+    body = await c.req.json();
+  } catch {
+    return c.json({ error: "body must be JSON" }, 400);
+  }
+  try {
+    const out = await handleReadList(body, c.env);
+    console.log(out.log);
+    return c.json(out.json);
+  } catch (e) {
+    if (e instanceof ReadListError) return c.json({ error: e.message }, e.status);
+    throw e;
+  }
+});
+
 // Day 3: POST /ingest — map + directory photos → draft store.json
 // Day 4: POST /explain — route recap text (never changes the route)
 
