@@ -6,6 +6,9 @@
     },
     "preview": {
       "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://quickaisle.jeffrey-f-cabrera.workers.dev"
+      },
       "android": {
         "buildType": "apk",
         "autoIncrement": true
