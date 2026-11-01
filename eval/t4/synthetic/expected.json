@@ -1,0 +1,53 @@
+{
+ "source": "synthetic, muse-image-1.0",
+ "list-01.jpg": {
+  "items": ["Eggs", "Milk", "Bread", "Bananas", "Cereal", "Chicken breast"],
+  "mustNotReturn": [],
+  "notes": []
+ },
+ "list-02.jpg": {
+  "items": ["cerial", "tolet paper", "brocoli", "yogert", "tortias", "bbq sause"],
+  "mustNotReturn": [],
+  "notes": []
+ },
+ "list-03.jpg": {
+  "items": ["2 doz eggs", "1 gal whole milk", "Cheerios x2", "3 lb ground beef", "Tide pods", "24pk Ozarka water"],
+  "mustNotReturn": [],
+  "notes": []
+ },
+ "list-04.jpg": {
+  "items": ["headache stuff", "something for dinner Tues", "snacks for kids lunch", "bday candles", "stuff to clean the bathroom", "dog food"],
+  "mustNotReturn": [],
+  "notes": []
+ },
+ "list-05.jpg": {
+  "items": ["rice", "hot cocoa", "pop tarts", "toothpicks", "saran wrap", "taco shells"],
+  "mustNotReturn": ["MAGNETIC NOTEPAD"],
+  "notes": []
+ },
+ "list-06.jpg": {
+  "items": ["apples", "cheese -> shredded", "razors", "pickles", "sushi"],
+  "mustNotReturn": ["grapes"],
+  "notes": ["check price"]
+ },
+ "list-07.jpg": {
+  "items": ["eggs", "butter", "flour", "sugar", "foil", "band-aids", "baby wipes", "air freshener"],
+  "mustNotReturn": ["LEFT", "RIGHT"],
+  "notes": []
+ },
+ "list-08.jpg": {
+  "items": ["tortillas", "ground beef", "shredded cheese", "salsa", "sour cream", "lettuce"],
+  "mustNotReturn": ["TACO NIGHT"],
+  "notes": []
+ },
+ "list-09.jpg": {
+  "items": ["OJ", "PB & J stuff", "TP", "mac n chz", "frzn pizza", "dish soap"],
+  "mustNotReturn": [],
+  "notes": []
+ },
+ "list-10.jpg": {
+  "items": ["frozen peas", "apples", "shampoo", "rice", "ice", "bread", "paper towels", "yogurt", "chips", "batteries", "soup", "pasta", "ketchup", "prescription pickup"],
+  "mustNotReturn": ["ice cream", "coffee"],
+  "notes": []
+ }
+}

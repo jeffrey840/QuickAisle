@@ -33,11 +33,16 @@ import {
   scoreT1,
   scoreT2,
   scoreT3Case,
+  scoreT4List,
+  scoreT4Run,
+  t4Lists,
   AISLE_X_TRUTH,
   DEPT_TRUTH,
   ENTRANCE_TRUTH,
   type T2LayoutAnswer,
   type T3Expect,
+  type T4GoldFile,
+  type T4ListResult,
 } from "./score.ts";
 import { T1Schema, T2Schema } from "./schemas.ts";
 import { T1_PROMPT, T2_PROMPT } from "./prompts.ts";
@@ -47,6 +52,8 @@ import {
   ResolveSchema,
   type ResolvePromptDef,
 } from "../server/src/resolve-contract.ts";
+import { READLIST_PROMPT, ReadListSchema } from "../server/src/readlist-contract.ts";
+import { NetworkError } from "../server/src/providers/http.ts";
 import { loadFixtures, saveFixture } from "./fixtures.ts";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
@@ -116,6 +123,8 @@ interface RunRecord {
   raw?: string;
   /** per-attempt diagnostics — results JSON only, never the summary */
   attempts?: AttemptInfo[];
+  /** per-list detail (T4 only) — results JSON only, never the summary */
+  lists?: Array<Record<string, unknown>>;
   error?: string;
 }
 const records: RunRecord[] = [];
@@ -522,13 +531,140 @@ async function taskT3(
   }
 }
 
-async function taskT4(): Promise<void> {
-  const exp = join(root, "eval/cases/list-photos/expected.json");
+async function taskT4(providers: RunnerProvider[], runs: number, ctx: TaskCtx): Promise<void> {
+  const live = providers.filter((p) => p !== "mock");
+  if (live.length < providers.length) {
+    summary.push("T4 mock skipped: mock supports t1/t2 only.");
+  }
+  const exp = join(root, "eval/t4/synthetic/expected.json");
   if (!existsSync(exp)) {
-    summary.push("T4 skipped: eval/cases/list-photos/expected.json not present (owner supplies photos, §9C).");
+    summary.push("T4 (synthetic, muse-image-1.0) skipped: eval/t4/synthetic/expected.json not present.");
     return;
   }
-  summary.push("T4: photo cases present — runner lands with /read-list on Day 2.");
+  const gold = JSON.parse(readFileSync(exp, "utf8")) as T4GoldFile;
+  const lists = t4Lists(gold);
+  const bad = lists.filter(
+    (l) => !Array.isArray(l.gold.items) || l.gold.items.length === 0,
+  );
+  if (bad.length > 0) {
+    throw new Error(
+      `T4 gold malformed: ${bad.map((l) => l.image).join(", ")} have no items`,
+    );
+  }
+  for (const name of live) {
+    for (let r = 0; r < runs; r++) {
+      const t0 = Date.now();
+      const results: T4ListResult[] = [];
+      const perList: Array<{
+        image: string;
+        ms: number;
+        retries: number;
+        usage?: UsageInfo;
+        attempts?: AttemptInfo[];
+        raw?: string;
+      }> = [];
+      let totalRetries = 0;
+      for (const { image, gold: g } of lists) {
+        const key = `t4-${name}-${READLIST_PROMPT.version}-${image}`;
+        const lt0 = Date.now();
+        try {
+          const res = await directChat({
+            provider: name,
+            system: READLIST_PROMPT.system,
+            user: READLIST_PROMPT.user,
+            images: [{ mime: "image/jpeg", b64: imgB64(join("eval/t4/synthetic", image)) }],
+            schema: ReadListSchema,
+            name: "read_list",
+            key,
+            env: ctx.env,
+            fixtures: ctx.fixtures,
+          });
+          const v = ReadListSchema.safeParse(res.data);
+          if (!v.success) throw new Error("response failed read-list schema validation");
+          results.push({
+            image,
+            score: scoreT4List(image, g, v.data.items),
+            ms: Date.now() - lt0,
+            timeout: false,
+          });
+          perList.push({
+            image,
+            ms: Date.now() - lt0,
+            retries: res.retries,
+            usage: res.usage,
+            attempts: res.attempts,
+          });
+          totalRetries += res.retries;
+          if (ctx.saveRaw) {
+            perList[perList.length - 1]!.raw = res.raw;
+          }
+          maybeRecord(ctx, name, key, res.raw, res.latencyMs);
+        } catch (e) {
+          const timeout = e instanceof NetworkError && e.code === "timeout";
+          const msg = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+          results.push({
+            image,
+            score: scoreT4List(image, g, []),
+            ms: Date.now() - lt0,
+            timeout,
+            error: msg,
+          });
+          perList.push({ image, ms: Date.now() - lt0, retries: 0 });
+          summary.push(`  T4FAIL ${name} run${r} ${image}: ${timeout ? "TIMEOUT" : msg}`);
+        }
+      }
+      const s = scoreT4Run(results);
+      if (s.recall === 0 && s.lists > 0) {
+        const msg = "scored 0% — counting as failure";
+        records.push({
+          provider: name, task: "t4", run: r, ms: Date.now() - t0,
+          accuracy: null, score: null, retries: totalRetries, error: msg,
+        });
+        summary.push(`T4 ${name} run${r} [${READLIST_PROMPT.version}] (synthetic): ERROR ${msg}`);
+        continue;
+      }
+      records.push({
+        provider: name, task: "t4", run: r, ms: Date.now() - t0,
+        accuracy: s.recall, score: s, retries: totalRetries,
+        fp: fpOf(results.map((x) => [x.image, x.score.matched, x.score.total])),
+        lists: perList,
+      });
+      summary.push(
+        `T4 ${name} run${r} [${READLIST_PROMPT.version}] (synthetic): ` +
+          `strict ${pct(s.recall)} lenient ${pct(s.lenientRecall)} ` +
+          `mustNot ${s.mustNotHits} false ${s.falseItems} leaks ${s.noteLeaks} ` +
+          `timeouts ${s.timeouts}/${s.lists} failed ${s.failed} ` +
+          `p50=${s.p50}ms max=${s.max}ms retries=${totalRetries}`,
+      );
+      for (const x of results) {
+        const pl = perList.find((p) => p.image === x.image)!;
+        summary.push(
+          `  T4LIST ${name} run${r} ${x.image}: ` +
+            `${x.score.matched}/${x.score.total} mustNot ${x.score.mustNotHits.length} ` +
+            `false ${x.score.falseItems.length} leaks ${x.score.noteLeaks.length} ` +
+            `${pl.ms}ms retries=${pl.retries}${usageStr(pl.usage)}${attemptsStr(pl.attempts)}`,
+        );
+        for (const h of x.score.mustNotHits) {
+          summary.push(`  T4MUSTNOT ${name} run${r} ${x.image}: "${h}"`);
+        }
+        if (
+          x.score.missing.length > 0 ||
+          x.score.falseItems.length > 0 ||
+          x.score.noteLeaks.length > 0
+        ) {
+          summary.push(
+            `  T4MISS ${name} run${r} ${x.image}: ` +
+              `missing [${x.score.missing.join(" | ") || "none"}] vs ` +
+              `false [${x.score.falseItems.join(" | ") || "none"}]` +
+              (x.score.noteLeaks.length
+                ? ` leaks [${x.score.noteLeaks.join(" | ")}]`
+                : ""),
+          );
+        }
+      }
+    }
+    aggregate("t4", name);
+  }
 }
 
 function printTable(): string[] {
@@ -635,7 +771,7 @@ async function main(): Promise<void> {
   if (runTask("t3")) {
     await taskT3(providers, runs, ctx, resolvePromptForArg(arg("resolve-version", "v1")));
   }
-  if (runTask("t4")) await taskT4();
+  if (runTask("t4")) await taskT4(providers, runs, ctx);
 
   const table = printTable();
   const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");

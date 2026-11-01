@@ -494,7 +494,7 @@ and know exactly when to switch. Ground-truth files are already written — see 
 |---|---|---|
 | `eval/gold/directory.json` | Every directory line **exactly as printed** (name + aisle), plus the known map-vs-directory conflicts | 167 items |
 | `eval/cases/resolve.json` | Messy list inputs → expected product. Covers spelling, synonyms, brands, vague requests, departments, items that need a question (cheese/chicken/bread), Spanish, "taco night" expansion, and junk that must **not** match | 58 cases |
-| *(to create)* `eval/cases/list-photos/` | 10 photos + `expected.json` of the items in each: 5 handwritten lists, 2 screenshots, 2 recipes, 1 product | owner supplies photos |
+| `eval/t4/synthetic/` | 10 synthetic list photos (`list-01..10.jpg`, muse-image-1.0) + `expected.json` of the items in each | T4 gold = `expected.json`; list-10 is 14 items ("ice", no coffee) |
 | *(reuse)* hand-built `store.json` | Ground truth for map reading: 17 aisles, x-positions in §4, 2 entrances, departments by wall | from Day 1 |
 
 ### The four tests
@@ -503,7 +503,7 @@ and know exactly when to switch. Ground-truth files are already written — see 
 | **T1 Directory reading** | `directory.png` → model returns `[{name, aisle}]` | **Item recall** (found / 167), **aisle accuracy** (exact match, normalized: "13A"="13a", "End Cap"="endcap"), extra/hallucinated items (lower better) |
 | **T2 Map reading** | `map.png` → aisle numbers + positions, departments, entrances | Aisle count correct (17), aisle **order** correct, mean position error vs §4 (px, lower better), departments found, entrances found (2). **End-to-end:** build store from AI output → run routing tests A and B → same route? |
 | **T3 List understanding** | each case in `resolve.json` | **Top-1 accuracy**, **asks when it should** (clarify cases) and **doesn't ask when it shouldn't**, **invented products = 0** (after server validation; also report raw rate before validation) |
-| **T4 List photos** | photos in `list-photos/` | Item recall + precision after matching, recipe staples correctly skipped |
+| **T4 List photos (synthetic)** | `eval/t4/synthetic/list-*.jpg` → items | **Strict + lenient recall**, mustNotReturn hits (safety), false items, note leaks. Extraction only. T4 contract readlist-v1, strict+lenient recall |
 
 **For every test, also record:** valid-JSON rate (first try, and after one retry), latency p50/p95,
 cost per run (tokens × price), and **consistency** — run each case **3 times**; report how often the

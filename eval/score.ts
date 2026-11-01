@@ -254,3 +254,241 @@ export function scoreT3Case(expect: T3Expect, ans: T3Answer): T3CaseScore {
     askedWhenShouldNot: ans.needsClarification,
   };
 }
+
+// ---------- T4: list-photo extraction ----------
+
+export interface T4ListGold {
+  items: string[];
+  mustNotReturn: string[];
+  notes: string[];
+}
+
+export interface T4GoldFile {
+  source: string;
+  [image: string]: T4ListGold | string;
+}
+
+export function t4Lists(gold: T4GoldFile): Array<{ image: string; gold: T4ListGold }> {
+  return Object.entries(gold)
+    .filter(([k]) => k !== "source")
+    .map(([image, g]) => ({ image, gold: g as T4ListGold }));
+}
+
+/**
+ * T4 normalization: lowercase, trim, strip leading "-" / "|", strip
+ * trailing "." / ",", collapse spaces. Matching after this is exact —
+ * like T3 (scoreT3Case), there is no fuzzy tolerance.
+ */
+export function normT4Item(s: string): string {
+  return s
+    .toLowerCase()
+    .trim()
+    .replace(/^[-|]+\s*/, "")
+    .replace(/[.,]+$/, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function stripNotePhrases(
+  nr: string,
+  notes: string[],
+): { cleaned: string; leaked: boolean } {
+  let cleaned = nr;
+  let leaked = false;
+  for (const n of notes) {
+    const p = normT4Item(n);
+    if (p && cleaned.includes(p)) {
+      leaked = true;
+      cleaned = cleaned.replace(p, " ");
+    }
+  }
+  if (leaked) {
+    cleaned = cleaned
+      .replace(/[<>()-]+/g, " ")
+      .replace(/[.,]+/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+  return { cleaned, leaked };
+}
+
+function isMustNotHit(nr: string, entry: string): boolean {
+  const ne = normT4Item(entry);
+  if (!ne) return false;
+  return nr === ne || nr.startsWith(`${ne} `) || nr.startsWith(`${ne} (`);
+}
+
+/**
+ * Lenient hit: T3's normName (strip all non-alphanumerics) equal, or one
+ * side contains the other. Multiplication signs fold to "x" first, so
+ * transcription wobble ("Cheerios ×2" vs "Cheerios x2") matches while
+ * real misses ("2 dozen eggs" vs "2 doz eggs") don't. Empty on either
+ * side never matches.
+ */
+export function t4LenientHit(returned: string, goldItem: string): boolean {
+  const prep = (s: string): string => normName(s.replace(/[×✕✖]/g, "x"));
+  const a = prep(returned);
+  const b = prep(goldItem);
+  if (!a || !b) return false;
+  return a === b || a.includes(b) || b.includes(a);
+}
+
+export interface T4ListScore {
+  image: string;
+  matched: number;
+  total: number;
+  recall: number;
+  /** gold items with a lenient hit (strict stays the headline) */
+  lenientMatched: number;
+  /** returned but matching nothing (mustNot hits are NOT included here) */
+  falseItems: string[];
+  /** the headline safety number: crossed-out items, headings, decoys */
+  mustNotHits: string[];
+  /** returned strings that smuggled a note phrase in with an item */
+  noteLeaks: string[];
+  missing: string[];
+}
+
+export interface T4ReturnedItem {
+  text: string;
+  quantity?: string;
+}
+
+/**
+ * Strict-match candidates for one returned item: the text plus both
+ * quantity orders. The combos are skipped when quantity is empty or
+ * already inside the text, so a model that splits "2 doz" / "eggs" and
+ * a model that keeps "2 doz eggs" in text score the same.
+ */
+function t4Candidates(item: T4ReturnedItem): string[] {
+  const out = [item.text];
+  const q = (item.quantity ?? "").trim();
+  if (q && !normT4Item(item.text).includes(normT4Item(q))) {
+    out.push(`${item.quantity} ${item.text}`, `${item.text} ${item.quantity}`);
+  }
+  return [...new Set(out)];
+}
+
+/**
+ * Scores extraction only, not product matching: raw spellings and
+ * quantities count as long as the text matches the gold.
+ */
+export function scoreT4List(
+  image: string,
+  gold: T4ListGold,
+  returned: T4ReturnedItem[],
+): T4ListScore {
+  const want = new Map(gold.items.map((g) => [normT4Item(g), g]));
+  const used = new Set<string>();
+  const falseItems: string[] = [];
+  const mustNotHits: string[] = [];
+  const noteLeaks: string[] = [];
+  const cleanReturns: string[] = [];
+  for (const r of returned) {
+    const rawCands = t4Candidates(r);
+    const cands = [...new Set(rawCands.map(normT4Item).filter(Boolean))];
+    if (cands.length === 0) continue;
+    if (cands.some((nr) => gold.mustNotReturn.some((e) => isMustNotHit(nr, e)))) {
+      mustNotHits.push(r.text);
+      continue;
+    }
+    cleanReturns.push(...rawCands);
+    const strictHit = cands.find((nr) => want.has(nr) && !used.has(nr));
+    if (strictHit) {
+      used.add(strictHit);
+      continue;
+    }
+    let leaked = false;
+    let cleanHit: string | null = null;
+    for (const nr of cands) {
+      const stripped = stripNotePhrases(nr, gold.notes);
+      if (stripped.leaked) leaked = true;
+      if (stripped.leaked && want.has(stripped.cleaned) && !used.has(stripped.cleaned)) {
+        cleanHit = stripped.cleaned;
+        break;
+      }
+    }
+    if (leaked) noteLeaks.push(r.text);
+    if (cleanHit) {
+      used.add(cleanHit);
+      continue;
+    }
+    falseItems.push(r.text);
+  }
+  const missing = [...want.entries()]
+    .filter(([n]) => !used.has(n))
+    .map(([, g]) => g);
+  // Lenient recall runs over non-mustNot returns only, so a safety
+  // violation (e.g. "ice cream" for list-10) never credits "ice".
+  const lenientMatched = gold.items.filter((g) =>
+    cleanReturns.some((r) => t4LenientHit(r, g)),
+  ).length;
+  return {
+    image,
+    matched: used.size,
+    total: gold.items.length,
+    recall: gold.items.length ? used.size / gold.items.length : 0,
+    lenientMatched,
+    falseItems,
+    mustNotHits,
+    noteLeaks,
+    missing,
+  };
+}
+
+export interface T4ListResult {
+  image: string;
+  /** zeroed score when timeout/error — a failed list, never skipped */
+  score: T4ListScore;
+  ms: number;
+  timeout: boolean;
+  error?: string;
+}
+
+export interface T4RunScore {
+  lists: number;
+  failed: number;
+  timeouts: number;
+  recall: number;
+  lenientRecall: number;
+  falseItems: number;
+  mustNotHits: number;
+  noteLeaks: number;
+  p50: number;
+  max: number;
+}
+
+/** Micro-recall over all lists (timeouts score 0, not skipped) + latency. */
+export function scoreT4Run(results: T4ListResult[]): T4RunScore {
+  let matched = 0;
+  let lenient = 0;
+  let total = 0;
+  let falseItems = 0;
+  let mustNotHits = 0;
+  let noteLeaks = 0;
+  let failed = 0;
+  let timeouts = 0;
+  const lat = results.map((r) => r.ms).sort((a, b) => a - b);
+  for (const r of results) {
+    matched += r.score.matched;
+    lenient += r.score.lenientMatched;
+    total += r.score.total;
+    falseItems += r.score.falseItems.length;
+    mustNotHits += r.score.mustNotHits.length;
+    noteLeaks += r.score.noteLeaks.length;
+    if (r.timeout || r.error) failed++;
+    if (r.timeout) timeouts++;
+  }
+  return {
+    lists: results.length,
+    failed,
+    timeouts,
+    recall: total ? matched / total : 0,
+    lenientRecall: total ? lenient / total : 0,
+    falseItems,
+    mustNotHits,
+    noteLeaks,
+    p50: lat.length ? lat[Math.min(lat.length - 1, Math.floor(0.5 * lat.length))]! : 0,
+    max: lat.length ? lat[lat.length - 1]! : 0,
+  };
+}
