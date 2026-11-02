@@ -14,6 +14,7 @@ import * as ImagePicker from "expo-image-picker";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 import { buildStoreFromDraft } from "@quickaisle/routing";
 import { friendlyReason, postIngest, type IngestDraftWire } from "./api";
+import { bundledAssetUri } from "./assets";
 import { newStoreId, type SavedStore } from "./stores";
 import sampleDraftJson from "../../../data/stores/store-002/draft-ingest-v1.json";
 
@@ -129,7 +130,10 @@ export default function AddStore({
     try {
       const wire = sampleDraftJson as unknown as IngestDraftWire;
       setDraft(fromWire(wire));
-      const src = Image.resolveAssetSource(sampleMap) as { uri: string; width: number; height: number };
+      // Sample map is 1662×1064; platforms that can't report a size use that.
+      const resolve = (Image as unknown as { resolveAssetSource?: (m: unknown) => { uri: string; width?: number; height?: number } })
+        .resolveAssetSource?.bind(Image);
+      const src = bundledAssetUri(sampleMap, [1662, 1064], resolve);
       try {
         const small = await shrink(src.uri, src.width, src.height, STORED_LONG_SIDE, 0.7);
         setMapDataUri(`data:image/jpeg;base64,${small.b64}`);
@@ -137,7 +141,7 @@ export default function AddStore({
       } catch {
         // Offline-safe fallback: point at the bundled asset itself.
         setMapDataUri(src.uri);
-        setMapSize([src.width || 1662, src.height || 1064]);
+        setMapSize([src.width, src.height]);
       }
       setPhase("review");
     } catch (e) {

@@ -84,4 +84,43 @@ describe("store repo", () => {
   it("newStoreId makes unique ids", () => {
     assert.notEqual(newStoreId(), newStoreId());
   });
+
+  it("stores one key per store plus a small index", async () => {
+    const kv = fakeKV();
+    const repo = createStoreRepo(kv);
+    const s = sample(newStoreId(), "Second store");
+    await repo.save(s);
+    const dump = kv.dump();
+    assert.ok(`quickaisle:store:${s.id}` in dump);
+    assert.deepEqual(JSON.parse(dump["quickaisle:stores:index"]!), [s.id]);
+    assert.ok(!("quickaisle:stores" in dump));
+  });
+
+  it("delete removes the store key and the index entry", async () => {
+    const kv = fakeKV();
+    const repo = createStoreRepo(kv);
+    const a = sample(newStoreId(), "A");
+    const b = sample(newStoreId(), "B");
+    await repo.save(a);
+    await repo.save(b);
+    await repo.remove(a.id);
+    const dump = kv.dump();
+    assert.deepEqual(JSON.parse(dump["quickaisle:stores:index"]!), [b.id]);
+    assert.ok(!(`quickaisle:store:${a.id}` in dump));
+    assert.deepEqual((await repo.list()).map((s) => s.id), [b.id]);
+  });
+
+  it("migrates the old single key once, then removes it", async () => {
+    const kv = fakeKV();
+    const s = sample(newStoreId(), "Legacy store");
+    await kv.setItem("quickaisle:stores", JSON.stringify({ [s.id]: s, bad: { id: "bad" } }));
+    const repo = createStoreRepo(kv);
+    assert.deepEqual((await repo.list()).map((x) => x.id), [s.id]);
+    const dump = kv.dump();
+    assert.ok(!("quickaisle:stores" in dump));
+    assert.ok(`quickaisle:store:${s.id}` in dump);
+    assert.deepEqual(JSON.parse(dump["quickaisle:stores:index"]!), [s.id]);
+    // second access is a no-op, not a duplicate
+    assert.equal((await repo.list()).length, 1);
+  });
 });
