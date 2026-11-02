@@ -22,6 +22,12 @@ export interface ChatArgs<S extends z.ZodTypeAny> {
    * 15 s text / 45 s vision. /resolve sets 30 s (§10).
    */
   timeoutMs?: number;
+  /**
+   * Sampling temperature. OFF by default — only sent when a caller
+   * passes it (Meta provider only). Whether muse-spark-1.3 accepts it
+   * is under test (scripts/probe-temperature.ts).
+   */
+  temperature?: number;
 }
 
 export interface UsageInfo {

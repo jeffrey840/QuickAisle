@@ -57,6 +57,7 @@ export async function chatMeta<S extends z.ZodTypeAny>(
   const base = {
     model: MODEL,
     reasoning_effort: "low",
+    ...(args.temperature !== undefined ? { temperature: args.temperature } : {}),
     response_format: {
       type: "json_schema",
       json_schema: { name, strict: true, schema: jsonSchema },
