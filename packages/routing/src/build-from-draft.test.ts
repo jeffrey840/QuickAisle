@@ -48,6 +48,15 @@ describe("buildStoreFromDraft (store-002 draft)", () => {
     assert.ok(r.exitId.startsWith("door-"));
     console.log(`store-002 test route: in ${r.entranceId} → ${r.stops.map((s) => s.name).join(" → ")} → out ${r.exitId}`);
   });
+
+  it("walkways: [water] (aisle 3, left side) touches door-0", () => {
+    const r = planRoute(store, ["water"], {});
+    assert.equal(r.stops.length, 1);
+    assert.ok(
+      r.entranceId === "door-0" || r.exitId === "door-0",
+      `expected door-0, got in ${r.entranceId} out ${r.exitId}`,
+    );
+  });
 });
 
 describe("buildStoreFromDraft (synthetic two-block draft)", () => {

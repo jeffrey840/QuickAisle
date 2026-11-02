@@ -1,7 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Button,
   Image,
+  Platform,
   ScrollView,
   StyleSheet,
   Switch,
@@ -21,8 +22,11 @@ import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 import { StoreDoc, type StoreDoc as StoreDocType } from "@quickaisle/schema";
 import { planRoute, type RouteResult } from "@quickaisle/routing";
 import { normalize, resolveLocal } from "@quickaisle/matching";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { deviceAliases, saveLearnedAliases } from "./src/aliasStore";
 import { friendlyReason, postReadList, postResolve } from "./src/api";
+import AddStore from "./src/AddStore";
+import { createStoreRepo, HEB_ID, type SavedStore } from "./src/stores";
 import { cardForTerm, mergePick, type ClarifyCard } from "./src/clarify";
 import {
   current as shopCurrent,
@@ -35,15 +39,12 @@ import {
 } from "./src/shop";
 import storeJson from "../../data/stores/heb-001/store.json";
 
-const store: StoreDocType = StoreDoc.parse(storeJson);
-const STORE_ID = store.storeId;
-const PRODUCT_IDS = new Set(store.products.map((p) => p.id));
+const hebStore: StoreDocType = StoreDoc.parse(storeJson);
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const hebMapImage = require("../../data/stores/heb-001/map.png");
+const repo = createStoreRepo(AsyncStorage);
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 const MAX_ONLINE_TERMS = 30;
-const MAP_W = store.imageSize[0];
-const MAP_H = store.imageSize[1];
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const mapImage = require("../../data/stores/heb-001/map.png");
 
 const TEST_A = "prescriptions, eggs, apples, cereal, cheese, chicken, razors";
 const TEST_B = "cookies, pickles, water, sushi, frozen food";
@@ -58,9 +59,15 @@ function parseList(raw: string): string[] {
 function ZoomableMap({
   route,
   highlight,
+  mapSource,
+  mapW,
+  mapH,
 }: {
   route: RouteResult;
   highlight?: { current: number | null; dimmed: boolean[] };
+  mapSource: { uri: string } | number;
+  mapW: number;
+  mapH: number;
 }) {
   const scale = useSharedValue(1);
   const savedScale = useSharedValue(1);
@@ -109,9 +116,9 @@ function ZoomableMap({
   return (
     <View style={styles.mapFrame}>
       <GestureDetector gesture={composed}>
-        <Animated.View style={[styles.mapBox, style]}>
-          <Image source={mapImage} style={styles.mapImage} resizeMode="contain" />
-          <Svg viewBox={`0 0 ${MAP_W} ${MAP_H}`} style={styles.mapSvg}>
+        <Animated.View style={[styles.mapBox, style, { aspectRatio: mapW / mapH }]}>
+          <Image source={mapSource} style={styles.mapImage} resizeMode="contain" />
+          <Svg viewBox={`0 0 ${mapW} ${mapH}`} style={styles.mapSvg}>
             <Polyline
               points={points}
               fill="none"
@@ -166,6 +173,43 @@ export default function App() {
   const [cards, setCards] = useState<ClarifyCard[]>([]);
   const [matchedIds, setMatchedIds] = useState<string[]>([]);
   const [shop, setShop] = useState<ShopState | null>(null);
+  const [saved, setSaved] = useState<SavedStore[]>([]);
+  const [selectedId, setSelectedId] = useState<string>(HEB_ID);
+  const [adding, setAdding] = useState(false);
+
+  useEffect(() => {
+    void (async () => {
+      const [list, sel] = await Promise.all([repo.list(), repo.selected()]);
+      setSaved(list);
+      setSelectedId(sel);
+    })();
+  }, []);
+
+  const active = useMemo(() => {
+    const s = saved.find((x) => x.id === selectedId);
+    if (s) {
+      return { id: s.id, name: s.name, doc: s.store, map: { uri: s.mapDataUri } as { uri: string } | number };
+    }
+    return { id: HEB_ID, name: "H-E-B", doc: hebStore, map: hebMapImage as { uri: string } | number };
+  }, [saved, selectedId]);
+  const productIds = useMemo(() => new Set(active.doc.products.map((p) => p.id)), [active]);
+
+  const clearPlan = () => {
+    setRoute(null);
+    setUnmatched([]);
+    setCards([]);
+    setMatchedIds([]);
+    setShop(null);
+    setError(null);
+    setNotes([]);
+  };
+
+  const pickStore = (id: string) => {
+    clearPlan();
+    setText("");
+    setSelectedId(id);
+    void repo.select(id);
+  };
 
   const plan = async () => {
     setError(null);
@@ -180,10 +224,10 @@ export default function App() {
       }
       // Local first (exact → learned alias → fuzzy). Alias-store failure
       // degrades to no learned aliases, never to an error.
-      const local = await resolveLocal(terms, store.products, {
-        storeId: STORE_ID,
+      const local = await resolveLocal(terms, active.doc.products, {
+        storeId: active.id,
         aliases: deviceAliases,
-      }).catch(() => resolveLocal(terms, store.products));
+      }).catch(() => resolveLocal(terms, active.doc.products));
       const matched = local.matched.map((m) => ({ term: m.term, productId: m.productId }));
       let noMatch = local.needAi.map((n) => n.term);
       // Online top-up for the leftovers. Any failure (no server, timeout,
@@ -193,7 +237,11 @@ export default function App() {
       if (noMatch.length > 0 && API_URL) {
         setResolving(true);
         try {
-          const online = await postResolve(API_URL, STORE_ID, noMatch.slice(0, MAX_ONLINE_TERMS));
+          const catalog =
+            active.id === HEB_ID
+              ? undefined
+              : active.doc.products.map((p) => ({ id: p.id, name: p.name }));
+          const online = await postResolve(API_URL, active.id, noMatch.slice(0, MAX_ONLINE_TERMS), 60_000, catalog);
           const fixed = new Set<string>();
           for (const a of online.answers) {
             if (a.needsClarification) {
@@ -203,13 +251,13 @@ export default function App() {
               continue;
             }
             const top = a.matches[0];
-            if (top && PRODUCT_IDS.has(top.productId)) {
+            if (top && productIds.has(top.productId)) {
               matched.push({ term: a.input, productId: top.productId });
               fixed.add(a.input);
             }
           }
           noMatch = noMatch.filter((t) => !fixed.has(t));
-          await saveLearnedAliases(STORE_ID, online.learnedAliases).catch(() => {});
+          await saveLearnedAliases(active.id, online.learnedAliases).catch(() => {});
         } catch {
           // keep local-only result
         } finally {
@@ -221,7 +269,7 @@ export default function App() {
       const newCards: ClarifyCard[] = [];
       for (const n of local.needAi) {
         if (!noMatch.includes(n.term)) continue;
-        const card = cardForTerm(n.term, clarifies.get(n.term), n.suggestions, store.products);
+        const card = cardForTerm(n.term, clarifies.get(n.term), n.suggestions, active.doc.products);
         if (card) newCards.push(card);
       }
       const carded = new Set(newCards.map((c) => c.term));
@@ -234,7 +282,7 @@ export default function App() {
       }
       const ids = matched.map((m) => m.productId);
       setMatchedIds(ids);
-      const r = planRoute(store, ids, { prescriptionReady: rxReady });
+      const r = planRoute(active.doc, ids, { prescriptionReady: rxReady });
       setRoute(r);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -251,12 +299,12 @@ export default function App() {
     try {
       if (card.kind === "suggest") {
         await deviceAliases
-          .save(STORE_ID, normalize(card.term), productId, card.similarity ?? 0.85)
+          .save(active.id, normalize(card.term), productId, card.similarity ?? 0.85)
           .catch(() => {});
       }
       const ids = mergePick(matchedIds, productId);
       setMatchedIds(ids);
-      setRoute(planRoute(store, ids, { prescriptionReady: rxReady }));
+      setRoute(planRoute(active.doc, ids, { prescriptionReady: rxReady }));
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     }
@@ -288,6 +336,10 @@ export default function App() {
   const readPhoto = async (fromCamera: boolean) => {
     setError(null);
     setPhotoReason(null);
+    if (fromCamera && Platform.OS === "web") {
+      setError("Camera isn't available in the browser — choose a photo instead.");
+      return;
+    }
     if (!API_URL) {
       setError("Couldn't read the photo — type your list instead.");
       return;
@@ -321,7 +373,7 @@ export default function App() {
       if (!small.base64) throw new Error("photo conversion failed");
       setReading(true);
       try {
-        const online = await postReadList(API_URL, STORE_ID, {
+        const online = await postReadList(API_URL, active.id, {
           mime: "image/jpeg",
           b64: small.base64,
         });
@@ -350,12 +402,62 @@ export default function App() {
     }
   };
 
+  if (adding) {
+    return (
+      <GestureHandlerRootView style={styles.root}>
+        <AddStore
+          apiUrl={API_URL}
+          onCancel={() => setAdding(false)}
+          onSaved={(s) => {
+            void (async () => {
+              await repo.save(s);
+              setSaved(await repo.list());
+              pickStore(s.id);
+              setAdding(false);
+            })();
+          }}
+        />
+      </GestureHandlerRootView>
+    );
+  }
+
   return (
     <GestureHandlerRootView style={styles.root}>
       <View style={styles.container}>
-        <Text style={styles.title}>QuickAisle — H-E-B demo</Text>
+        <Text style={styles.title}>QuickAisle — {active.name}</Text>
         <View style={styles.row}>
-          <Button title="Snap list" onPress={() => void readPhoto(true)} disabled={reading} />
+          <Button
+            key={HEB_ID}
+            title={active.id === HEB_ID ? "● H-E-B" : "H-E-B"}
+            onPress={() => pickStore(HEB_ID)}
+          />
+          {saved.map((s) => (
+            <Button
+              key={s.id}
+              title={active.id === s.id ? `● ${s.name}` : s.name}
+              onPress={() => pickStore(s.id)}
+            />
+          ))}
+          <Button title="+ Add a store" onPress={() => setAdding(true)} />
+        </View>
+        {active.id !== HEB_ID ? (
+          <View style={styles.row}>
+            <Button
+              title="Delete this store"
+              onPress={() => {
+                void (async () => {
+                  await repo.remove(active.id);
+                  setSaved(await repo.list());
+                  pickStore(HEB_ID);
+                })();
+              }}
+            />
+          </View>
+        ) : null}
+        <View style={styles.row}>
+          {Platform.OS !== "web" ? (
+            <Button title="Snap list" onPress={() => void readPhoto(true)} disabled={reading} />
+          ) : null}
           <Button title="Choose photo" onPress={() => void readPhoto(false)} disabled={reading} />
         </View>
         <TextInput
@@ -369,8 +471,12 @@ export default function App() {
           <Text style={styles.hint}>Note: {notes.join(" · ")}</Text>
         ) : null}
         <View style={styles.row}>
-          <Button title="Test A" onPress={() => { setText(TEST_A); setNotes([]); setError(null); setPhotoReason(null); }} />
-          <Button title="Test B" onPress={() => { setText(TEST_B); setNotes([]); setError(null); setPhotoReason(null); }} />
+          {active.id === HEB_ID ? (
+            <>
+              <Button title="Test A" onPress={() => { setText(TEST_A); setNotes([]); setError(null); setPhotoReason(null); }} />
+              <Button title="Test B" onPress={() => { setText(TEST_B); setNotes([]); setError(null); setPhotoReason(null); }} />
+            </>
+          ) : null}
           <View style={styles.rxRow}>
             <Text>Rx ready</Text>
             <Switch value={rxReady} onValueChange={setRxReady} />
@@ -443,7 +549,13 @@ export default function App() {
                 <Button title="Start shopping" onPress={startShopping} />
               </View>
             )}
-            <ZoomableMap route={route} highlight={mapHighlight} />
+            <ZoomableMap
+              route={route}
+              highlight={mapHighlight}
+              mapSource={active.map}
+              mapW={active.doc.imageSize[0]}
+              mapH={active.doc.imageSize[1]}
+            />
             <Text style={styles.hint}>Pinch to zoom · drag to pan · double-tap to reset</Text>
           </View>
         ) : null}
@@ -491,7 +603,7 @@ const styles = StyleSheet.create({
     overflow: "hidden",
     backgroundColor: "#f8fafc",
   },
-  mapBox: { width: "100%", aspectRatio: MAP_W / MAP_H },
+  mapBox: { width: "100%" },
   mapImage: { position: "absolute", width: "100%", height: "100%" },
   mapSvg: { position: "absolute", width: "100%", height: "100%" },
 });

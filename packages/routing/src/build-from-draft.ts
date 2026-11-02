@@ -144,17 +144,37 @@ export function buildStoreFromDraft(draft: DraftInput, opts: BuildOpts): BuildRe
     }
     return Math.abs(a.x0 - b.x0) <= tol * W && Math.abs(a.x1 - b.x1) <= tol * W;
   };
+  // Block id per aisle-end node: joined neighbours share a block, loners get their own.
+  const endBlock = new Map<string, number>();
+  let nextBlock = 0;
   for (const o of ["vertical", "horizontal"] as const) {
     const group = aisleRecs
       .filter((a) => a.orientation === o && a.num !== null)
       .sort((a, b) => a.num! - b.num! || (a.n < b.n ? -1 : 1));
-    for (let i = 1; i < group.length; i++) {
-      const prev = group[i - 1]!;
+    for (let i = 0; i < group.length; i++) {
       const cur = group[i]!;
-      if (cur.num === prev.num! + 1 && lineup(prev, cur, 0.08)) {
+      const prev = i > 0 ? group[i - 1]! : null;
+      const joined =
+        prev !== null && cur.num === prev.num! + 1 && lineup(prev, cur, 0.08);
+      if (joined) {
         addEdge(prev.ends[0], cur.ends[0]);
         addEdge(prev.ends[1], cur.ends[1]);
+        const b = endBlock.get(prev.ends[0])!;
+        endBlock.set(cur.ends[0], b);
+        endBlock.set(cur.ends[1], b);
+      } else {
+        endBlock.set(cur.ends[0], nextBlock);
+        endBlock.set(cur.ends[1], nextBlock);
+        nextBlock++;
       }
+    }
+  }
+  // Non-numeric aisles never join a block: each is its own block.
+  for (const a of aisleRecs) {
+    if (!endBlock.has(a.ends[0])) {
+      endBlock.set(a.ends[0], nextBlock);
+      endBlock.set(a.ends[1], nextBlock);
+      nextBlock++;
     }
   }
 
@@ -239,6 +259,28 @@ export function buildStoreFromDraft(draft: DraftInput, opts: BuildOpts): BuildRe
       }
     }
     addEdge(bestPair![0], bestPair![1]);
+  }
+
+  // Walkways between blocks: the component join above adds only ONE link per
+  // component, so a stop near one door can still route out the far door. Join
+  // any two aisle-end nodes from DIFFERENT blocks within 6% of the image
+  // width — close ends are almost always the same walkway on a store map.
+  const NEAR_JOIN_FRAC = 0.06;
+  const haveEdge = new Set(edges.map((e) => [e.a, e.b].sort().join("|")));
+  const ends = [...endBlock.keys()];
+  for (let i = 0; i < ends.length; i++) {
+    for (let j = i + 1; j < ends.length; j++) {
+      const a = ends[i]!;
+      const b = ends[j]!;
+      if (endBlock.get(a) === endBlock.get(b)) continue;
+      if (haveEdge.has([a, b].sort().join("|"))) continue;
+      const pa = nodes.find((n) => n.id === a)!.xy;
+      const pb = nodes.find((n) => n.id === b)!.xy;
+      if (dist(pa, pb) <= NEAR_JOIN_FRAC * W) {
+        addEdge(a, b);
+        haveEdge.add([a, b].sort().join("|"));
+      }
+    }
   }
 
   // ---- products: one per unique item text ----

@@ -84,6 +84,14 @@ describe("validateResolveRequest", () => {
       "catalog[0].name",
     );
     bad({ storeId: "heb-001", terms: ["x"], catalog: [] }, "1–800");
+    bad(
+      { storeId: "heb-001", terms: ["x"], catalog: [{ id: 5, name: "x" }] },
+      "catalog[0].id",
+    );
+    bad(
+      { storeId: "heb-001", terms: ["x"], catalog: ["junk"] },
+      "catalog[0]",
+    );
   });
 });
 

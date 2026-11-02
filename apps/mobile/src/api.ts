@@ -25,6 +25,60 @@ export function friendlyReason(e: unknown): string {
   return `(${raw.slice(0, 80)})`;
 }
 
+export interface IngestDraftWire {
+  runsOk: number;
+  lowConfidence: boolean;
+  aisles: Array<{
+    n: string;
+    orientation: "vertical" | "horizontal";
+    box: [number, number, number, number];
+    items: string[];
+    agreement: number;
+  }>;
+  departments: Array<{ name: string; box: [number, number, number, number]; agreement: number }>;
+  entrances: Array<{
+    box: [number, number, number, number];
+    kind: "entrance" | "exit" | "both";
+    agreement: number;
+  }>;
+  notes: string[];
+  provider: string;
+}
+
+/** Friendly message for an /ingest HTTP failure. Pure, so tests can pin it. */
+export function ingestErrorForStatus(status: number): string {
+  if (status === 413) return "That map photo is too big — try a smaller one.";
+  if (status === 502) return "Couldn't read this map — try a sharper photo.";
+  if (status === 400) return "That file isn't a map photo we can read.";
+  return `Couldn't read the map (server said ${status}) — try again.`;
+}
+
+/** POST /ingest with a client timeout. Throws a friendly Error on any failure. */
+export async function postIngest(
+  apiUrl: string,
+  image: ReadListImage,
+  timeoutMs = 70_000,
+): Promise<IngestDraftWire> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(`${apiUrl.replace(/\/+$/, "")}/ingest`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ image }),
+      signal: ctrl.signal,
+    });
+    if (!res.ok) throw new Error(ingestErrorForStatus(res.status));
+    const json = (await res.json()) as Partial<IngestDraftWire>;
+    if (!json || !Array.isArray(json.aisles) || json.aisles.length === 0) {
+      throw new Error("Couldn't read this map — try a sharper photo.");
+    }
+    return json as IngestDraftWire;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export interface ReadListImage {
   mime: string;
   b64: string;
@@ -77,6 +131,7 @@ export async function postResolve(
   storeId: string,
   terms: string[],
   timeoutMs = 60_000,
+  catalog?: Array<{ id: string; name: string }>,
 ): Promise<ResolveResponseWire> {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
@@ -84,7 +139,7 @@ export async function postResolve(
     const res = await fetch(`${apiUrl.replace(/\/+$/, "")}/resolve`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ storeId, terms }),
+      body: JSON.stringify(catalog ? { storeId, terms, catalog } : { storeId, terms }),
       signal: ctrl.signal,
     });
     if (!res.ok) throw new Error(`/resolve failed with status ${res.status}`);
