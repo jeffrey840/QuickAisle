@@ -391,6 +391,15 @@ the user adjusts on the review screen. Either way `/ingest` ships.
 - **Done when:** "headache stuff, cerial, ice cream" produces a sensible route in the installed APK,
   **and** a photo of a handwritten list and a recipe page each produce a route.
 
+**Day 2 — DONE (Nov 1)**
+- `/read-list` deployed (Meta primary, 8s hedge, 30s cap, 30×60 caps, 1.5 MB). Live curl OK (list-08: 6 items, no heading; list-06: grapes skipped, notes captured).
+- T4 synthetic (readlist-v1): run 1 Meta 98.6% / Baseten 92.8%; run 2 (recorded) Meta 100% / Baseten 97.1%; mustNotReturn hits 0 in 40 calls; Meta p50 ~2.1–2.6s, max 5.1s; Baseten p50 ~9s. Fixtures committed, DEMO replay works.
+- Bug found on phone: `launchMediaLibraryAsync` didn't exist → fixed to `launchImageLibraryAsync`; root typecheck now includes `apps/mobile`.
+- Phone-tested on the new APK: Choose photo, Snap list, offline photo message, Clarify (offline "Did you mean" cards + online AI card), Shop mode, Test A 28.1% / Test B 22.4%.
+- Known behavior: online, typos are fixed silently by AI and saved as device aliases; "Did you mean" cards appear only offline. Exact multi-location items (cheese/chicken/bread) never ask; possible later polish.
+- Parked: notes lose their item ("-> shredded" vs "cheese: shredded") → would need readlist-v2 + re-record.
+- Next: push feat/day2, merge to main; then Day 3 /ingest (map photo primary, directory optional, Meta 2–3× merge, review screen required, no Baseten fallback; confirm whether muse-spark-1.3 accepts temperature).
+
 **Day 3 (Nov 1) — Meta AI hero feature (25% of score)**
 - [ ] `/ingest`: directory photo → item list; map photo → SAM 3.1 segments → labeled store graph
 - [ ] "Add a store" + review/fix screen in the app
