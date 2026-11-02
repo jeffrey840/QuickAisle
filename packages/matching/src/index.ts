@@ -117,3 +117,8 @@ export async function resolveLocal(
   }
   return { matched, needAi };
 }
+
+/** Drop repeat product ids (duplicate terms → one stop), keeping first order. */
+export function dedupeIds(ids: string[]): string[] {
+  return [...new Set(ids)];
+}

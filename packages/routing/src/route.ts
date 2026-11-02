@@ -78,6 +78,21 @@ function popcount(n: number): number {
 }
 
 /**
+ * Friendly door name for built stores ("bottom-right entrance").
+ * Only builder-made door-N ids are rewritten; anything else (H-E-B's
+ * ent_L/ent_R, unknown ids) passes through unchanged.
+ */
+export function doorLabel(store: StoreDoc, doorId: string): string {
+  if (!/^door-\d+$/.test(doorId)) return doorId;
+  const node = store.nodes.find((n) => n.id === doorId);
+  if (!node) return doorId;
+  const [W, H] = store.imageSize;
+  const horiz = node.xy[0] < W / 2 ? "left" : "right";
+  const vert = node.xy[1] < H / 2 ? "top" : "bottom";
+  return `${vert}-${horiz} ${node.type === "exit" ? "exit" : "entrance"}`;
+}
+
+/**
  * Pairwise walking distances (px) between entrances and default-location stops.
  * Exported for tests and the future /explain endpoint.
  */

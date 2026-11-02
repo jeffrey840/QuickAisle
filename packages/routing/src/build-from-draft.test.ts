@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { buildStoreFromDraft, type DraftInput } from "./build-from-draft.ts";
-import { planRoute } from "./route.ts";
+import { doorLabel, planRoute } from "./route.ts";
 
 const draft = JSON.parse(
   readFileSync(
@@ -47,6 +47,13 @@ describe("buildStoreFromDraft (store-002 draft)", () => {
     assert.ok(r.entranceId.startsWith("door-"));
     assert.ok(r.exitId.startsWith("door-"));
     console.log(`store-002 test route: in ${r.entranceId} → ${r.stops.map((s) => s.name).join(" → ")} → out ${r.exitId}`);
+  });
+
+  it("doorLabel names built doors by position, passes others through", () => {
+    assert.equal(doorLabel(store, "door-0"), "bottom-left entrance");
+    assert.equal(doorLabel(store, "door-1"), "bottom-right entrance");
+    assert.equal(doorLabel(store, "ent_L"), "ent_L");
+    assert.equal(doorLabel(store, "door-9"), "door-9");
   });
 
   it("walkways: [water] (aisle 3, left side) touches door-0", () => {

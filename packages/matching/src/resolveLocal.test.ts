@@ -4,6 +4,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { StoreDoc, type StoreProduct } from "@quickaisle/schema";
 import {
+  dedupeIds,
   normalize,
   resolveListExact,
   resolveLocal,
@@ -86,5 +87,13 @@ describe("resolveLocal", () => {
   it("skips terms that normalize to empty", async () => {
     const r = await resolveLocal(["   ", "!!!"], products);
     assert.deepEqual(r, { matched: [], needAi: [] });
+  });
+});
+
+describe("dedupeIds", () => {
+  it("drops repeats, keeping first occurrence order", () => {
+    assert.deepEqual(dedupeIds(["vitamins", "cookies", "cookies"]), ["vitamins", "cookies"]);
+    assert.deepEqual(dedupeIds(["a", "b", "a", "c", "b"]), ["a", "b", "c"]);
+    assert.deepEqual(dedupeIds([]), []);
   });
 });

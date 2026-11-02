@@ -15,6 +15,7 @@ import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 import { buildStoreFromDraft } from "@quickaisle/routing";
 import { friendlyReason, postIngest, type IngestDraftWire } from "./api";
 import { bundledAssetUri } from "./assets";
+import { alsoIn } from "./review";
 import { newStoreId, type SavedStore } from "./stores";
 import sampleDraftJson from "../../../data/stores/store-002/draft-ingest-v1.json";
 
@@ -353,7 +354,9 @@ export default function AddStore({
             ) : null}
           </View>
           <View style={styles.chips}>
-            {a.items.map((item, i) => (
+            {a.items.map((item, i) => {
+              const others = alsoIn(item, draft.aisles, a.key);
+              return (
               <View key={`${item}-${i}`} style={styles.chipRow}>
                 <Text
                   style={styles.chip}
@@ -363,7 +366,9 @@ export default function AddStore({
                     )
                   }
                 >
-                  {item} <Text
+                  {item}
+                  {others.length > 0 ? <Text style={styles.also}> · also in {others.join(", ")}</Text> : null}
+                  {" "}<Text
                     style={styles.x}
                     onPress={() =>
                       setDraft((d) =>
@@ -384,7 +389,8 @@ export default function AddStore({
                   </Text>
                 </Text>
               </View>
-            ))}
+              );
+            })}
           </View>
           {addingFor === a.key ? (
             <View style={styles.row}>
@@ -492,6 +498,7 @@ const styles = StyleSheet.create({
   chips: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginVertical: 6 },
   chipRow: { flexDirection: "row" },
   chip: { backgroundColor: "#e0e7ff", borderRadius: 12, paddingHorizontal: 8, paddingVertical: 4, fontSize: 13 },
+  also: { color: "#666", fontSize: 11 },
   x: { color: "#b91c1c", fontWeight: "bold" },
   addInput: { borderWidth: 1, borderColor: "#999", borderRadius: 6, padding: 6, flex: 1, minWidth: 120 },
 });

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  Alert,
   Button,
   Image,
   Platform,
@@ -20,8 +21,8 @@ import Svg, { Circle, Polyline, Text as SvgText } from "react-native-svg";
 import * as ImagePicker from "expo-image-picker";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 import { StoreDoc, type StoreDoc as StoreDocType } from "@quickaisle/schema";
-import { planRoute, type RouteResult } from "@quickaisle/routing";
-import { normalize, resolveLocal } from "@quickaisle/matching";
+import { doorLabel, planRoute, type RouteResult } from "@quickaisle/routing";
+import { dedupeIds, normalize, resolveLocal } from "@quickaisle/matching";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { deviceAliases, saveLearnedAliases } from "./src/aliasStore";
 import { friendlyReason, postReadList, postResolve } from "./src/api";
@@ -211,6 +212,28 @@ export default function App() {
     void repo.select(id);
   };
 
+  const deleteActiveStore = () => {
+    const id = active.id;
+    void (async () => {
+      await repo.remove(id);
+      setSaved(await repo.list());
+      pickStore(HEB_ID);
+    })();
+  };
+
+  const confirmDeleteStore = () => {
+    const msg = `Delete ${active.name}? This can't be undone.`;
+    if (Platform.OS === "web") {
+      const w = globalThis as { confirm?: (m: string) => boolean };
+      if (w.confirm?.(msg)) deleteActiveStore();
+    } else {
+      Alert.alert("Delete store", msg, [
+        { text: "Cancel", style: "cancel" },
+        { text: "Delete", style: "destructive", onPress: deleteActiveStore },
+      ]);
+    }
+  };
+
   const plan = async () => {
     setError(null);
     setPhotoReason(null);
@@ -280,7 +303,7 @@ export default function App() {
         setRoute(null);
         return;
       }
-      const ids = matched.map((m) => m.productId);
+      const ids = dedupeIds(matched.map((m) => m.productId));
       setMatchedIds(ids);
       const r = planRoute(active.doc, ids, { prescriptionReady: rxReady });
       setRoute(r);
@@ -440,20 +463,6 @@ export default function App() {
           ))}
           <Button title="+ Add a store" onPress={() => setAdding(true)} />
         </View>
-        {active.id !== HEB_ID ? (
-          <View style={styles.row}>
-            <Button
-              title="Delete this store"
-              onPress={() => {
-                void (async () => {
-                  await repo.remove(active.id);
-                  setSaved(await repo.list());
-                  pickStore(HEB_ID);
-                })();
-              }}
-            />
-          </View>
-        ) : null}
         <View style={styles.row}>
           {Platform.OS !== "web" ? (
             <Button title="Snap list" onPress={() => void readPhoto(true)} disabled={reading} />
@@ -537,7 +546,7 @@ export default function App() {
               <View>
                 <Text style={styles.savings}>
                   {route.savingsPct}% shorter than typed order ·{" "}
-                  in {route.entranceId} / out {route.exitId}
+                  in {doorLabel(active.doc, route.entranceId)} / out {doorLabel(active.doc, route.exitId)}
                 </Text>
                 <ScrollView style={styles.stops} nestedScrollEnabled>
                   {route.stops.map((s, i) => (
@@ -557,6 +566,11 @@ export default function App() {
               mapH={active.doc.imageSize[1]}
             />
             <Text style={styles.hint}>Pinch to zoom · drag to pan · double-tap to reset</Text>
+          </View>
+        ) : null}
+        {active.id !== HEB_ID ? (
+          <View style={styles.row}>
+            <Button title="Delete this store" onPress={confirmDeleteStore} />
           </View>
         ) : null}
       </View>
