@@ -11,17 +11,17 @@ import {
 /**
  * POST /resolve: messy list terms → catalog matches.
  *
- * Catalog source: storeIds the server knows (heb-001) use the bundled
- * catalog and any client-sent catalog is ignored. Unknown storeIds
- * (future /ingest stores kept on the device) must send their own catalog.
- * Every returned productId is validated against the catalog used.
+ * Catalog source: a client-sent catalog, when present and valid, is used
+ * as-is (second store). Otherwise heb-001 uses the bundled catalog and
+ * unknown storeIds are rejected. Every returned productId is validated
+ * against the catalog used.
  */
 
 export const MAX_TERMS = 30;
 export const MAX_TERM_CHARS = 60;
-export const MAX_CATALOG = 500;
-export const MAX_NAME_CHARS = 80;
-export const MAX_ID_CHARS = 40;
+export const MAX_CATALOG = 800;
+export const MAX_NAME_CHARS = 60;
+export const MAX_ID_CHARS = 60;
 export const MAX_STOREID_CHARS = 40;
 /** learnedAliases[] only carries confident, non-clarify top matches */
 export const LEARN_CONFIDENCE = 0.85;
@@ -75,13 +75,21 @@ export function validateResolveRequest(body: unknown): ValidResolve {
     }
     return trimmed;
   });
-  if (storeId === HEB_STORE_ID) return { storeId, terms, catalog: HEB_CATALOG };
-  if (!Array.isArray(b.catalog) || b.catalog.length === 0 || b.catalog.length > MAX_CATALOG) {
-    throw new Resolve400(
-      `unknown storeId "${storeId}": include catalog with 1–${MAX_CATALOG} products`,
-    );
+  // Client catalog, when present, wins — even for heb-001 (second store).
+  if (b.catalog !== undefined) {
+    if (!Array.isArray(b.catalog) || b.catalog.length === 0 || b.catalog.length > MAX_CATALOG) {
+      throw new Resolve400(`catalog must be an array of 1–${MAX_CATALOG} products`);
+    }
+    return { storeId, terms, catalog: checkCatalog(b.catalog) };
   }
-  const catalog = b.catalog.map((c, i) => {
+  if (storeId === HEB_STORE_ID) return { storeId, terms, catalog: HEB_CATALOG };
+  throw new Resolve400(
+    `unknown storeId "${storeId}": include catalog with 1–${MAX_CATALOG} products`,
+  );
+}
+
+function checkCatalog(catalog: unknown[]): CatalogEntry[] {
+  return catalog.map((c, i) => {
     if (!c || typeof c !== "object" || Array.isArray(c)) {
       throw new Resolve400(`catalog[${i}] must be {id, name}`);
     }
@@ -94,7 +102,6 @@ export function validateResolveRequest(body: unknown): ValidResolve {
     }
     return { id: id.trim(), name: name.trim() };
   });
-  return { storeId, terms, catalog };
 }
 
 export interface CleanAnswer {

@@ -51,7 +51,9 @@ if (existsSync(devVars)) {
 if (process.env.MODEL_API_KEY) env.MODEL_API_KEY = process.env.MODEL_API_KEY;
 if (!env.MODEL_API_KEY) fail("MODEL_API_KEY missing — fill server/.dev.vars or export it.");
 
-const base = basename(imagePath, ext);
+// Parent folder, not file basename: both maps are called map.png.
+const parent = basename(dirname(imagePath));
+const base = parent === "." || parent === "" ? basename(imagePath, ext) : parent;
 const stamp = new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-");
 const outDir = join(root, "eval/results");
 mkdirSync(outDir, { recursive: true });

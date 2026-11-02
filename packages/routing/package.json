@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "scripts": {
-    "test": "node --test src/route.test.ts"
+    "test": "node --test src/route.test.ts src/build-from-draft.test.ts"
   },
   "dependencies": {
     "@quickaisle/schema": "0.1.0"

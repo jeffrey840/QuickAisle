@@ -1,0 +1,845 @@
+{
+ "runsOk": 3,
+ "lowConfidence": false,
+ "aisles": [
+  {
+   "n": "1",
+   "orientation": "vertical",
+   "box": [
+    315,
+    110,
+    338,
+    360
+   ],
+   "items": [
+    "wine",
+    "mixers"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "2",
+   "orientation": "vertical",
+   "box": [
+    343,
+    110,
+    368,
+    360
+   ],
+   "items": [
+    "wine",
+    "beer & wine"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "3",
+   "orientation": "vertical",
+   "box": [
+    373,
+    110,
+    397,
+    360
+   ],
+   "items": [
+    "water",
+    "grilling tools",
+    "jug water",
+    "sparkling water",
+    "lighter fluid",
+    "charcoal",
+    "portable grills"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "4",
+   "orientation": "vertical",
+   "box": [
+    410,
+    110,
+    433,
+    360
+   ],
+   "items": [
+    "coffee",
+    "tea",
+    "party",
+    "creamers/filters"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "5",
+   "orientation": "vertical",
+   "box": [
+    443,
+    110,
+    467,
+    360
+   ],
+   "items": [
+    "isotonic",
+    "soda",
+    "specialty soda",
+    "latino soda"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "6",
+   "orientation": "vertical",
+   "box": [
+    476,
+    105,
+    496,
+    360
+   ],
+   "items": [
+    "rice cakes",
+    "vegan",
+    "coconut water",
+    "juice",
+    "candy",
+    "bottled juice"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "7",
+   "orientation": "vertical",
+   "box": [
+    497,
+    105,
+    516,
+    360
+   ],
+   "items": [
+    "greeting cards",
+    "bread",
+    "pastry",
+    "canned fruit",
+    "fried fruit",
+    "taco shells",
+    "tortillas"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "8",
+   "orientation": "vertical",
+   "box": [
+    519,
+    105,
+    538,
+    360
+   ],
+   "items": [
+    "greeting cards",
+    "cereal",
+    "wholesome snacks",
+    "hot cereal",
+    "bread cereal",
+    "bagged cereal",
+    "pancake syrup",
+    "cookies",
+    "school supplies",
+    "toys"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "9",
+   "orientation": "vertical",
+   "box": [
+    541,
+    105,
+    560,
+    360
+   ],
+   "items": [
+    "spice",
+    "oil",
+    "shortening",
+    "flour",
+    "baking mix",
+    "foil bakeware",
+    "cake mixes",
+    "light bulbs"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "10",
+   "orientation": "vertical",
+   "box": [
+    564,
+    105,
+    583,
+    360
+   ],
+   "items": [
+    "olive oil",
+    "vinegar",
+    "salad dressings"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "11",
+   "orientation": "vertical",
+   "box": [
+    586,
+    105,
+    605,
+    360
+   ],
+   "items": [
+    "seasonal",
+    "cajun",
+    "condiments",
+    "india",
+    "goya",
+    "middle eastern",
+    "kosher"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "12",
+   "orientation": "vertical",
+   "box": [
+    609,
+    105,
+    628,
+    360
+   ],
+   "items": [
+    "seasonal",
+    "asian",
+    "gluten free",
+    "tomatoes",
+    "pasta sauce",
+    "stuffing",
+    "instant potatoes",
+    "latino pasta"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "13",
+   "orientation": "vertical",
+   "box": [
+    631,
+    105,
+    650,
+    360
+   ],
+   "items": [
+    "canned fruit",
+    "tomatoes",
+    "dry pasta",
+    "pasta sauce",
+    "italian",
+    "canned beans",
+    "latino pasta"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "14",
+   "orientation": "vertical",
+   "box": [
+    654,
+    105,
+    673,
+    360
+   ],
+   "items": [
+    "tomatoes",
+    "healthy living",
+    "canned beans",
+    "canned vegetables",
+    "canned soup",
+    "dry soup",
+    "canned chili"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "15",
+   "orientation": "vertical",
+   "box": [
+    679,
+    105,
+    698,
+    360
+   ],
+   "items": [
+    "cookies",
+    "healthy living",
+    "snack nuts",
+    "snack meats",
+    "popcorn",
+    "party snacks",
+    "crackers",
+    "chips"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "16",
+   "orientation": "horizontal",
+   "box": [
+    729,
+    135,
+    887,
+    177
+   ],
+   "items": [
+    "frozen foods"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "17",
+   "orientation": "horizontal",
+   "box": [
+    729,
+    198,
+    887,
+    242
+   ],
+   "items": [
+    "frozen foods"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "18",
+   "orientation": "horizontal",
+   "box": [
+    729,
+    263,
+    887,
+    307
+   ],
+   "items": [
+    "frozen foods"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "19",
+   "orientation": "horizontal",
+   "box": [
+    729,
+    313,
+    887,
+    335
+   ],
+   "items": [
+    "napkins",
+    "paper towels",
+    "plates/cups",
+    "household food storage",
+    "wrap/foil",
+    "trash bags"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "20",
+   "orientation": "horizontal",
+   "box": [
+    729,
+    343,
+    887,
+    367
+   ],
+   "items": [
+    "dry dog food",
+    "premium dry dog food",
+    "dry cat food",
+    "cat litter"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "21",
+   "orientation": "horizontal",
+   "box": [
+    729,
+    373,
+    887,
+    397
+   ],
+   "items": [
+    "air care",
+    "candles",
+    "cleaners",
+    "floor care",
+    "mops/brooms",
+    "sponges",
+    "dish",
+    "large plastic"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "22",
+   "orientation": "horizontal",
+   "box": [
+    729,
+    403,
+    887,
+    433
+   ],
+   "items": [
+    "bleach",
+    "fabric softener",
+    "starch",
+    "closet hardware",
+    "air filters",
+    "liquid laundry",
+    "powdered laundry",
+    "latino laundry"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "23",
+   "orientation": "horizontal",
+   "box": [
+    729,
+    437,
+    887,
+    471
+   ],
+   "items": [
+    "health & wellness",
+    "potty training",
+    "wipes",
+    "diapers",
+    "natural feeding",
+    "baby formula",
+    "baby water",
+    "baby food",
+    "safety",
+    "bath time"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "24",
+   "orientation": "horizontal",
+   "box": [
+    729,
+    475,
+    887,
+    509
+   ],
+   "items": [
+    "pro hair care",
+    "premium hair care",
+    "hair color",
+    "ethnic hair",
+    "value hair"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "25",
+   "orientation": "horizontal",
+   "box": [
+    729,
+    513,
+    887,
+    547
+   ],
+   "items": [
+    "kid's hair",
+    "hair accessories",
+    "cotton",
+    "bags"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "26",
+   "orientation": "horizontal",
+   "box": [
+    729,
+    551,
+    887,
+    585
+   ],
+   "items": [
+    "fragrance",
+    "face care",
+    "body care",
+    "women's personal wash",
+    "hand soap",
+    "bath & body",
+    "sun care"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "27",
+   "orientation": "horizontal",
+   "box": [
+    729,
+    589,
+    887,
+    623
+   ],
+   "items": [
+    "trial size",
+    "sewing",
+    "men's body/hair/deodorant/footcare"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "28",
+   "orientation": "horizontal",
+   "box": [
+    729,
+    627,
+    887,
+    660
+   ],
+   "items": [
+    "oral care",
+    "eye care",
+    "reader",
+    "sunglasses"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "29",
+   "orientation": "horizontal",
+   "box": [
+    729,
+    665,
+    887,
+    695
+   ],
+   "items": [
+    "incontinence",
+    "first aid",
+    "sanitary",
+    "feminine hygiene",
+    "legwear"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "30",
+   "orientation": "horizontal",
+   "box": [
+    729,
+    700,
+    887,
+    725
+   ],
+   "items": [
+    "diet",
+    "digestive",
+    "diabetic",
+    "vitamins"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "31",
+   "orientation": "horizontal",
+   "box": [
+    729,
+    730,
+    887,
+    760
+   ],
+   "items": [
+    "nutrition",
+    "laxatives",
+    "over the counter medications"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "32",
+   "orientation": "vertical",
+   "box": [
+    501,
+    405,
+    520,
+    565
+   ],
+   "items": [
+    "greeting cards",
+    "toys"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "33",
+   "orientation": "vertical",
+   "box": [
+    527,
+    405,
+    546,
+    565
+   ],
+   "items": [
+    "hardware"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "34",
+   "orientation": "vertical",
+   "box": [
+    553,
+    405,
+    572,
+    565
+   ],
+   "items": [
+    "seasonal"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "35",
+   "orientation": "vertical",
+   "box": [
+    579,
+    405,
+    598,
+    565
+   ],
+   "items": [
+    "seasonal"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "36",
+   "orientation": "vertical",
+   "box": [
+    605,
+    405,
+    624,
+    565
+   ],
+   "items": [
+    "seasonal",
+    "healthy living"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "37",
+   "orientation": "vertical",
+   "box": [
+    631,
+    405,
+    650,
+    565
+   ],
+   "items": [
+    "healthy living"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "38",
+   "orientation": "vertical",
+   "box": [
+    657,
+    405,
+    676,
+    565
+   ],
+   "items": [
+    "healthy living"
+   ],
+   "agreement": 3
+  },
+  {
+   "n": "39",
+   "orientation": "vertical",
+   "box": [
+    683,
+    405,
+    702,
+    565
+   ],
+   "items": [
+    "healthy living"
+   ],
+   "agreement": 3
+  }
+ ],
+ "departments": [
+  {
+   "name": "Market",
+   "box": [
+    127,
+    77,
+    190,
+    105
+   ],
+   "agreement": 3
+  },
+  {
+   "name": "Deli",
+   "box": [
+    238,
+    145,
+    282,
+    175
+   ],
+   "agreement": 3
+  },
+  {
+   "name": "Cheese Shop",
+   "box": [
+    148,
+    235,
+    198,
+    253
+   ],
+   "agreement": 3
+  },
+  {
+   "name": "Seafood",
+   "box": [
+    126,
+    510,
+    198,
+    535
+   ],
+   "agreement": 3
+  },
+  {
+   "name": "Bakery",
+   "box": [
+    258,
+    489,
+    326,
+    514
+   ],
+   "agreement": 3
+  },
+  {
+   "name": "Produce",
+   "box": [
+    99,
+    699,
+    171,
+    723
+   ],
+   "agreement": 3
+  },
+  {
+   "name": "Meal Simple",
+   "box": [
+    225,
+    608,
+    296,
+    630
+   ],
+   "agreement": 3
+  },
+  {
+   "name": "Floral",
+   "box": [
+    411,
+    564,
+    471,
+    587
+   ],
+   "agreement": 3
+  },
+  {
+   "name": "Checkstands",
+   "box": [
+    475,
+    664,
+    588,
+    688
+   ],
+   "agreement": 3
+  },
+  {
+   "name": "Dairy",
+   "box": [
+    772,
+    85,
+    820,
+    105
+   ],
+   "agreement": 3
+  },
+  {
+   "name": "Frozen Foods",
+   "box": [
+    765,
+    145,
+    848,
+    165
+   ],
+   "agreement": 3
+  },
+  {
+   "name": "Pharmacy",
+   "box": [
+    862,
+    585,
+    886,
+    732
+   ],
+   "agreement": 3
+  }
+ ],
+ "entrances": [
+  {
+   "box": [
+    244,
+    882,
+    288,
+    932
+   ],
+   "kind": "both",
+   "agreement": 3
+  },
+  {
+   "box": [
+    684,
+    824,
+    732,
+    867
+   ],
+   "kind": "both",
+   "agreement": 3
+  }
+ ],
+ "notes": [
+  "Small item labels along aisles 1-15 and 32-39 are dense and ",
+  "Aisles 16-18, 19-31 are horizontal on right side; boxes are ",
+  "Counter letters A/B/C/D, curbside numbers 1-10 on far right,",
+  "Tortilleria / Cakes / Donuts text near Bakery not added as s",
+  "Small item text along aisles 1-15 and 32-39 is low-resolutio",
+  "Aisle boxes are approximate due to dense shelving symbols",
+  "Ignored counter letters A/B/C/D, curbside numbers 1-10 on fa",
+  "Beer & Wine labels appear along aisles 1-2 but also as gener",
+  "Small item text along aisles 1-15 and 32-39 is dense and par",
+  "Boxes are estimated from low-resolution map; long-axis orien",
+  "Curbside numbered stalls 1-10 on far right, counter letters ",
+  "Tortilleria, Cakes, Donuts, Beer & Wine, Appliances text pre"
+ ]
+}

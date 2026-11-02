@@ -31,16 +31,20 @@ function bad(body: unknown, part: string): void {
 }
 
 describe("validateResolveRequest", () => {
-  it("uses the bundled catalog for heb-001 and ignores a client catalog", () => {
-    const out = validateResolveRequest({
-      storeId: "heb-001",
-      terms: ["cerial"],
-      catalog: [{ id: "x".repeat(999), name: "junk" }],
-    });
+  it("uses the bundled catalog for heb-001 when no catalog is sent", () => {
+    const out = validateResolveRequest({ storeId: "heb-001", terms: ["cerial"] });
     assert.equal(out.storeId, "heb-001");
     assert.deepEqual(out.terms, ["cerial"]);
     assert.equal(out.catalog.length, 183);
     assert.ok(out.catalog.some((c) => c.id === "cereal"));
+  });
+
+  it("a client catalog wins, even for heb-001 (second store)", () => {
+    const mine = [{ id: "coffee", name: "Coffee" }];
+    for (const storeId of ["heb-001", "store-002"]) {
+      const out = validateResolveRequest({ storeId, terms: ["coffee"], catalog: mine });
+      assert.deepEqual(out.catalog, mine);
+    }
   });
 
   it("accepts a client catalog for unknown stores", () => {
@@ -65,7 +69,11 @@ describe("validateResolveRequest", () => {
     bad({ storeId: "future-001", terms: ["x"] }, "include catalog");
     bad(
       { storeId: "future-001", terms: ["x"], catalog: Array(MAX_CATALOG + 1).fill(tiny[0]) },
-      "1–500",
+      "1–800",
+    );
+    bad(
+      { storeId: "heb-001", terms: ["x"], catalog: [{ id: "x".repeat(999), name: "junk" }] },
+      "catalog[0].id",
     );
     bad(
       { storeId: "future-001", terms: ["x"], catalog: [{ id: "x".repeat(MAX_ID_CHARS + 1), name: "n" }] },
@@ -75,6 +83,7 @@ describe("validateResolveRequest", () => {
       { storeId: "future-001", terms: ["x"], catalog: [{ id: "i", name: "n".repeat(MAX_NAME_CHARS + 1) }] },
       "catalog[0].name",
     );
+    bad({ storeId: "heb-001", terms: ["x"], catalog: [] }, "1–800");
   });
 });
 
