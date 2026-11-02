@@ -20,9 +20,19 @@ import * as ImagePicker from "expo-image-picker";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 import { StoreDoc, type StoreDoc as StoreDocType } from "@quickaisle/schema";
 import { planRoute, type RouteResult } from "@quickaisle/routing";
-import { resolveLocal } from "@quickaisle/matching";
+import { normalize, resolveLocal } from "@quickaisle/matching";
 import { deviceAliases, saveLearnedAliases } from "./src/aliasStore";
-import { postReadList, postResolve } from "./src/api";
+import { friendlyReason, postReadList, postResolve } from "./src/api";
+import { cardForTerm, mergePick, type ClarifyCard } from "./src/clarify";
+import {
+  current as shopCurrent,
+  isDone as shopDone,
+  markGot,
+  markSkipped,
+  startShop,
+  summarize as shopSummary,
+  type ShopState,
+} from "./src/shop";
 import storeJson from "../../data/stores/heb-001/store.json";
 
 const store: StoreDocType = StoreDoc.parse(storeJson);
@@ -45,7 +55,13 @@ function parseList(raw: string): string[] {
     .filter(Boolean);
 }
 
-function ZoomableMap({ route }: { route: RouteResult }) {
+function ZoomableMap({
+  route,
+  highlight,
+}: {
+  route: RouteResult;
+  highlight?: { current: number | null; dimmed: boolean[] };
+}) {
   const scale = useSharedValue(1);
   const savedScale = useSharedValue(1);
   const tx = useSharedValue(0);
@@ -123,10 +139,11 @@ function ZoomableMap({ route }: { route: RouteResult }) {
                 key={"c" + s.locationId + i}
                 cx={s.xy[0]}
                 cy={s.xy[1]}
-                r={16}
-                fill="#2563eb"
+                r={highlight && highlight.current === i ? 26 : 16}
+                fill={highlight && highlight.current === i ? "#dc2626" : "#2563eb"}
                 stroke="#fff"
                 strokeWidth={4}
+                opacity={highlight && highlight.dimmed[i] ? 0.3 : 1}
               />
             ))}
           </Svg>
@@ -146,9 +163,15 @@ export default function App() {
   const [notes, setNotes] = useState<string[]>([]);
   const [reading, setReading] = useState(false);
   const [photoReason, setPhotoReason] = useState<string | null>(null);
+  const [cards, setCards] = useState<ClarifyCard[]>([]);
+  const [matchedIds, setMatchedIds] = useState<string[]>([]);
+  const [shop, setShop] = useState<ShopState | null>(null);
 
   const plan = async () => {
     setError(null);
+    setPhotoReason(null);
+    setCards([]);
+    setShop(null);
     try {
       const terms = parseList(text);
       if (terms.length === 0) {
@@ -166,13 +189,20 @@ export default function App() {
       // Online top-up for the leftovers. Any failure (no server, timeout,
       // bad response) keeps the local-only result — offline behavior is
       // identical to before this change.
+      const clarifies = new Map<string, { question: string; options: string[] }>();
       if (noMatch.length > 0 && API_URL) {
         setResolving(true);
         try {
           const online = await postResolve(API_URL, STORE_ID, noMatch.slice(0, MAX_ONLINE_TERMS));
           const fixed = new Set<string>();
           for (const a of online.answers) {
-            const top = !a.needsClarification ? a.matches[0] : undefined;
+            if (a.needsClarification) {
+              if (!clarifies.has(a.input)) {
+                clarifies.set(a.input, { question: a.question, options: a.options });
+              }
+              continue;
+            }
+            const top = a.matches[0];
             if (top && PRODUCT_IDS.has(top.productId)) {
               matched.push({ term: a.input, productId: top.productId });
               fixed.add(a.input);
@@ -186,22 +216,74 @@ export default function App() {
           setResolving(false);
         }
       }
-      setUnmatched(noMatch);
+      // One card per still-unmatched term that has something to ask, in
+      // list order. Carded terms leave "No match" until skipped.
+      const newCards: ClarifyCard[] = [];
+      for (const n of local.needAi) {
+        if (!noMatch.includes(n.term)) continue;
+        const card = cardForTerm(n.term, clarifies.get(n.term), n.suggestions, store.products);
+        if (card) newCards.push(card);
+      }
+      const carded = new Set(newCards.map((c) => c.term));
+      setCards(newCards);
+      setUnmatched(noMatch.filter((t) => !carded.has(t)));
       if (matched.length === 0) {
         setError("Nothing matched. Try Test A or Test B.");
         setRoute(null);
         return;
       }
-      const r = planRoute(
-        store,
-        matched.map((m) => m.productId),
-        { prescriptionReady: rxReady },
-      );
+      const ids = matched.map((m) => m.productId);
+      setMatchedIds(ids);
+      const r = planRoute(store, ids, { prescriptionReady: rxReady });
       setRoute(r);
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     }
   };
+
+  const answerCard = async (card: ClarifyCard, productId: string | null) => {
+    setCards((cs) => cs.slice(1));
+    setShop(null);
+    if (!productId) {
+      setUnmatched((u) => [...u, card.term]);
+      return;
+    }
+    try {
+      if (card.kind === "suggest") {
+        await deviceAliases
+          .save(STORE_ID, normalize(card.term), productId, card.similarity ?? 0.85)
+          .catch(() => {});
+      }
+      const ids = mergePick(matchedIds, productId);
+      setMatchedIds(ids);
+      setRoute(planRoute(store, ids, { prescriptionReady: rxReady }));
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    }
+  };
+
+  const startShopping = () => {
+    if (!route) return;
+    setShop(
+      startShop(
+        route.stops.map((s) => ({
+          label: s.aisleLabel ? `${s.aisleLabel} — ${s.name}` : s.name,
+          name: s.name,
+        })),
+      ),
+    );
+  };
+
+  const card = cards[0] ?? null;
+  const sh = shop ? shopCurrent(shop) : null;
+  const shopFinished = shop ? shopDone(shop) : false;
+  const shopSum = shop && shopFinished ? shopSummary(shop) : null;
+  const mapHighlight = shop
+    ? {
+        current: sh ? sh.position - 1 : null,
+        dimmed: shop.got.map((g, i) => g || shop.skipped[i]!),
+      }
+    : undefined;
 
   const readPhoto = async (fromCamera: boolean) => {
     setError(null);
@@ -261,12 +343,10 @@ export default function App() {
         setReading(false);
       }
     } catch (e) {
-      // Text box untouched on any failure. Short reason for diagnosis —
-      // never image data (errors here never contain it).
+      // Text box untouched on any failure.
       setReading(false);
       setError("Couldn't read the photo — type your list instead.");
-      const reason = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
-      setPhotoReason(`(${reason.slice(0, 80)})`);
+      setPhotoReason(friendlyReason(e));
     }
   };
 
@@ -282,15 +362,15 @@ export default function App() {
           style={styles.input}
           multiline
           value={text}
-          onChangeText={setText}
+          onChangeText={(t) => { setText(t); setError(null); setPhotoReason(null); }}
           placeholder="milk, eggs, cereal…"
         />
         {notes.length > 0 ? (
           <Text style={styles.hint}>Note: {notes.join(" · ")}</Text>
         ) : null}
         <View style={styles.row}>
-          <Button title="Test A" onPress={() => { setText(TEST_A); setNotes([]); }} />
-          <Button title="Test B" onPress={() => { setText(TEST_B); setNotes([]); }} />
+          <Button title="Test A" onPress={() => { setText(TEST_A); setNotes([]); setError(null); setPhotoReason(null); }} />
+          <Button title="Test B" onPress={() => { setText(TEST_B); setNotes([]); setError(null); setPhotoReason(null); }} />
           <View style={styles.rxRow}>
             <Text>Rx ready</Text>
             <Switch value={rxReady} onValueChange={setRxReady} />
@@ -304,20 +384,66 @@ export default function App() {
         {unmatched.length > 0 ? (
           <Text style={styles.unmatched}>No match: {unmatched.join(", ")}</Text>
         ) : null}
+        {card ? (
+          <View style={styles.card}>
+            <Text style={styles.savings}>Quick question: {card.term}</Text>
+            <Text style={styles.stop}>{card.question}</Text>
+            <View style={styles.row}>
+              {card.kind === "suggest" ? (
+                <>
+                  <Button title="Yes" onPress={() => void answerCard(card, card.options[0]!.productId)} />
+                  <Button title="No" onPress={() => void answerCard(card, null)} />
+                </>
+              ) : (
+                <>
+                  {card.options.map((o) => (
+                    <Button key={o.productId} title={o.name} onPress={() => void answerCard(card, o.productId)} />
+                  ))}
+                  <Button title="Skip" onPress={() => void answerCard(card, null)} />
+                </>
+              )}
+            </View>
+            {cards.length > 1 ? (
+              <Text style={styles.hint}>{cards.length - 1} more question{cards.length > 2 ? "s" : ""}</Text>
+            ) : null}
+          </View>
+        ) : null}
         {route ? (
           <View style={styles.result}>
-            <Text style={styles.savings}>
-              {route.savingsPct}% shorter than typed order ·{" "}
-              in {route.entranceId} / out {route.exitId}
-            </Text>
-            <ScrollView style={styles.stops} nestedScrollEnabled>
-              {route.stops.map((s, i) => (
-                <Text key={s.locationId + i} style={styles.stop}>
-                  {i + 1}. {s.instruction}
+            {sh ? (
+              <View>
+                <Text style={styles.shopLabel}>{sh.stop.label}</Text>
+                <Text style={styles.hint}>{sh.position} of {sh.total}</Text>
+                <View style={styles.row}>
+                  <Button title="Got it" onPress={() => setShop((s) => (s ? markGot(s) : s))} />
+                  <Button title="Skip for now" onPress={() => setShop((s) => (s ? markSkipped(s) : s))} />
+                </View>
+              </View>
+            ) : shopSum ? (
+              <View>
+                <Text style={styles.savings}>
+                  Done: {shopSum.got} got, {shopSum.skipped} skipped
+                  {shopSum.skippedNames.length > 0 ? ` (${shopSum.skippedNames.join(", ")})` : ""}
                 </Text>
-              ))}
-            </ScrollView>
-            <ZoomableMap route={route} />
+                <Button title="Back to list" onPress={() => setShop(null)} />
+              </View>
+            ) : (
+              <View>
+                <Text style={styles.savings}>
+                  {route.savingsPct}% shorter than typed order ·{" "}
+                  in {route.entranceId} / out {route.exitId}
+                </Text>
+                <ScrollView style={styles.stops} nestedScrollEnabled>
+                  {route.stops.map((s, i) => (
+                    <Text key={s.locationId + i} style={styles.stop}>
+                      {i + 1}. {s.instruction}
+                    </Text>
+                  ))}
+                </ScrollView>
+                <Button title="Start shopping" onPress={startShopping} />
+              </View>
+            )}
+            <ZoomableMap route={route} highlight={mapHighlight} />
             <Text style={styles.hint}>Pinch to zoom · drag to pan · double-tap to reset</Text>
           </View>
         ) : null}
@@ -346,6 +472,15 @@ const styles = StyleSheet.create({
   unmatched: { color: "#b45309", marginBottom: 8 },
   result: { flex: 1, marginTop: 4 },
   savings: { fontWeight: "bold", marginBottom: 4 },
+  card: {
+    borderWidth: 1,
+    borderColor: "#2563eb",
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 8,
+    backgroundColor: "#eff6ff",
+  },
+  shopLabel: { fontSize: 24, fontWeight: "bold", marginBottom: 2 },
   stops: { maxHeight: 110, marginBottom: 4 },
   stop: { marginBottom: 2 },
   mapFrame: {

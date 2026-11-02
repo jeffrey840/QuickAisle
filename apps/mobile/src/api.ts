@@ -13,6 +13,18 @@ export interface ResolveResponseWire {
   fallbackReason?: string;
 }
 
+/**
+ * Short parenthesized reason for a photo failure, for on-phone diagnosis.
+ * Network failures map to fixed strings; anything else is the raw
+ * name/message capped at 80 chars. Never image data.
+ */
+export function friendlyReason(e: unknown): string {
+  const raw = e instanceof Error ? `${e.name}: ${e.message}` : String(e);
+  if (/unknownhost|network request failed/i.test(raw)) return "(no internet connection)";
+  if (/abort|timeout|timed out/i.test(raw)) return "(timed out)";
+  return `(${raw.slice(0, 80)})`;
+}
+
 export interface ReadListImage {
   mime: string;
   b64: string;
