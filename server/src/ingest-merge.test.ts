@@ -1,7 +1,13 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import type { IngestData } from "./ingest-contract.ts";
-import { capMergedIngest, mergeIngestRuns } from "./ingest-merge.ts";
+import {
+  ROTATED_FALLBACK_NOTE,
+  capMergedIngest,
+  combineIngestViews,
+  mergeIngestRuns,
+  type MergedIngest,
+} from "./ingest-merge.ts";
 
 const run = (over: Partial<IngestData> = {}): IngestData => ({
   aisles: [],
@@ -107,6 +113,77 @@ describe("mergeIngestRuns", () => {
     assert.equal(m.entrances.length, 1);
     assert.equal(m.entrances[0]!.kind, "entrance");
     assert.equal(m.entrances[0]!.agreement, 3);
+  });
+});
+
+describe("combineIngestViews", () => {
+  const merged = (over: Partial<MergedIngest> = {}): MergedIngest => ({
+    runsOk: 3,
+    lowConfidence: false,
+    aisles: [],
+    departments: [],
+    entrances: [],
+    notes: [],
+    ...over,
+  });
+  const aisle = (
+    n: string,
+    orientation: "vertical" | "horizontal",
+    items: string[],
+  ): MergedIngest["aisles"][number] => ({
+    n,
+    orientation,
+    box: [0, 0, 10, 100],
+    items,
+    agreement: 3,
+  });
+
+  it("vertical aisles take items from the rotated merge, matched by n", () => {
+    const out = combineIngestViews(
+      merged({ aisles: [aisle("3", "vertical", ["orig-item"])] }),
+      merged({ aisles: [aisle("3", "horizontal", ["rot-a", "rot-b"])] }),
+    );
+    assert.deepEqual(out.aisles[0]!.items, ["rot-a", "rot-b"]);
+    assert.equal(out.aisles[0]!.itemsView, "rotated");
+    // geometry/orientation stay original
+    assert.equal(out.aisles[0]!.orientation, "vertical");
+    assert.deepEqual(out.aisles[0]!.box, [0, 0, 10, 100]);
+    assert.equal(out.runsOk, 6);
+  });
+
+  it("horizontal aisles keep original items", () => {
+    const out = combineIngestViews(
+      merged({ aisles: [aisle("21", "horizontal", ["orig-item"])] }),
+      merged({ aisles: [aisle("21", "vertical", ["rot-item"])] }),
+    );
+    assert.deepEqual(out.aisles[0]!.items, ["orig-item"]);
+    assert.equal(out.aisles[0]!.itemsView, "original");
+  });
+
+  it("vertical aisle missing from rotated merge keeps original items", () => {
+    const out = combineIngestViews(
+      merged({ aisles: [aisle("7", "vertical", ["orig-item"])] }),
+      merged({ aisles: [aisle("8", "horizontal", ["other"])] }),
+    );
+    assert.deepEqual(out.aisles[0]!.items, ["orig-item"]);
+    assert.equal(out.aisles[0]!.itemsView, "original");
+    assert.ok(!out.notes.includes(ROTATED_FALLBACK_NOTE));
+  });
+
+  it("empty rotated side returns original items plus a note", () => {
+    for (const rot of [null, merged({ runsOk: 0, lowConfidence: true })]) {
+      const out = combineIngestViews(
+        merged({
+          aisles: [aisle("3", "vertical", ["orig-item"])],
+          notes: ["orig-note"],
+        }),
+        rot,
+      );
+      assert.deepEqual(out.aisles[0]!.items, ["orig-item"]);
+      assert.equal(out.aisles[0]!.itemsView, "original");
+      assert.deepEqual(out.notes, ["orig-note", ROTATED_FALLBACK_NOTE]);
+      assert.equal(out.runsOk, 3);
+    }
   });
 });
 

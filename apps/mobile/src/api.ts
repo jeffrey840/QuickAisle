@@ -34,6 +34,7 @@ export interface IngestDraftWire {
     box: [number, number, number, number];
     items: string[];
     agreement: number;
+    itemsView?: "original" | "rotated";
   }>;
   departments: Array<{ name: string; box: [number, number, number, number]; agreement: number }>;
   entrances: Array<{
@@ -57,7 +58,8 @@ export function ingestErrorForStatus(status: number): string {
 export async function postIngest(
   apiUrl: string,
   image: ReadListImage,
-  timeoutMs = 70_000,
+  timeoutMs = 90_000,
+  rotated?: ReadListImage,
 ): Promise<IngestDraftWire> {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), timeoutMs);
@@ -65,7 +67,7 @@ export async function postIngest(
     const res = await fetch(`${apiUrl.replace(/\/+$/, "")}/ingest`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ image }),
+      body: JSON.stringify(rotated ? { image, rotated } : { image }),
       signal: ctrl.signal,
     });
     if (!res.ok) throw new Error(ingestErrorForStatus(res.status));

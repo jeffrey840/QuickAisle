@@ -178,9 +178,25 @@ export default function AddStore({
         setError("That map photo is too big — try a smaller one.");
         return;
       }
+      // Second view for sideways aisle labels: the resized upload rotated 90° clockwise.
+      const rot = await manipulateAsync(
+        up.uri,
+        [{ rotate: 90 }],
+        { compress: 0.85, format: SaveFormat.JPEG, base64: true },
+      );
+      if (!rot.base64) throw new Error("photo conversion failed");
+      if ((rot.base64.length * 3) / 4 > MAX_UPLOAD_BYTES) {
+        setError("That map photo is too big — try a smaller one.");
+        return;
+      }
       setPhase("reading");
       try {
-        const online = await postIngest(apiUrl, { mime: "image/jpeg", b64: up.b64 });
+        const online = await postIngest(
+          apiUrl,
+          { mime: "image/jpeg", b64: up.b64 },
+          90_000,
+          { mime: "image/jpeg", b64: rot.base64 },
+        );
         const small = await shrink(up.uri, up.width, up.height, STORED_LONG_SIDE, 0.7);
         setDraft(fromWire(online));
         setMapDataUri(`data:image/jpeg;base64,${small.b64}`);
@@ -244,7 +260,7 @@ export default function AddStore({
           <Button title="Try the sample store" onPress={() => void useSample()} disabled={phase === "reading"} />
           <Button title="Cancel" onPress={onCancel} disabled={phase === "reading"} />
         </View>
-        {phase === "reading" ? <Text style={styles.hint}>Reading the map… about 20 seconds</Text> : null}
+        {phase === "reading" ? <Text style={styles.hint}>Reading the map… about 30–40 seconds</Text> : null}
         {error ? <Text style={styles.error}>{error}</Text> : null}
         {reason ? <Text style={styles.hint}>{reason}</Text> : null}
       </View>
