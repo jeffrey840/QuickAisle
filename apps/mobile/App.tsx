@@ -27,6 +27,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { deviceAliases, saveLearnedAliases } from "./src/aliasStore";
 import { friendlyReason, postReadList, postResolve } from "./src/api";
 import AddStore from "./src/AddStore";
+import VoiceButton from "./src/VoiceButton";
 import { createStoreRepo, HEB_ID, type SavedStore } from "./src/stores";
 import { cardForTerm, mergePick, type ClarifyCard } from "./src/clarify";
 import {
@@ -489,6 +490,18 @@ export default function App() {
           placeholder="milk, eggs, cereal…"
           placeholderTextColor="#6b7280"
         />
+        {Platform.OS !== "web" ? (
+          <View style={styles.row}>
+            <VoiceButton
+              apiUrl={API_URL}
+              onTranscript={(t) => {
+                setText((prev) => (prev.trim() ? `${prev}\n${t}` : t));
+                setError(null);
+                setPhotoReason(null);
+              }}
+            />
+          </View>
+        ) : null}
         {notes.length > 0 ? (
           <Text style={styles.hint}>Note: {notes.join(" · ")}</Text>
         ) : null}

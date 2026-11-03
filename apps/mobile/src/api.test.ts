@@ -1,6 +1,6 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
-import { friendlyReason, ingestErrorForStatus } from "./api.ts";
+import { friendlyReason, ingestErrorForStatus, voiceListErrorForStatus } from "./api.ts";
 
 describe("friendlyReason", () => {
   it("maps network failures to fixed strings", () => {
@@ -28,5 +28,15 @@ describe("ingestErrorForStatus", () => {
     assert.equal(ingestErrorForStatus(502), "Couldn't read this map — try a sharper photo.");
     assert.equal(ingestErrorForStatus(400), "That file isn't a map photo we can read.");
     assert.ok(ingestErrorForStatus(500).includes("500"));
+  });
+});
+
+describe("voiceListErrorForStatus", () => {
+  it("maps voice-list failures to friendly messages", () => {
+    assert.equal(voiceListErrorForStatus(413), "That recording is too long — keep it under 30 seconds.");
+    assert.equal(voiceListErrorForStatus(504), "Transcription timed out — try again.");
+    assert.equal(voiceListErrorForStatus(502), "Couldn't transcribe that — try again.");
+    assert.equal(voiceListErrorForStatus(400), "Couldn't use that recording — try again.");
+    assert.ok(voiceListErrorForStatus(500).includes("500"));
   });
 });

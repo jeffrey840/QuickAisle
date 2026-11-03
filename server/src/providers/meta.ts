@@ -20,17 +20,23 @@ const MAX_IMAGES = 50;
 const MAX_IMAGE_BYTES = 50 * 1024 * 1024;
 
 /**
- * Dev/eval-only base override, honored ONLY with ALLOW_URL_OVERRIDE=1.
+ * Meta API origin. Dev/eval-only override, honored ONLY with
+ * ALLOW_URL_OVERRIDE=1. Shared by chat (/v1/chat/completions) and voice
+ * (/v1/asr/transcribe) so both always resolve under one base.
+ */
+export function metaBaseUrl(env: ProviderEnv): string {
+  return env.ALLOW_URL_OVERRIDE === "1" && env.META_BASE_URL
+    ? env.META_BASE_URL.replace(/\/+$/, "")
+    : DEFAULT_BASE_URL;
+}
+
+/**
  * The override is an origin (scheme+host+port); /v1/chat/completions is
  * appended here, so the default always resolves to exactly
  * https://api.meta.ai/v1/chat/completions with no doubled segments.
  */
 function chatUrl(env: ProviderEnv): string {
-  const base =
-    env.ALLOW_URL_OVERRIDE === "1" && env.META_BASE_URL
-      ? env.META_BASE_URL.replace(/\/+$/, "")
-      : DEFAULT_BASE_URL;
-  return `${base}/v1/chat/completions`;
+  return `${metaBaseUrl(env)}/v1/chat/completions`;
 }
 
 /** Meta Model API, primary. Strict JSON-schema mode. Live calls only. */

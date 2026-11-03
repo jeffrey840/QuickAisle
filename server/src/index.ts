@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import { Resolve400, handleResolve } from "./resolve.ts";
 import { ReadListError, handleReadList } from "./readlist.ts";
 import { IngestError, MAX_BODY_CHARS, handleIngestText } from "./ingest.ts";
+import { MAX_VOICE_BODY_CHARS, VoiceError, handleVoiceText } from "./voice.ts";
 
 type Bindings = {
   PRIMARY_PROVIDER?: string;
@@ -73,6 +74,26 @@ app.post("/ingest", async (c) => {
     return c.json(out.json);
   } catch (e) {
     if (e instanceof IngestError) return c.json({ error: e.message }, e.status);
+    throw e;
+  }
+});
+
+app.post("/voice-list", async (c) => {
+  let text: string;
+  try {
+    text = await c.req.text();
+  } catch {
+    return c.json({ error: "body must be text" }, 400);
+  }
+  if (text.length > MAX_VOICE_BODY_CHARS) {
+    return c.json({ error: "body too large" }, 413);
+  }
+  try {
+    const out = await handleVoiceText(text, c.env);
+    console.log(out.log);
+    return c.json(out.json);
+  } catch (e) {
+    if (e instanceof VoiceError) return c.json({ error: e.message }, e.status);
     throw e;
   }
 });

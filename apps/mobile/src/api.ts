@@ -86,6 +86,54 @@ export interface ReadListImage {
   b64: string;
 }
 
+export interface VoiceAudio {
+  mime: string;
+  b64: string;
+}
+
+export interface VoiceListResponseWire {
+  transcript: string;
+  provider: string;
+}
+
+/** Friendly message for a /voice-list HTTP failure. Pure, so tests can pin it. */
+export function voiceListErrorForStatus(status: number): string {
+  if (status === 413) return "That recording is too long — keep it under 30 seconds.";
+  if (status === 504) return "Transcription timed out — try again.";
+  if (status === 502) return "Couldn't transcribe that — try again.";
+  if (status === 400) return "Couldn't use that recording — try again.";
+  return `Couldn't transcribe (server said ${status}) — try again.`;
+}
+
+/** POST /voice-list with a client timeout. Throws a friendly Error on any failure. */
+export async function postVoiceList(
+  apiUrl: string,
+  audio: VoiceAudio,
+  timeoutMs = 25_000,
+): Promise<VoiceListResponseWire> {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), timeoutMs);
+  try {
+    const res = await fetch(`${apiUrl.replace(/\/+$/, "")}/voice-list`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ audio }),
+      signal: ctrl.signal,
+    });
+    if (!res.ok) throw new Error(voiceListErrorForStatus(res.status));
+    const json = (await res.json()) as Partial<VoiceListResponseWire>;
+    if (!json || typeof json.transcript !== "string" || !json.transcript.trim()) {
+      throw new Error("Didn't catch that — try again.");
+    }
+    return {
+      transcript: json.transcript,
+      provider: typeof json.provider === "string" ? json.provider : "?",
+    };
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 export interface ReadListResponseWire {
   items: Array<{ text: string; quantity?: string }>;
   notes: string[];
