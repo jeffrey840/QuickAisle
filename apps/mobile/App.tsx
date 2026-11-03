@@ -22,7 +22,7 @@ import * as ImagePicker from "expo-image-picker";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 import { StoreDoc, type StoreDoc as StoreDocType } from "@quickaisle/schema";
 import { doorLabel, planRoute, type RouteResult } from "@quickaisle/routing";
-import { dedupeIds, normalize, resolveLocal } from "@quickaisle/matching";
+import { dedupeIds, departmentFallback, normalize, resolveLocal } from "@quickaisle/matching";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { deviceAliases, saveLearnedAliases } from "./src/aliasStore";
 import { friendlyReason, postReadList, postResolve } from "./src/api";
@@ -287,6 +287,18 @@ export default function App() {
           setResolving(false);
         }
       }
+      // Department fallback for the still-unmatched: common staples route
+      // to their department. Pure and offline-safe — no network here.
+      // Hits count as matched and get no card.
+      if (noMatch.length > 0) {
+        const still: string[] = [];
+        for (const t of noMatch) {
+          const hit = departmentFallback(t, active.doc.products);
+          if (hit) matched.push({ term: t, productId: hit.id });
+          else still.push(t);
+        }
+        noMatch = still;
+      }
       // One card per still-unmatched term that has something to ask, in
       // list order. Carded terms leave "No match" until skipped.
       const newCards: ClarifyCard[] = [];
@@ -475,6 +487,7 @@ export default function App() {
           value={text}
           onChangeText={(t) => { setText(t); setError(null); setPhotoReason(null); }}
           placeholder="milk, eggs, cereal…"
+          placeholderTextColor="#6b7280"
         />
         {notes.length > 0 ? (
           <Text style={styles.hint}>Note: {notes.join(" · ")}</Text>
@@ -487,7 +500,7 @@ export default function App() {
             </>
           ) : null}
           <View style={styles.rxRow}>
-            <Text>Rx ready</Text>
+            <Text style={styles.rxLabel}>Rx ready</Text>
             <Switch value={rxReady} onValueChange={setRxReady} />
           </View>
           <Button title="Plan route" onPress={plan} disabled={resolving || reading} />
@@ -579,9 +592,11 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-  root: { flex: 1 },
-  container: { flex: 1, padding: 16, paddingTop: 48 },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 8 },
+  // Explicit light background + dark text throughout: Android dark mode
+  // (edge-to-edge, ignores userInterfaceStyle) must not restyle us.
+  root: { flex: 1, backgroundColor: "#ffffff" },
+  container: { flex: 1, padding: 16, paddingTop: 48, paddingBottom: 48, backgroundColor: "#ffffff" },
+  title: { fontSize: 22, fontWeight: "bold", marginBottom: 8, color: "#111827" },
   hint: { color: "#666", marginTop: 4, fontSize: 12 },
   input: {
     borderWidth: 1,
@@ -591,13 +606,15 @@ const styles = StyleSheet.create({
     height: 76,
     textAlignVertical: "top",
     marginBottom: 8,
+    color: "#111827",
   },
   row: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 8, flexWrap: "wrap" },
   rxRow: { flexDirection: "row", alignItems: "center", gap: 4 },
+  rxLabel: { color: "#111827" },
   error: { color: "#b91c1c", marginBottom: 8 },
   unmatched: { color: "#b45309", marginBottom: 8 },
   result: { flex: 1, marginTop: 4 },
-  savings: { fontWeight: "bold", marginBottom: 4 },
+  savings: { fontWeight: "bold", marginBottom: 4, color: "#111827" },
   card: {
     borderWidth: 1,
     borderColor: "#2563eb",
@@ -606,9 +623,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     backgroundColor: "#eff6ff",
   },
-  shopLabel: { fontSize: 24, fontWeight: "bold", marginBottom: 2 },
+  shopLabel: { fontSize: 24, fontWeight: "bold", marginBottom: 2, color: "#111827" },
   stops: { maxHeight: 110, marginBottom: 4 },
-  stop: { marginBottom: 2 },
+  stop: { marginBottom: 2, color: "#111827" },
   mapFrame: {
     flex: 1,
     borderWidth: 1,

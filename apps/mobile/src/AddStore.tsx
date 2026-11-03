@@ -256,6 +256,7 @@ export default function AddStore({
           ) : null}
           <Button title="Choose map photo" onPress={() => void readMapPhoto(false)} disabled={phase === "reading"} />
         </View>
+        <Text style={styles.hint}>Tip: for wide maps, hold your phone sideways so the whole map fills the photo.</Text>
         <View style={styles.row}>
           <Button title="Try the sample store" onPress={() => void useSample()} disabled={phase === "reading"} />
           <Button title="Cancel" onPress={onCancel} disabled={phase === "reading"} />
@@ -274,7 +275,7 @@ export default function AddStore({
     <ScrollView style={styles.wrap}>
       <Text style={styles.title}>AI draft — check before saving</Text>
       <Text style={styles.label}>Store name (required)</Text>
-      <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="My grocery store" />
+      <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="My grocery store" placeholderTextColor="#6b7280" />
       <View style={[styles.mapFrame, { aspectRatio: W / H }]}>
         <Image source={{ uri: mapDataUri }} style={styles.mapImage} resizeMode="contain" />
         <Svg viewBox={`0 0 ${W} ${H}`} style={styles.mapSvg}>
@@ -415,6 +416,7 @@ export default function AddStore({
                 value={addText}
                 onChangeText={setAddText}
                 placeholder="New item"
+                placeholderTextColor="#6b7280"
                 autoFocus
               />
               <Button
@@ -446,7 +448,7 @@ export default function AddStore({
       <View style={styles.aisle}>
         <Text style={styles.label}>+ Add aisle</Text>
         <View style={styles.row}>
-          <TextInput style={styles.num} value={newNum} onChangeText={setNewNum} placeholder="#" />
+          <TextInput style={styles.num} value={newNum} onChangeText={setNewNum} placeholder="#" placeholderTextColor="#6b7280" />
           <Button
             title={newOri === "vertical" ? "Vertical ↓" : "Horizontal →"}
             onPress={() => setNewOri((o) => (o === "vertical" ? "horizontal" : "vertical"))}
@@ -498,23 +500,24 @@ export default function AddStore({
 }
 
 const styles = StyleSheet.create({
-  wrap: { flex: 1, padding: 16 },
-  title: { fontSize: 20, fontWeight: "bold", marginBottom: 8 },
-  label: { fontWeight: "bold", fontSize: 14 },
+  // Explicit light background + dark text: Android dark mode must not restyle us.
+  wrap: { flex: 1, padding: 16, paddingBottom: 48, backgroundColor: "#ffffff" },
+  title: { fontSize: 20, fontWeight: "bold", marginBottom: 8, color: "#111827" },
+  label: { fontWeight: "bold", fontSize: 14, color: "#111827" },
   hint: { color: "#666", marginTop: 4, fontSize: 12 },
   error: { color: "#b91c1c", marginVertical: 8 },
   warn: { color: "#b45309", marginVertical: 6 },
-  input: { borderWidth: 1, borderColor: "#999", borderRadius: 8, padding: 10, marginBottom: 8 },
+  input: { borderWidth: 1, borderColor: "#999", borderRadius: 8, padding: 10, marginBottom: 8, color: "#111827" },
   row: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 8, flexWrap: "wrap" },
   mapFrame: { width: "100%", borderWidth: 1, borderColor: "#ddd", borderRadius: 8, overflow: "hidden", backgroundColor: "#f8fafc", marginBottom: 8 },
   mapImage: { position: "absolute", width: "100%", height: "100%" },
   mapSvg: { position: "absolute", width: "100%", height: "100%" },
   aisle: { borderWidth: 1, borderColor: "#ddd", borderRadius: 8, padding: 8, marginBottom: 8 },
-  num: { borderWidth: 1, borderColor: "#999", borderRadius: 6, padding: 6, minWidth: 56, textAlign: "center" },
+  num: { borderWidth: 1, borderColor: "#999", borderRadius: 6, padding: 6, minWidth: 56, textAlign: "center", color: "#111827" },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginVertical: 6 },
   chipRow: { flexDirection: "row" },
-  chip: { backgroundColor: "#e0e7ff", borderRadius: 12, paddingHorizontal: 8, paddingVertical: 4, fontSize: 13 },
+  chip: { backgroundColor: "#e0e7ff", borderRadius: 12, paddingHorizontal: 8, paddingVertical: 4, fontSize: 13, color: "#111827" },
   also: { color: "#666", fontSize: 11 },
   x: { color: "#b91c1c", fontWeight: "bold" },
-  addInput: { borderWidth: 1, borderColor: "#999", borderRadius: 6, padding: 6, flex: 1, minWidth: 120 },
+  addInput: { borderWidth: 1, borderColor: "#999", borderRadius: 6, padding: 6, flex: 1, minWidth: 120, color: "#111827" },
 });

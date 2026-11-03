@@ -2,8 +2,9 @@ import type { StoreProduct } from "@quickaisle/schema";
 import { FUZZY_ACCEPT, FUZZY_GRAY, buildFuzzyIndex, fuzzyMatch } from "./fuzzy.ts";
 import type { FuzzyHit } from "./fuzzy.ts";
 import { normalize } from "./normalize.ts";
+import { departmentFallback } from "./departments.ts";
 
-export { FUZZY_ACCEPT, FUZZY_GRAY, buildFuzzyIndex, fuzzyMatch, normalize };
+export { FUZZY_ACCEPT, FUZZY_GRAY, buildFuzzyIndex, departmentFallback, fuzzyMatch, normalize };
 export type { FuzzyHit };
 
 export interface MatchResult {

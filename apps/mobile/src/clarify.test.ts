@@ -65,6 +65,40 @@ describe("cardForTerm", () => {
       null,
     );
   });
+
+  it("suppresses the eggs/Vinegar coincidence (low similarity, no shared stem)", () => {
+    // Real fuzzy numbers: eggs→Vinegar scores 0.6667 in the gray zone.
+    assert.equal(
+      cardForTerm(
+        "eggs",
+        undefined,
+        [{ productId: idOf("Vinegar"), name: "Vinegar", similarity: 0.6667 }],
+        products,
+      ),
+      null,
+    );
+    // Even a high score can't save a suggestion with no shared stem.
+    assert.equal(
+      cardForTerm(
+        "eggs",
+        undefined,
+        [{ productId: idOf("Vinegar"), name: "Vinegar", similarity: 0.8 }],
+        products,
+      ),
+      null,
+    );
+  });
+
+  it("keeps the cerial/Cereal near-miss card", () => {
+    const card = cardForTerm(
+      "cerial",
+      undefined,
+      [{ productId: idOf("Cereal"), name: "Cereal", similarity: 0.8333 }],
+      products,
+    );
+    assert.ok(card && card.kind === "suggest");
+    assert.equal(card.question, "Did you mean Cereal?");
+  });
 });
 
 describe("mergePick", () => {
