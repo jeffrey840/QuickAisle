@@ -13,6 +13,12 @@ import {
  */
 
 export const MAX_IMAGE_BYTES = 1_572_864; // 1.5 MB decoded
+/**
+ * Raw body cap, checked before AND after read (Content-Length can be
+ * missing or lying). A 1.5 MB image as base64 is
+ * ceil(1572864 B → b64) = 2097152 chars, plus storeId/envelope headroom.
+ */
+export const MAX_READLIST_BODY_CHARS = 2_200_000;
 export const MAX_ITEMS = 30;
 export const MAX_ITEM_CHARS = 60;
 export const READLIST_TIMEOUT_MS = 30_000;

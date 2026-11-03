@@ -4,3 +4,10 @@ compatibility_date = "2026-10-01"
 
 [vars]
 PRIMARY_PROVIDER = "meta"
+ALLOWED_ORIGINS = "https://quickaisle.pages.dev,http://localhost:8081"
+
+# Demo rate-limit counters (per-IP hourly + global daily buckets).
+# Create the namespace, then replace the placeholder id below with the real one.
+[[kv_namespaces]]
+binding = "RATE_LIMIT"
+id = "b8d4e3c4874e401e872ab964d6bace5e"
