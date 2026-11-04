@@ -272,7 +272,7 @@ export default function AddStore({
   const [W, H] = mapSize;
 
   return (
-    <ScrollView style={styles.wrap}>
+    <ScrollView style={styles.wrap} contentContainerStyle={styles.wrapContent}>
       <Text style={styles.title}>AI draft — check before saving</Text>
       <Text style={styles.label}>Store name (required)</Text>
       <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="My grocery store" placeholderTextColor="#6b7280" />
@@ -501,7 +501,11 @@ export default function AddStore({
 
 const styles = StyleSheet.create({
   // Explicit light background + dark text: Android dark mode must not restyle us.
-  wrap: { flex: 1, padding: 16, paddingBottom: 48, backgroundColor: "#ffffff" },
+  wrap: { flex: 1, padding: 16, paddingTop: 48, backgroundColor: "#ffffff" },
+  // Bottom padding lives here, not in style: ScrollView style padding
+  // doesn't extend the scrollable content, stranding Save/Cancel under
+  // the Android nav bar. 96 clears the bar with room to spare.
+  wrapContent: { paddingBottom: 96 },
   title: { fontSize: 20, fontWeight: "bold", marginBottom: 8, color: "#111827" },
   label: { fontWeight: "bold", fontSize: 14, color: "#111827" },
   hint: { color: "#666", marginTop: 4, fontSize: 12 },

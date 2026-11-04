@@ -30,6 +30,7 @@ import AddStore from "./src/AddStore";
 import VoiceButton from "./src/VoiceButton";
 import { createStoreRepo, HEB_ID, type SavedStore } from "./src/stores";
 import { cardForTerm, mergePick, type ClarifyCard } from "./src/clarify";
+import { addCardTerm, buildTermsById, termsSuffix, type TermsById } from "./src/stopTerms";
 import {
   current as shopCurrent,
   isDone as shopDone,
@@ -174,6 +175,7 @@ export default function App() {
   const [photoReason, setPhotoReason] = useState<string | null>(null);
   const [cards, setCards] = useState<ClarifyCard[]>([]);
   const [matchedIds, setMatchedIds] = useState<string[]>([]);
+  const [termsById, setTermsById] = useState<TermsById>({});
   const [shop, setShop] = useState<ShopState | null>(null);
   const [saved, setSaved] = useState<SavedStore[]>([]);
   const [selectedId, setSelectedId] = useState<string>(HEB_ID);
@@ -201,6 +203,7 @@ export default function App() {
     setUnmatched([]);
     setCards([]);
     setMatchedIds([]);
+    setTermsById({});
     setShop(null);
     setError(null);
     setNotes([]);
@@ -318,6 +321,7 @@ export default function App() {
       }
       const ids = dedupeIds(matched.map((m) => m.productId));
       setMatchedIds(ids);
+      setTermsById(buildTermsById(matched));
       const r = planRoute(active.doc, ids, { prescriptionReady: rxReady });
       setRoute(r);
     } catch (e) {
@@ -340,6 +344,7 @@ export default function App() {
       }
       const ids = mergePick(matchedIds, productId);
       setMatchedIds(ids);
+      setTermsById((t) => addCardTerm(t, productId, card.term));
       setRoute(planRoute(active.doc, ids, { prescriptionReady: rxReady }));
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
@@ -351,7 +356,9 @@ export default function App() {
     setShop(
       startShop(
         route.stops.map((s) => ({
-          label: s.aisleLabel ? `${s.aisleLabel} — ${s.name}` : s.name,
+          label:
+            (s.aisleLabel ? `${s.aisleLabel} — ${s.name}` : s.name) +
+            termsSuffix(s.productId, s.name, termsById),
           name: s.name,
         })),
       ),
@@ -578,6 +585,7 @@ export default function App() {
                   {route.stops.map((s, i) => (
                     <Text key={s.locationId + i} style={styles.stop}>
                       {i + 1}. {s.instruction}
+                      {termsSuffix(s.productId, s.name, termsById)}
                     </Text>
                   ))}
                 </ScrollView>

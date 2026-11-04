@@ -216,6 +216,27 @@ export function buildStoreFromDraft(draft: DraftInput, opts: BuildOpts): BuildRe
     }
   });
 
+  // ---- doors: also join the K nearest non-door nodes within 20% of W ----
+  // A door with a single edge can hang off a far node (store-002 door-0
+  // joined only mid-store a32-1, stranding next-door Produce). Keep that
+  // first edge and add direct links to what's actually nearby.
+  const DOOR_JOIN_FRAC = 0.2;
+  const DOOR_JOIN_K = 2;
+  const doorLinked = (a: string, b: string): boolean =>
+    edges.some((e) => (e.a === a && e.b === b) || (e.a === b && e.b === a));
+  const doorNodes = nodes.filter((n) => n.type === "entrance" || n.type === "exit");
+  const walkNodes = nodes.filter((n) => n.type !== "entrance" && n.type !== "exit");
+  for (const door of doorNodes) {
+    const near = walkNodes
+      .map((n) => ({ id: n.id, d: dist(door.xy, n.xy) }))
+      .filter((c) => c.d <= DOOR_JOIN_FRAC * W)
+      .sort((a, b) => a.d - b.d)
+      .slice(0, DOOR_JOIN_K);
+    for (const c of near) {
+      if (!doorLinked(door.id, c.id)) addEdge(door.id, c.id);
+    }
+  }
+
   // ---- connect components via closest cross-component pairs ----
   const parent = new Map<string, string>();
   const find = (x: string): string => {

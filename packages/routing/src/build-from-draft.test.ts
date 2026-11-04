@@ -64,6 +64,34 @@ describe("buildStoreFromDraft (store-002 draft)", () => {
       `expected door-0, got in ${r.entranceId} out ${r.exitId}`,
     );
   });
+
+  it("door-0 links directly to Produce", () => {
+    const produce = store.nodes.find((n) => n.id.startsWith("dept-produce"));
+    assert.ok(produce, "expected a dept-produce node");
+    const linked = store.edges.some(
+      (e) =>
+        (e.a === "door-0" && e.b === produce.id) ||
+        (e.a === produce.id && e.b === "door-0"),
+    );
+    assert.ok(linked, "expected an edge between door-0 and the Produce department node");
+  });
+
+  it("Produce comes first from the left door", () => {
+    const ids = ["produce", "deli", "coffee", "dairy"];
+    for (const id of ids) {
+      assert.ok(store.products.some((p) => p.id === id), `missing product ${id}`);
+    }
+    const r = planRoute(store, ids, {});
+    console.log(
+      `store-002 left-door route (ids: ${ids.join(",")}): in ${r.entranceId} → ${r.stops.map((s) => s.name).join(" → ")} → out ${r.exitId}`,
+    );
+    assert.ok(
+      r.entranceId === "door-0" || r.exitId === "door-0",
+      `expected door-0 at an end, got in ${r.entranceId} out ${r.exitId}`,
+    );
+    const end = r.entranceId === "door-0" ? r.stops[0]! : r.stops[r.stops.length - 1]!;
+    assert.equal(end.productId, "produce");
+  });
 });
 
 describe("buildStoreFromDraft (synthetic two-block draft)", () => {
