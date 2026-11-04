@@ -279,6 +279,7 @@ export default function App() {
   const [selectedId, setSelectedId] = useState<string>(HEB_ID);
   const [adding, setAdding] = useState(false);
   const [showStores, setShowStores] = useState(false);
+  const [justSaved, setJustSaved] = useState<string | null>(null);
 
   useEffect(() => {
     void (async () => {
@@ -556,6 +557,8 @@ export default function App() {
               setSaved(await repo.list());
               pickStore(s.id);
               setAdding(false);
+              setJustSaved(s.name);
+              setTimeout(() => setJustSaved(null), 1500);
             })();
           }}
         />
@@ -571,6 +574,12 @@ export default function App() {
         keyboardShouldPersistTaps="handled"
       >
         <Header subtitle={`STORE: ${active.name} ▾`} onPressSubtitle={() => setShowStores((s) => !s)} />
+        {justSaved ? (
+          <View style={styles.savedWrap}>
+            <Stamp text="STORE SAVED" />
+            <Text style={styles.savedNote}>{justSaved} · saved on this phone only</Text>
+          </View>
+        ) : null}
         {showStores ? (
           <View style={styles.storeBlock}>
             <Text style={styles.sectionLabel}>YOUR STORES</Text>
@@ -911,6 +920,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 8,
   },
+  savedWrap: { marginTop: 10, alignItems: "center", gap: 4 },
+  savedNote: { fontFamily: mono, fontSize: 12, color: colors.muted, textAlign: "center" },
   doneRows: { gap: 4 },
   shopPanel: {
     backgroundColor: colors.shopDark,

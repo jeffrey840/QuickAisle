@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 import {
-  Button,
   Image,
   Platform,
   ScrollView,
@@ -17,6 +16,9 @@ import { friendlyReason, postIngest, type IngestDraftWire } from "./api";
 import { bundledAssetUri } from "./assets";
 import { alsoIn } from "./review";
 import { newStoreId, type SavedStore } from "./stores";
+import Btn from "./Btn";
+import { Header } from "./Receipt";
+import { colors, mono } from "./theme";
 import sampleDraftJson from "../../../data/stores/store-002/draft-ingest-v1.json";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports
@@ -248,20 +250,30 @@ export default function AddStore({
   if (phase === "pick" || phase === "reading") {
     return (
       <View style={styles.wrap}>
-        <Text style={styles.title}>Add a store</Text>
-        <Text style={styles.hint}>Take a photo of the store map. The AI reads the aisles — you check the draft before saving.</Text>
-        <View style={styles.row}>
+        <Header subtitle={phase === "reading" ? "NEW STORE · STEP 2 OF 3" : "NEW STORE · STEP 1 OF 3"} />
+        <Text style={styles.sectionLabel}>PHOTOGRAPH THE STORE MAP</Text>
+        <Text style={styles.hint}>Usually near the entrance or customer service.</Text>
+        <View style={styles.frameBox}>
+          <View style={styles.phoneRect} />
+          <Text style={styles.frameText}>HOLD PHONE SIDEWAYS FOR WIDE MAPS</Text>
+        </View>
+        <View style={styles.btnStack}>
           {Platform.OS !== "web" ? (
-            <Button title="Snap map" onPress={() => void readMapPhoto(true)} disabled={phase === "reading"} />
+            <Btn title="Snap map" onPress={() => void readMapPhoto(true)} disabled={phase === "reading"} variant="primary" full />
           ) : null}
-          <Button title="Choose map photo" onPress={() => void readMapPhoto(false)} disabled={phase === "reading"} />
+          <Btn title="Choose map photo" onPress={() => void readMapPhoto(false)} disabled={phase === "reading"} variant="outline" full />
         </View>
-        <Text style={styles.hint}>Tip: for wide maps, hold your phone sideways so the whole map fills the photo.</Text>
-        <View style={styles.row}>
-          <Button title="Try the sample store" onPress={() => void useSample()} disabled={phase === "reading"} />
-          <Button title="Cancel" onPress={onCancel} disabled={phase === "reading"} />
+        <View style={styles.quietRow}>
+          <Btn title="Try the sample store" onPress={() => void useSample()} disabled={phase === "reading"} variant="quiet" />
+          <Text style={styles.dot}>·</Text>
+          <Btn title="Cancel" onPress={onCancel} disabled={phase === "reading"} variant="quiet" />
         </View>
-        {phase === "reading" ? <Text style={styles.hint}>Reading the map… about 30–40 seconds</Text> : null}
+        {phase === "reading" ? (
+          <View>
+            <Text style={styles.reading}>READING THE MAP… ABOUT 30–40 SECONDS</Text>
+            <Text style={styles.hint}>META VISION READS THE PHOTO AND A SIDEWAYS COPY AND KEEPS WHAT THE READS AGREE ON.</Text>
+          </View>
+        ) : null}
         {error ? <Text style={styles.error}>{error}</Text> : null}
         {reason ? <Text style={styles.hint}>{reason}</Text> : null}
       </View>
@@ -273,9 +285,10 @@ export default function AddStore({
 
   return (
     <ScrollView style={styles.wrap} contentContainerStyle={styles.wrapContent}>
-      <Text style={styles.title}>AI draft — check before saving</Text>
-      <Text style={styles.label}>Store name (required)</Text>
+      <Header subtitle="NEW STORE · STEP 3 OF 3 · CHECK IT" />
+      <Text style={styles.sectionLabel}>STORE NAME (REQUIRED)</Text>
       <TextInput style={styles.input} value={name} onChangeText={setName} placeholder="My grocery store" placeholderTextColor="#6b7280" />
+      <Text style={styles.summary}>{`${draft.aisles.length} AISLES · ${draft.entrances.length} DOORS · ${draft.departments.length} AREAS`}</Text>
       <View style={[styles.mapFrame, { aspectRatio: W / H }]}>
         <Image source={{ uri: mapDataUri }} style={styles.mapImage} resizeMode="contain" />
         <Svg viewBox={`0 0 ${W} ${H}`} style={styles.mapSvg}>
@@ -310,7 +323,7 @@ export default function AddStore({
       ) : null}
       {draft.notes.length > 0 ? (
         <View style={styles.row}>
-          <Button title={showNotes ? "Hide AI notes" : `Show AI notes (${draft.notes.length})`} onPress={() => setShowNotes((s) => !s)} />
+          <Btn title={showNotes ? "Hide AI notes" : `Show AI notes (${draft.notes.length})`} onPress={() => setShowNotes((s) => !s)} variant="outline" />
         </View>
       ) : null}
       {showNotes
@@ -330,8 +343,8 @@ export default function AddStore({
       ) : null}
       {draft.aisles.map((a) => (
         <View key={a.key} style={styles.aisle}>
-          <View style={styles.row}>
-            <Text style={styles.label}>Aisle</Text>
+          <View style={styles.aisleHead}>
+            <Text style={styles.aisleA}>A</Text>
             <TextInput
               style={styles.num}
               value={a.n}
@@ -341,15 +354,17 @@ export default function AddStore({
                 )
               }
             />
-            <Text style={styles.hint}>{a.orientation}</Text>
-            <Button
+            <Text style={styles.aisleA}>{a.orientation === "vertical" ? "↓" : "→"}</Text>
+            <Btn
               title="Delete aisle"
+              variant="danger-text"
               onPress={() =>
                 setDraft((d) => (d ? { ...d, aisles: d.aisles.filter((x) => x.key !== a.key) } : d))
               }
             />
             {moving && moving.fromKey !== a.key ? (
-              <Button
+              <Btn
+                variant="outline"
                 title={`→ ${a.n || "?"}`}
                 onPress={() => {
                   const m = moving;
@@ -419,7 +434,8 @@ export default function AddStore({
                 placeholderTextColor="#6b7280"
                 autoFocus
               />
-              <Button
+              <Btn
+                variant="outline"
                 title="Add"
                 onPress={() => {
                   const t = addText.trim();
@@ -441,19 +457,21 @@ export default function AddStore({
               />
             </View>
           ) : (
-            <Button title="+ item" onPress={() => { setAddingFor(a.key); setAddText(""); }} />
+            <Btn title="+ item" onPress={() => { setAddingFor(a.key); setAddText(""); }} variant="quiet" />
           )}
         </View>
       ))}
       <View style={styles.aisle}>
-        <Text style={styles.label}>+ Add aisle</Text>
+        <Text style={styles.sectionLabel}>+ ADD AISLE</Text>
         <View style={styles.row}>
           <TextInput style={styles.num} value={newNum} onChangeText={setNewNum} placeholder="#" placeholderTextColor="#6b7280" />
-          <Button
+          <Btn
+            variant="outline"
             title={newOri === "vertical" ? "Vertical ↓" : "Horizontal →"}
             onPress={() => setNewOri((o) => (o === "vertical" ? "horizontal" : "vertical"))}
           />
-          <Button
+          <Btn
+            variant="outline"
             title="Add aisle"
             onPress={() => {
               const t = newNum.trim();
@@ -490,9 +508,9 @@ export default function AddStore({
         </View>
       </View>
       {error ? <Text style={styles.error}>{error}</Text> : null}
-      <View style={styles.row}>
-        <Button title="Save store" onPress={save} />
-        <Button title="Cancel" onPress={onCancel} />
+      <View style={styles.btnStack}>
+        <Btn title="Save store" onPress={save} variant="primary" full />
+        <Btn title="Cancel" onPress={onCancel} variant="outline" full />
       </View>
       <View style={{ height: 40 }} />
     </ScrollView>
@@ -501,27 +519,54 @@ export default function AddStore({
 
 const styles = StyleSheet.create({
   // Explicit light background + dark text: Android dark mode must not restyle us.
-  wrap: { flex: 1, padding: 16, paddingTop: 48, backgroundColor: "#ffffff" },
+  wrap: { flex: 1, padding: 16, paddingTop: 48, backgroundColor: colors.paper },
   // Bottom padding lives here, not in style: ScrollView style padding
   // doesn't extend the scrollable content, stranding Save/Cancel under
   // the Android nav bar. 96 clears the bar with room to spare.
   wrapContent: { paddingBottom: 96 },
-  title: { fontSize: 20, fontWeight: "bold", marginBottom: 8, color: "#111827" },
-  label: { fontWeight: "bold", fontSize: 14, color: "#111827" },
-  hint: { color: "#666", marginTop: 4, fontSize: 12 },
-  error: { color: "#b91c1c", marginVertical: 8 },
-  warn: { color: "#b45309", marginVertical: 6 },
-  input: { borderWidth: 1, borderColor: "#999", borderRadius: 8, padding: 10, marginBottom: 8, color: "#111827" },
+  sectionLabel: { fontFamily: mono, fontSize: 13, letterSpacing: 1, color: colors.ink, marginTop: 12 },
+  summary: { fontFamily: mono, fontSize: 12, color: colors.muted, marginTop: 6 },
+  hint: { color: colors.muted, marginTop: 4, fontSize: 12, fontFamily: mono },
+  error: { color: colors.red, marginTop: 8, fontSize: 13, fontFamily: mono },
+  warn: { color: colors.red, marginTop: 8, fontSize: 12, fontFamily: mono },
+  input: {
+    backgroundColor: colors.white,
+    borderWidth: 1.5,
+    borderColor: colors.ink,
+    borderRadius: 0,
+    padding: 10,
+    marginTop: 4,
+    color: colors.ink,
+    fontFamily: mono,
+    fontSize: 14,
+  },
   row: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 8, flexWrap: "wrap" },
-  mapFrame: { width: "100%", borderWidth: 1, borderColor: "#ddd", borderRadius: 8, overflow: "hidden", backgroundColor: "#f8fafc", marginBottom: 8 },
+  btnStack: { gap: 8, marginTop: 10 },
+  quietRow: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, marginTop: 4 },
+  dot: { color: colors.muted, fontFamily: mono },
+  frameBox: {
+    borderWidth: 1.5,
+    borderColor: colors.ink,
+    height: 120,
+    marginTop: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  phoneRect: { width: 90, height: 52, borderWidth: 1.5, borderColor: colors.muted },
+  frameText: { color: colors.muted, fontSize: 12, fontFamily: mono, textAlign: "center" },
+  reading: { color: colors.red, marginTop: 10, fontSize: 13, fontFamily: mono },
+  mapFrame: { width: "100%", borderWidth: 1, borderColor: colors.line, borderRadius: 0, overflow: "hidden", backgroundColor: colors.white, marginTop: 8, marginBottom: 8 },
   mapImage: { position: "absolute", width: "100%", height: "100%" },
   mapSvg: { position: "absolute", width: "100%", height: "100%" },
-  aisle: { borderWidth: 1, borderColor: "#ddd", borderRadius: 8, padding: 8, marginBottom: 8 },
-  num: { borderWidth: 1, borderColor: "#999", borderRadius: 6, padding: 6, minWidth: 56, textAlign: "center", color: "#111827" },
+  aisle: { borderWidth: 1, borderColor: colors.line, borderRadius: 0, padding: 8, marginTop: 8, backgroundColor: colors.white },
+  aisleHead: { flexDirection: "row", alignItems: "center", gap: 8, flexWrap: "wrap" },
+  aisleA: { fontFamily: mono, fontSize: 15, fontWeight: "bold", color: colors.ink },
+  num: { borderWidth: 1, borderColor: colors.line, borderRadius: 0, padding: 6, minWidth: 56, textAlign: "center", color: colors.ink, fontFamily: mono, backgroundColor: colors.white },
   chips: { flexDirection: "row", flexWrap: "wrap", gap: 6, marginVertical: 6 },
   chipRow: { flexDirection: "row" },
-  chip: { backgroundColor: "#e0e7ff", borderRadius: 12, paddingHorizontal: 8, paddingVertical: 4, fontSize: 13, color: "#111827" },
-  also: { color: "#666", fontSize: 11 },
-  x: { color: "#b91c1c", fontWeight: "bold" },
-  addInput: { borderWidth: 1, borderColor: "#999", borderRadius: 6, padding: 6, flex: 1, minWidth: 120, color: "#111827" },
+  chip: { backgroundColor: colors.white, borderWidth: 1, borderColor: colors.line, borderRadius: 0, paddingHorizontal: 8, paddingVertical: 4, fontSize: 13, color: colors.ink, fontFamily: mono },
+  also: { color: colors.muted, fontSize: 11, fontFamily: mono },
+  x: { color: colors.red, fontWeight: "bold" },
+  addInput: { borderWidth: 1, borderColor: colors.line, borderRadius: 0, padding: 6, flex: 1, minWidth: 120, color: colors.ink, fontFamily: mono, backgroundColor: colors.white },
 });
