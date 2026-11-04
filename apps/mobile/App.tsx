@@ -851,9 +851,9 @@ export default function App() {
 const styles = StyleSheet.create({
   // Explicit light background + dark text throughout: Android dark mode
   // (edge-to-edge, ignores userInterfaceStyle) must not restyle us.
-  root: { flex: 1, backgroundColor: "#ffffff" },
-  scroll: { flex: 1, backgroundColor: colors.paper },
-  container: { padding: 16, paddingTop: 48, paddingBottom: 96, backgroundColor: colors.paper },
+  root: { flex: 1, backgroundColor: colors.paper },
+  scroll: { flex: 1, marginTop: 36, backgroundColor: colors.paper },
+  container: { padding: 16, paddingTop: 12, paddingBottom: 96, backgroundColor: colors.paper },
   title: { fontSize: 22, fontWeight: "bold", marginBottom: 8, color: "#111827" },
   sectionLabel: {
     fontFamily: mono,
@@ -968,7 +968,7 @@ const styles = StyleSheet.create({
   shopBtns: { flexDirection: "row", gap: 8, marginTop: 10 },
   goWrap: { flex: 2 },
   mapFrame: {
-    height: 320,
+    maxHeight: 420,
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 8,
