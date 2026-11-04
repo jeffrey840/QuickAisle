@@ -23,6 +23,28 @@ export interface AiClarifyAnswer {
 
 const MAX_OPTIONS = 4;
 
+/**
+ * Suggest cards need a near-miss, not a coincidence: the top hit must be
+ * close (≥ SUGGEST_MIN_SIMILARITY) and share a leading stem (MIN_STEM
+ * letters on some word pair) with the term. eggs→Vinegar (0.67, no shared
+ * stem) is suppressed; cerial→Cereal (0.83, "cer") still asks.
+ */
+export const SUGGEST_MIN_SIMILARITY = 0.75;
+const MIN_STEM = 3;
+
+export function sharesStem(term: string, name: string): boolean {
+  const termWords = normalize(term).split(" ").filter(Boolean);
+  const nameWords = normalize(name).split(" ").filter(Boolean);
+  for (const t of termWords) {
+    for (const n of nameWords) {
+      let i = 0;
+      while (i < t.length && i < n.length && t[i] === n[i]) i++;
+      if (i >= MIN_STEM) return true;
+    }
+  }
+  return false;
+}
+
 /** Map option names to catalog products; drop anything unmappable. */
 export function mapOptionsToProducts(
   options: string[],
@@ -58,7 +80,7 @@ export function cardForTerm(
     }
   }
   const top = suggestions[0];
-  if (top) {
+  if (top && top.similarity >= SUGGEST_MIN_SIMILARITY && sharesStem(term, top.name)) {
     return {
       kind: "suggest",
       term,

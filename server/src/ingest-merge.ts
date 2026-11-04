@@ -14,7 +14,12 @@ export interface MergedAisle {
   items: string[];
   /** runs that reported this aisle number */
   agreement: number;
+  /** which merged view the items came from (set by combineIngestViews) */
+  itemsView?: ItemsView;
 }
+
+/** per-aisle item source in a two-view /ingest response */
+export type ItemsView = "original" | "rotated";
 
 export interface MergedDepartment {
   name: string;
@@ -265,6 +270,50 @@ export function mergeIngestRuns(runs: IngestData[]): MergedIngest {
   ];
 
   return { runsOk: runs.length, lowConfidence: false, aisles, departments, entrances, notes };
+}
+
+/** appended when the rotated side yields zero runs (still a 200) */
+export const ROTATED_FALLBACK_NOTE = "rotated view unreadable — items from original only";
+
+/**
+ * Two-view combine (C4): geometry, orientation, departments, entrances and
+ * notes come from the ORIGINAL merge; items come from the ROTATED merge for
+ * aisles the original calls vertical (sideways labels read better rotated
+ * 90° clockwise), matched by aisle number n. Horizontal aisles, and vertical
+ * aisles missing from the rotated merge, keep original items. A null/empty
+ * rotated side returns the original with itemsView="original" everywhere
+ * plus ROTATED_FALLBACK_NOTE. Pure — returns a new object.
+ */
+export function combineIngestViews(
+  orig: MergedIngest,
+  rot: MergedIngest | null,
+): MergedIngest {
+  const tagOriginal = (): MergedIngest => ({
+    runsOk: orig.runsOk,
+    lowConfidence: orig.lowConfidence,
+    aisles: orig.aisles.map((a) => ({ ...a, items: [...a.items], itemsView: "original" as ItemsView })),
+    departments: orig.departments.map((d) => ({ ...d })),
+    entrances: orig.entrances.map((e) => ({ ...e })),
+    notes: [...orig.notes, ROTATED_FALLBACK_NOTE],
+  });
+  if (!rot || rot.runsOk === 0) return tagOriginal();
+  const rotItems = new Map<string, string[]>();
+  for (const a of rot.aisles) {
+    if (!rotItems.has(a.n)) rotItems.set(a.n, a.items);
+  }
+  return {
+    runsOk: orig.runsOk + rot.runsOk,
+    lowConfidence: orig.lowConfidence || rot.lowConfidence,
+    aisles: orig.aisles.map((a) => {
+      const items = a.orientation === "vertical" ? rotItems.get(a.n) : undefined;
+      return items === undefined
+        ? { ...a, items: [...a.items], itemsView: "original" as ItemsView }
+        : { ...a, items: [...items], itemsView: "rotated" as ItemsView };
+    }),
+    departments: orig.departments.map((d) => ({ ...d })),
+    entrances: orig.entrances.map((e) => ({ ...e })),
+    notes: [...orig.notes],
+  };
 }
 
 /**

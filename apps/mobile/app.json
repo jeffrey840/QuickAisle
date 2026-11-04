@@ -35,7 +35,8 @@
           "cameraPermission": "QuickAisle uses the camera to read your shopping list.",
           "photosPermission": "QuickAisle uses your photo library to read your shopping list."
         }
-      ]
+      ],
+      "expo-audio"
     ],
     "owner": "ie_ie"
   }

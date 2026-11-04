@@ -6,7 +6,7 @@
   "types": "src/index.ts",
   "scripts": {
     "build": "tsc -b",
-    "test": "node --test src/fuzzy.test.ts src/resolveLocal.test.ts"
+    "test": "node --test src/fuzzy.test.ts src/resolveLocal.test.ts src/departments.test.ts"
   },
   "dependencies": {
     "@quickaisle/schema": "0.1.0",

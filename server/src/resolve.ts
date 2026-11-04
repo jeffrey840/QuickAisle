@@ -29,6 +29,14 @@ export const LEARN_CONFIDENCE = 0.85;
 export const RESOLVE_TIMEOUT_MS = 30_000;
 /** start the other provider if the primary hasn't answered within this long */
 export const HEDGE_MS = 12_000;
+/**
+ * Raw body cap, checked before AND after read (Content-Length can be
+ * missing or lying). Worst legit body: 800 catalog entries × ~140 chars
+ * (`{"id":"<60>","name":"<60>"},`) ≈ 112 KB, plus 30 terms × ~64 B ≈ 2 KB
+ * plus the envelope → 256 KB leaves >2× headroom. The deeper caps (800
+ * entries, 60 chars) are enforced again after parse by validation.
+ */
+export const MAX_RESOLVE_BODY_CHARS = 262_144;
 
 export class Resolve400 extends Error {
   readonly status = 400;

@@ -9,6 +9,7 @@ import {
   validateIngestRequest,
 } from "./ingest.ts";
 import { IngestSchema } from "./ingest-contract.ts";
+import { ROTATED_FALLBACK_NOTE } from "./ingest-merge.ts";
 import type { chat } from "./providers/index.ts";
 import type { IngestData } from "./ingest-contract.ts";
 
@@ -69,6 +70,32 @@ describe("validateIngestRequest", () => {
       return true;
     });
   });
+
+  it("accepts an optional rotated second view with the same rules", () => {
+    const v = validateIngestRequest({
+      ...img(),
+      rotated: { mime: "image/jpeg", b64: "aGVsbG8=" },
+    });
+    assert.equal(v.rotated?.mime, "image/jpeg");
+    assert.equal(validateIngestRequest(img()).rotated, undefined);
+  });
+
+  it("invalid rotated → 400, oversize rotated → 413", () => {
+    for (const rotated of [{ mime: "image/webp", b64: "aGVsbG8=" }, "nope", { mime: "image/png" }]) {
+      assert.throws(() => validateIngestRequest({ ...img(), rotated }), (e: unknown) => {
+        assert.ok(e instanceof IngestError && e.status === 400);
+        return true;
+      });
+    }
+    const big = "A".repeat(Math.ceil((MAX_MAP_BYTES * 4) / 3) + 8);
+    assert.throws(
+      () => validateIngestRequest({ ...img(), rotated: { mime: "image/png", b64: big } }),
+      (e: unknown) => {
+        assert.ok(e instanceof IngestError && e.status === 413);
+        return true;
+      },
+    );
+  });
 });
 
 describe("POST /ingest", () => {
@@ -120,6 +147,37 @@ describe("handleIngestText", () => {
         return true;
       },
     );
+  });
+
+  it("two views merge 6 runs and tag itemsView", async () => {
+    const body = JSON.stringify({
+      ...img(),
+      rotated: { mime: "image/png", b64: "cm90YXRlZA==" },
+    });
+    const out = await handleIngestText(body, {}, fakeChat("ok"));
+    assert.equal(out.status, 200);
+    assert.equal(out.json.runsOk, 6);
+    // oneAisle is vertical → items come from the rotated merge
+    assert.equal(out.json.aisles[0]!.itemsView, "rotated");
+    assert.ok(out.log.includes("rotRunsOk=3"));
+    assert.ok(!out.log.includes("cm90YXRlZA=="));
+  });
+
+  it("rotated side failing returns original-only with a note (still 200)", async () => {
+    const failRot = (async (req: unknown) => {
+      const images = (req as { images: Array<{ b64: string }> }).images;
+      if (images[0]?.b64 !== "aGVsbG8=") throw new Error("meta 500");
+      return { data: oneAisle("13"), raw: "{}", provider: "meta", latencyMs: 5, retries: 0 };
+    }) as unknown as typeof chat;
+    const body = JSON.stringify({
+      ...img(),
+      rotated: { mime: "image/png", b64: "cm90YXRlZA==" },
+    });
+    const out = await handleIngestText(body, {}, failRot);
+    assert.equal(out.status, 200);
+    assert.equal(out.json.runsOk, 3);
+    assert.equal(out.json.aisles[0]!.itemsView, "original");
+    assert.ok(out.json.notes.includes(ROTATED_FALLBACK_NOTE));
   });
 
   it("caps apply to merged output", async () => {
