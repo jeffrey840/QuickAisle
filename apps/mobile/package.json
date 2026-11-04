@@ -30,7 +30,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "test": "node --test src/clarify.test.ts src/shop.test.ts src/api.test.ts src/stores.test.ts src/assets.test.ts src/review.test.ts src/wav.test.ts src/stopTerms.test.ts"
+    "test": "node --test src/clarify.test.ts src/shop.test.ts src/api.test.ts src/stores.test.ts src/assets.test.ts src/review.test.ts src/wav.test.ts src/stopTerms.test.ts src/lineColors.test.ts src/spoken.test.ts"
   },
   "private": true
 }

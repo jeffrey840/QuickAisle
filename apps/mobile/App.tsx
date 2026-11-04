@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   Alert,
-  Button,
   Image,
   Platform,
   ScrollView,
@@ -11,7 +10,12 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+  Gesture,
+  GestureDetector,
+  GestureHandlerRootView,
+  ScrollView as GHScrollView,
+} from "react-native-gesture-handler";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -28,7 +32,9 @@ import { deviceAliases, saveLearnedAliases } from "./src/aliasStore";
 import { friendlyReason, postReadList, postResolve } from "./src/api";
 import AddStore from "./src/AddStore";
 import Btn from "./src/Btn";
-import { Header } from "./src/Receipt";
+import { Divider, Header, Row, Stamp } from "./src/Receipt";
+import { areaColor, areaLabel } from "./src/lineColors";
+import { splitSpoken } from "./src/spoken";
 import VoiceButton from "./src/VoiceButton";
 import { colors, mono } from "./src/theme";
 import { createStoreRepo, HEB_ID, type SavedStore } from "./src/stores";
@@ -57,6 +63,92 @@ const TEST_B = "cookies, pickles, water, sushi, frozen food";
 // Verbatim copy of api.ts's 429 text (that const isn't exported, and api.ts
 // is frozen) — used only to pick the red-box style. Same text either way.
 const DEMO_LIMIT_TEXT = "Demo limit reached — try again later or use the sample store";
+
+/** A stop's list words without the " — " prefix termsSuffix adds. Display only. */
+function stopWords(productId: string, name: string, termsById: TermsById): string {
+  return termsSuffix(productId, name, termsById).replace(/^ — /, "");
+}
+
+/** Display state of one transit-line row. Reads shop state, changes nothing. */
+function stopRowState(
+  shop: ShopState | null,
+  i: number,
+): "got" | "skipped" | "current" | "upcoming" {
+  if (shop?.got[i]) return "got";
+  if (shop?.skipped[i]) return "skipped";
+  if (shop && i === shop.index) return "current";
+  return "upcoming";
+}
+
+/** Distinct legend entries (label + color) in order of first appearance. */
+function legendEntries(stops: Array<{ name: string; aisleLabel?: string }>): Array<{
+  label: string;
+  color: string;
+}> {
+  const seen = new Map<string, string>();
+  for (const s of stops) {
+    const display = s.aisleLabel ? `${s.aisleLabel} — ${s.name}` : s.name;
+    const label = areaLabel(display);
+    if (!seen.has(label)) seen.set(label, areaColor(display));
+  }
+  return [...seen].map(([label, color]) => ({ label, color }));
+}
+
+/** One transit-line stop row. Presentational; all data comes from props. */
+function ShopLineRow({
+  stop,
+  state,
+  words,
+}: {
+  stop: { name: string; aisleLabel?: string };
+  state: "got" | "skipped" | "current" | "upcoming";
+  words: string;
+}) {
+  const label =
+    stop.aisleLabel && stop.aisleLabel.toLowerCase() !== stop.name.toLowerCase()
+      ? `${stop.aisleLabel} — ${stop.name}`
+      : stop.name;
+  const color = areaColor(label);
+  const where = stop.aisleLabel && /\baisles?\b/i.test(stop.aisleLabel) ? "aisle" : "area";
+  if (state === "current") {
+    return (
+      <View style={[styles.lineRow, styles.currentBlock]}>
+        <View style={[styles.dot, styles.currentDot]} />
+        <View>
+          <Text style={styles.currentLabel}>
+            {label}
+            <Text style={styles.lineSuffix}> · {where}</Text>
+          </Text>
+          {words ? <Text style={styles.currentWords}>{words}</Text> : null}
+        </View>
+      </View>
+    );
+  }
+  return (
+    <View style={styles.lineRow}>
+      <View
+        style={
+          state === "skipped"
+            ? [styles.dot, styles.skippedDot, { borderColor: color }]
+            : [styles.dot, { backgroundColor: color }]
+        }
+      />
+      {state === "got" ? (
+        <Text style={styles.doneLabel}>
+          {label}
+          <Text style={styles.lineSuffix}> · {where}</Text>
+          <Text style={{ color: color }}> ✓</Text>
+        </Text>
+      ) : (
+        <Text style={styles.lineLabel}>
+          {label}
+          <Text style={styles.lineSuffix}> · {where}</Text>
+          {state === "skipped" ? <Text style={{ color: color }}> · skipped, come back</Text> : null}
+        </Text>
+      )}
+    </View>
+  );
+}
 
 function parseList(raw: string): string[] {
   return raw
@@ -473,7 +565,11 @@ export default function App() {
 
   return (
     <GestureHandlerRootView style={styles.root}>
-      <View style={styles.container}>
+      <GHScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
+      >
         <Header subtitle={`STORE: ${active.name} ▾`} onPressSubtitle={() => setShowStores((s) => !s)} />
         {showStores ? (
           <View style={styles.storeBlock}>
@@ -497,6 +593,8 @@ export default function App() {
             <Btn title="+ Add a store" onPress={() => setAdding(true)} variant="primary" full />
           </View>
         ) : null}
+        {/* List entry hides while shopping so the panel + map fit. */}
+        {sh ? null : (<>
         <Text style={styles.sectionLabel}>YOUR LIST</Text>
         <TextInput
           style={styles.input}
@@ -517,7 +615,12 @@ export default function App() {
             <VoiceButton
               apiUrl={API_URL}
               onTranscript={(t) => {
-                setText((prev) => (prev.trim() ? `${prev}\n${t}` : t));
+                const phrases: string[] = [];
+                for (const p of active.doc.products) {
+                  phrases.push(p.name, ...p.aliases);
+                }
+                const line = splitSpoken(t, phrases).join(", ");
+                setText((prev) => (prev.trim() ? `${prev}\n${line}` : line));
                 setError(null);
                 setPhotoReason(null);
               }}
@@ -534,6 +637,9 @@ export default function App() {
             onValueChange={setRxReady}
             trackColor={{ false: "#C9C2B2", true: colors.ink }}
             thumbColor={colors.paper}
+            // react-native-web-only props (absent from core RN types, hence
+            // the cast); Android ignores them.
+            {...({ activeThumbColor: colors.paper, activeTrackColor: colors.ink } as object)}
           />
         </View>
         <View style={styles.planWrap}>
@@ -584,40 +690,133 @@ export default function App() {
             )}
           </View>
         ) : null}
+        </>)}
         {route ? (
           <View style={styles.result}>
             {sh ? (
-              <View>
-                <Text style={styles.shopLabel}>{sh.stop.label}</Text>
-                <Text style={styles.hint}>{sh.position} of {sh.total}</Text>
-                <View style={styles.row}>
-                  <Button title="Got it" onPress={() => setShop((s) => (s ? markGot(s) : s))} />
-                  <Button title="Skip for now" onPress={() => setShop((s) => (s ? markSkipped(s) : s))} />
+              <View style={styles.shopPanel}>
+                <View style={styles.shopTop}>
+                  <Text style={styles.shopTitle}>Aisle Line</Text>
+                  <Text style={styles.shopMeta}>
+                    Stop {sh.position} of {sh.total} · −{route.savingsPct}%
+                  </Text>
+                </View>
+                <View style={styles.shopTrack}>
+                  <View
+                    style={[
+                      styles.shopFill,
+                      {
+                        width: `${
+                          sh.total > 0 ? Math.round(((sh.position - 1) / sh.total) * 100) : 0
+                        }%`,
+                      },
+                    ]}
+                  />
+                </View>
+                <ScrollView style={styles.shopLine} nestedScrollEnabled>
+                  <View style={styles.lineWrap}>
+                    <View style={styles.rail} />
+                    <View style={styles.lineRows}>
+                      <View style={styles.lineRow}>
+                        <View style={styles.endDot} />
+                        <Text style={styles.endText}>
+                          Enter · {doorLabel(active.doc, route.entranceId)}
+                        </Text>
+                      </View>
+                      {route.stops.map((s, i) => (
+                        <ShopLineRow
+                          key={s.locationId + i}
+                          stop={s}
+                          state={stopRowState(shop, i)}
+                          words={stopWords(s.productId, s.name, termsById)}
+                        />
+                      ))}
+                      <View style={styles.lineRow}>
+                        <View style={styles.endDot} />
+                        <Text style={styles.endText}>
+                          Exit · {doorLabel(active.doc, route.exitId)}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                </ScrollView>
+                <View style={styles.legendRow}>
+                  {legendEntries(route.stops).map((e) => (
+                    <View key={e.label} style={styles.legendItem}>
+                      <View style={[styles.legendDot, { backgroundColor: e.color }]} />
+                      <Text style={styles.legendText}>{e.label}</Text>
+                    </View>
+                  ))}
+                </View>
+                <View style={styles.shopBtns}>
+                  <Btn
+                    title="Skip for now"
+                    onPress={() => setShop((s) => (s ? markSkipped(s) : s))}
+                    variant="dark-outline"
+                  />
+                  <View style={styles.goWrap}>
+                    <Btn
+                      title="Got it"
+                      onPress={() => setShop((s) => (s ? markGot(s) : s))}
+                      variant="yellow"
+                      full
+                    />
+                  </View>
                 </View>
               </View>
             ) : shopSum ? (
               <View>
-                <Text style={styles.savings}>
-                  Done: {shopSum.got} got, {shopSum.skipped} skipped
-                  {shopSum.skippedNames.length > 0 ? ` (${shopSum.skippedNames.join(", ")})` : ""}
-                </Text>
-                <Button title="Back to list" onPress={() => setShop(null)} />
+                <Text style={styles.doneTitle}>TRIP COMPLETE</Text>
+                <View style={styles.doneRows}>
+                  <Row left="GOT" right={`${shopSum.got}`} />
+                  <Row
+                    left="SKIPPED"
+                    right={
+                      shopSum.skipped > 0
+                        ? `${shopSum.skipped} (${shopSum.skippedNames.join(", ")})`
+                        : `${shopSum.skipped}`
+                    }
+                    tone={shopSum.skipped > 0 ? "red" : undefined}
+                  />
+                  <Row left="STOPS" right={`${shopSum.got + shopSum.skipped}`} />
+                </View>
+                <Divider />
+                <Row left="YOU SAVED" right={`${route.savingsPct}%`} />
+                <Text style={styles.hint}>vs. walking your list in typed order</Text>
+                <View style={styles.stampWrap}>
+                  <Stamp text="DONE · THANK YOU" size="big" />
+                </View>
+                <Btn title="Back to list" onPress={() => setShop(null)} variant="primary" full />
               </View>
             ) : (
               <View>
-                <Text style={styles.savings}>
-                  {route.savingsPct}% shorter than typed order ·{" "}
-                  in {doorLabel(active.doc, route.entranceId)} / out {doorLabel(active.doc, route.exitId)}
-                </Text>
-                <ScrollView style={styles.stops} nestedScrollEnabled>
+                <Divider />
+                <Row left="IN" right={doorLabel(active.doc, route.entranceId)} />
+                <Row left="OUT" right={doorLabel(active.doc, route.exitId)} />
+                <Divider />
+                <ScrollView
+                  style={styles.stops}
+                  contentContainerStyle={styles.stopsContent}
+                  nestedScrollEnabled
+                >
                   {route.stops.map((s, i) => (
-                    <Text key={s.locationId + i} style={styles.stop}>
-                      {i + 1}. {s.instruction}
-                      {termsSuffix(s.productId, s.name, termsById)}
-                    </Text>
+                    <Row
+                      key={s.locationId + i}
+                      left={`${String(i + 1).padStart(2, "0")} ${s.instruction}`}
+                      right={stopWords(s.productId, s.name, termsById) || s.name}
+                      rightTone="muted"
+                    />
                   ))}
                 </ScrollView>
-                <Button title="Start shopping" onPress={startShopping} />
+                <Divider />
+                <Row left="YOU SAVED" right={`${route.savingsPct}%`} size={16} />
+                <Text style={styles.hint}>vs. walking your list in typed order</Text>
+                {route.savingsPct > 0 ? (
+                  <View style={styles.stampWrap}>
+                    <Stamp text="SHORTEST ROUTE" />
+                  </View>
+                ) : null}
+                <Btn title="Start shopping" onPress={startShopping} variant="primary" full />
               </View>
             )}
             <ZoomableMap
@@ -635,7 +834,7 @@ export default function App() {
             <Btn title="Delete this store" onPress={confirmDeleteStore} variant="danger-text" />
           </View>
         ) : null}
-      </View>
+      </GHScrollView>
     </GestureHandlerRootView>
   );
 }
@@ -644,7 +843,8 @@ const styles = StyleSheet.create({
   // Explicit light background + dark text throughout: Android dark mode
   // (edge-to-edge, ignores userInterfaceStyle) must not restyle us.
   root: { flex: 1, backgroundColor: "#ffffff" },
-  container: { flex: 1, padding: 16, paddingTop: 48, paddingBottom: 48, backgroundColor: colors.paper },
+  scroll: { flex: 1, backgroundColor: colors.paper },
+  container: { padding: 16, paddingTop: 48, paddingBottom: 96, backgroundColor: colors.paper },
   title: { fontSize: 22, fontWeight: "bold", marginBottom: 8, color: "#111827" },
   sectionLabel: {
     fontFamily: mono,
@@ -684,7 +884,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   limitText: { color: colors.red, fontFamily: mono },
-  result: { flex: 1, marginTop: 4 },
+  result: { marginTop: 4 },
   savings: { fontWeight: "bold", marginBottom: 4, color: "#111827" },
   card: {
     borderWidth: 2,
@@ -700,9 +900,64 @@ const styles = StyleSheet.create({
   skipRight: { alignItems: "flex-end" },
   shopLabel: { fontSize: 24, fontWeight: "bold", marginBottom: 2, color: "#111827" },
   stops: { maxHeight: 110, marginBottom: 4 },
+  stopsContent: { gap: 4 },
   stop: { marginBottom: 2, color: "#111827" },
+  stampWrap: { marginVertical: 10 },
+  doneTitle: {
+    fontFamily: mono,
+    fontSize: 20,
+    letterSpacing: 3,
+    color: colors.ink,
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  doneRows: { gap: 4 },
+  shopPanel: {
+    backgroundColor: colors.shopDark,
+    borderRadius: 16,
+    padding: 14,
+    marginBottom: 8,
+  },
+  shopTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  shopTitle: { color: "#FFFFFF", fontSize: 15 },
+  shopMeta: { color: "#8D939E", fontSize: 12 },
+  shopTrack: {
+    backgroundColor: "#2B2F37",
+    height: 6,
+    borderRadius: 3,
+    overflow: "hidden",
+    marginBottom: 10,
+  },
+  shopFill: { backgroundColor: colors.shopYellow, height: 6, borderRadius: 3 },
+  shopLine: { maxHeight: 260 },
+  lineWrap: { flexDirection: "row", gap: 10 },
+  rail: { width: 6, borderRadius: 3, backgroundColor: "#2B2F37" },
+  lineRows: { flex: 1, gap: 10 },
+  lineRow: { flexDirection: "row", alignItems: "center", gap: 8 },
+  endDot: { width: 12, height: 12, borderRadius: 6, borderWidth: 2, borderColor: "#8D939E" },
+  endText: { color: "#8D939E", fontSize: 14 },
+  dot: { width: 12, height: 12, borderRadius: 6 },
+  skippedDot: { borderWidth: 2, backgroundColor: colors.shopDark },
+  lineLabel: { color: "#FFFFFF", fontSize: 15 },
+  lineSuffix: { color: "#8D939E", fontSize: 13 },
+  doneLabel: { color: "#8D939E", fontSize: 15, textDecorationLine: "line-through" },
+  currentBlock: { backgroundColor: "#22252C", borderRadius: 10, padding: 8 },
+  currentDot: { borderWidth: 3, borderColor: colors.shopYellow },
+  currentLabel: { color: "#FFFFFF", fontSize: 17 },
+  currentWords: { color: colors.shopYellow, fontSize: 13 },
+  legendRow: { flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 10 },
+  legendItem: { flexDirection: "row", alignItems: "center", gap: 4 },
+  legendDot: { width: 8, height: 8, borderRadius: 4 },
+  legendText: { color: "#8D939E", fontSize: 12 },
+  shopBtns: { flexDirection: "row", gap: 8, marginTop: 10 },
+  goWrap: { flex: 2 },
   mapFrame: {
-    flex: 1,
+    height: 320,
     borderWidth: 1,
     borderColor: "#ddd",
     borderRadius: 8,

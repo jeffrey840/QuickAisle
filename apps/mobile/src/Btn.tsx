@@ -1,7 +1,14 @@
 import { Pressable, StyleSheet, Text } from "react-native";
 import { colors, mono } from "./theme";
 
-export type BtnVariant = "primary" | "outline" | "selected" | "danger-text" | "quiet";
+export type BtnVariant =
+  | "primary"
+  | "outline"
+  | "selected"
+  | "danger-text"
+  | "quiet"
+  | "dark-outline"
+  | "yellow";
 
 /**
  * The one styled button (Android's built-in Button can't be styled).
@@ -33,6 +40,8 @@ export default function Btn({
         styles.base,
         filled ? styles.filled : null,
         variant === "outline" ? styles.outline : null,
+        variant === "dark-outline" ? styles.darkOutline : null,
+        variant === "yellow" ? styles.yellow : null,
         full ? styles.full : null,
         disabled ? styles.disabledBox : null,
         pressed ? styles.pressed : null,
@@ -44,6 +53,8 @@ export default function Btn({
           filled ? styles.filledText : null,
           variant === "danger-text" ? styles.dangerText : null,
           variant === "quiet" ? styles.quietText : null,
+          variant === "dark-outline" ? styles.darkOutlineText : null,
+          variant === "yellow" ? styles.yellowText : null,
           disabled ? styles.disabledText : null,
         ]}
       >
@@ -60,6 +71,8 @@ const styles = StyleSheet.create({
   base: { borderRadius: 0, paddingHorizontal: 12, paddingVertical: 10 },
   filled: { backgroundColor: colors.ink },
   outline: { borderWidth: 1.5, borderColor: colors.ink },
+  darkOutline: { borderWidth: 1, borderColor: "#3A3F49", borderRadius: 12 },
+  yellow: { backgroundColor: colors.shopYellow, borderRadius: 12 },
   full: { width: "100%" },
   disabledBox: { backgroundColor: "transparent", borderWidth: 1.5, borderColor: DISABLED_BORDER },
   pressed: { opacity: 0.7 },
@@ -73,5 +86,7 @@ const styles = StyleSheet.create({
   filledText: { color: colors.paper, letterSpacing: 1 },
   dangerText: { color: colors.red },
   quietText: { color: colors.muted },
+  darkOutlineText: { color: colors.white },
+  yellowText: { color: colors.shopDark },
   disabledText: { color: DISABLED_TEXT },
 });
