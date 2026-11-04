@@ -27,7 +27,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { deviceAliases, saveLearnedAliases } from "./src/aliasStore";
 import { friendlyReason, postReadList, postResolve } from "./src/api";
 import AddStore from "./src/AddStore";
+import Btn from "./src/Btn";
+import { Header } from "./src/Receipt";
 import VoiceButton from "./src/VoiceButton";
+import { colors, mono } from "./src/theme";
 import { createStoreRepo, HEB_ID, type SavedStore } from "./src/stores";
 import { cardForTerm, mergePick, type ClarifyCard } from "./src/clarify";
 import { addCardTerm, buildTermsById, termsSuffix, type TermsById } from "./src/stopTerms";
@@ -51,6 +54,9 @@ const MAX_ONLINE_TERMS = 30;
 
 const TEST_A = "prescriptions, eggs, apples, cereal, cheese, chicken, razors";
 const TEST_B = "cookies, pickles, water, sushi, frozen food";
+// Verbatim copy of api.ts's 429 text (that const isn't exported, and api.ts
+// is frozen) — used only to pick the red-box style. Same text either way.
+const DEMO_LIMIT_TEXT = "Demo limit reached — try again later or use the sample store";
 
 function parseList(raw: string): string[] {
   return raw
@@ -180,6 +186,7 @@ export default function App() {
   const [saved, setSaved] = useState<SavedStore[]>([]);
   const [selectedId, setSelectedId] = useState<string>(HEB_ID);
   const [adding, setAdding] = useState(false);
+  const [showStores, setShowStores] = useState(false);
 
   useEffect(() => {
     void (async () => {
@@ -467,28 +474,30 @@ export default function App() {
   return (
     <GestureHandlerRootView style={styles.root}>
       <View style={styles.container}>
-        <Text style={styles.title}>QuickAisle — {active.name}</Text>
-        <View style={styles.row}>
-          <Button
-            key={HEB_ID}
-            title={active.id === HEB_ID ? "● H-E-B" : "H-E-B"}
-            onPress={() => pickStore(HEB_ID)}
-          />
-          {saved.map((s) => (
-            <Button
-              key={s.id}
-              title={active.id === s.id ? `● ${s.name}` : s.name}
-              onPress={() => pickStore(s.id)}
+        <Header subtitle={`STORE: ${active.name} ▾`} onPressSubtitle={() => setShowStores((s) => !s)} />
+        {showStores ? (
+          <View style={styles.storeBlock}>
+            <Text style={styles.sectionLabel}>YOUR STORES</Text>
+            <Btn
+              key={HEB_ID}
+              title={active.id === HEB_ID ? "● H-E-B … IN USE" : "H-E-B"}
+              onPress={() => { pickStore(HEB_ID); setShowStores(false); }}
+              variant={active.id === HEB_ID ? "selected" : "outline"}
+              full
             />
-          ))}
-          <Button title="+ Add a store" onPress={() => setAdding(true)} />
-        </View>
-        <View style={styles.row}>
-          {Platform.OS !== "web" ? (
-            <Button title="Snap list" onPress={() => void readPhoto(true)} disabled={reading} />
-          ) : null}
-          <Button title="Choose photo" onPress={() => void readPhoto(false)} disabled={reading} />
-        </View>
+            {saved.map((s) => (
+              <Btn
+                key={s.id}
+                title={active.id === s.id ? `● ${s.name} … IN USE` : s.name}
+                onPress={() => { pickStore(s.id); setShowStores(false); }}
+                variant={active.id === s.id ? "selected" : "outline"}
+                full
+              />
+            ))}
+            <Btn title="+ Add a store" onPress={() => setAdding(true)} variant="primary" full />
+          </View>
+        ) : null}
+        <Text style={styles.sectionLabel}>YOUR LIST</Text>
         <TextInput
           style={styles.input}
           multiline
@@ -497,6 +506,12 @@ export default function App() {
           placeholder="milk, eggs, cereal…"
           placeholderTextColor="#6b7280"
         />
+        <View style={styles.row}>
+          {Platform.OS !== "web" ? (
+            <Btn title="Snap list" onPress={() => void readPhoto(true)} disabled={reading} variant="outline" />
+          ) : null}
+          <Btn title="Choose photo" onPress={() => void readPhoto(false)} disabled={reading} variant="outline" />
+        </View>
         {Platform.OS !== "web" ? (
           <View style={styles.row}>
             <VoiceButton
@@ -512,48 +527,61 @@ export default function App() {
         {notes.length > 0 ? (
           <Text style={styles.hint}>Note: {notes.join(" · ")}</Text>
         ) : null}
-        <View style={styles.row}>
-          {active.id === HEB_ID ? (
-            <>
-              <Button title="Test A" onPress={() => { setText(TEST_A); setNotes([]); setError(null); setPhotoReason(null); }} />
-              <Button title="Test B" onPress={() => { setText(TEST_B); setNotes([]); setError(null); setPhotoReason(null); }} />
-            </>
-          ) : null}
-          <View style={styles.rxRow}>
-            <Text style={styles.rxLabel}>Rx ready</Text>
-            <Switch value={rxReady} onValueChange={setRxReady} />
-          </View>
-          <Button title="Plan route" onPress={plan} disabled={resolving || reading} />
+        <View style={styles.rxRow}>
+          <Text style={styles.rxLabel}>Rx ready</Text>
+          <Switch
+            value={rxReady}
+            onValueChange={setRxReady}
+            trackColor={{ false: "#C9C2B2", true: colors.ink }}
+            thumbColor={colors.paper}
+          />
         </View>
+        <View style={styles.planWrap}>
+          <Btn title="Plan route" onPress={plan} disabled={resolving || reading} variant="primary" full />
+        </View>
+        {active.id === HEB_ID ? (
+          <View style={styles.row}>
+            <Text style={styles.tryLabel}>TRY:</Text>
+            <Btn title="Test A" onPress={() => { setText(TEST_A); setNotes([]); setError(null); setPhotoReason(null); }} variant="quiet" />
+            <Btn title="Test B" onPress={() => { setText(TEST_B); setNotes([]); setError(null); setPhotoReason(null); }} variant="quiet" />
+          </View>
+        ) : null}
         {resolving ? <Text style={styles.hint}>Resolving with AI…</Text> : null}
         {reading ? <Text style={styles.hint}>Reading list…</Text> : null}
-        {error ? <Text style={styles.error}>{error}</Text> : null}
+        {error ? (
+          error === DEMO_LIMIT_TEXT ? (
+            <View style={styles.limitBox}>
+              <Text style={styles.limitText}>{error}</Text>
+            </View>
+          ) : (
+            <Text style={styles.error}>{error}</Text>
+          )
+        ) : null}
         {photoReason ? <Text style={styles.hint}>{photoReason}</Text> : null}
         {unmatched.length > 0 ? (
           <Text style={styles.unmatched}>No match: {unmatched.join(", ")}</Text>
         ) : null}
         {card ? (
           <View style={styles.card}>
-            <Text style={styles.savings}>Quick question: {card.term}</Text>
-            <Text style={styles.stop}>{card.question}</Text>
-            <View style={styles.row}>
-              {card.kind === "suggest" ? (
-                <>
-                  <Button title="Yes" onPress={() => void answerCard(card, card.options[0]!.productId)} />
-                  <Button title="No" onPress={() => void answerCard(card, null)} />
-                </>
-              ) : (
-                <>
-                  {card.options.map((o) => (
-                    <Button key={o.productId} title={o.name} onPress={() => void answerCard(card, o.productId)} />
-                  ))}
-                  <Button title="Skip" onPress={() => void answerCard(card, null)} />
-                </>
-              )}
-            </View>
-            {cards.length > 1 ? (
-              <Text style={styles.hint}>{cards.length - 1} more question{cards.length > 2 ? "s" : ""}</Text>
-            ) : null}
+            <Text style={styles.cardTitle}>
+              QUICK QUESTION: {card.term}{cards.length > 1 ? ` · 1 OF ${cards.length}` : null}
+            </Text>
+            <Text style={styles.cardQuestion}>{card.question}</Text>
+            {card.kind === "suggest" ? (
+              <View style={styles.cardBtns}>
+                <Btn title="Yes" onPress={() => void answerCard(card, card.options[0]!.productId)} variant="outline" full />
+                <Btn title="No" onPress={() => void answerCard(card, null)} variant="outline" full />
+              </View>
+            ) : (
+              <View style={styles.cardBtns}>
+                {card.options.map((o) => (
+                  <Btn key={o.productId} title={o.name} onPress={() => void answerCard(card, o.productId)} variant="outline" full />
+                ))}
+                <View style={styles.skipRight}>
+                  <Btn title="Skip" onPress={() => void answerCard(card, null)} variant="quiet" />
+                </View>
+              </View>
+            )}
           </View>
         ) : null}
         {route ? (
@@ -604,7 +632,7 @@ export default function App() {
         ) : null}
         {active.id !== HEB_ID ? (
           <View style={styles.row}>
-            <Button title="Delete this store" onPress={confirmDeleteStore} />
+            <Btn title="Delete this store" onPress={confirmDeleteStore} variant="danger-text" />
           </View>
         ) : null}
       </View>
@@ -616,34 +644,60 @@ const styles = StyleSheet.create({
   // Explicit light background + dark text throughout: Android dark mode
   // (edge-to-edge, ignores userInterfaceStyle) must not restyle us.
   root: { flex: 1, backgroundColor: "#ffffff" },
-  container: { flex: 1, padding: 16, paddingTop: 48, paddingBottom: 48, backgroundColor: "#ffffff" },
+  container: { flex: 1, padding: 16, paddingTop: 48, paddingBottom: 48, backgroundColor: colors.paper },
   title: { fontSize: 22, fontWeight: "bold", marginBottom: 8, color: "#111827" },
-  hint: { color: "#666", marginTop: 4, fontSize: 12 },
+  sectionLabel: {
+    fontFamily: mono,
+    color: colors.muted,
+    fontSize: 13,
+    letterSpacing: 2,
+    marginBottom: 6,
+  },
+  storeBlock: { gap: 6, marginBottom: 8 },
+  hint: { color: colors.muted, marginTop: 4, fontSize: 12, fontFamily: mono },
   input: {
-    borderWidth: 1,
-    borderColor: "#999",
-    borderRadius: 8,
+    borderWidth: 1.5,
+    borderColor: colors.ink,
+    borderRadius: 0,
+    backgroundColor: colors.white,
     padding: 10,
-    height: 76,
+    minHeight: 80,
     textAlignVertical: "top",
     marginBottom: 8,
     color: "#111827",
+    fontFamily: mono,
+    fontSize: 14,
   },
   row: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 8, flexWrap: "wrap" },
-  rxRow: { flexDirection: "row", alignItems: "center", gap: 4 },
-  rxLabel: { color: "#111827" },
-  error: { color: "#b91c1c", marginBottom: 8 },
-  unmatched: { color: "#b45309", marginBottom: 8 },
+  rxRow: { flexDirection: "row", alignItems: "center", gap: 4, marginBottom: 8 },
+  rxLabel: { color: "#111827", fontFamily: mono },
+  planWrap: { marginBottom: 8 },
+  tryLabel: { fontFamily: mono, color: colors.muted, fontSize: 13 },
+  error: { color: colors.red, marginBottom: 8, fontFamily: mono },
+  unmatched: { color: colors.red, marginBottom: 8, fontFamily: mono },
+  limitBox: {
+    backgroundColor: colors.white,
+    borderWidth: 2,
+    borderColor: colors.red,
+    borderRadius: 0,
+    padding: 10,
+    marginBottom: 8,
+  },
+  limitText: { color: colors.red, fontFamily: mono },
   result: { flex: 1, marginTop: 4 },
   savings: { fontWeight: "bold", marginBottom: 4, color: "#111827" },
   card: {
-    borderWidth: 1,
-    borderColor: "#2563eb",
-    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: colors.red,
+    borderRadius: 0,
     padding: 10,
     marginBottom: 8,
-    backgroundColor: "#eff6ff",
+    backgroundColor: colors.white,
   },
+  cardTitle: { fontWeight: "bold", marginBottom: 4, color: colors.red, fontFamily: mono },
+  cardQuestion: { color: colors.ink, fontSize: 15, marginBottom: 6 },
+  cardBtns: { gap: 6 },
+  skipRight: { alignItems: "flex-end" },
   shopLabel: { fontSize: 24, fontWeight: "bold", marginBottom: 2, color: "#111827" },
   stops: { maxHeight: 110, marginBottom: 4 },
   stop: { marginBottom: 2, color: "#111827" },

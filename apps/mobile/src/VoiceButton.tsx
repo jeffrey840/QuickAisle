@@ -7,6 +7,7 @@ import {
   type AudioStreamOptions,
 } from "expo-audio";
 import { postVoiceList } from "./api";
+import { colors, mono } from "./theme";
 import {
   MAX_VOICE_SECONDS,
   MIN_VOICE_SECONDS,
@@ -157,7 +158,7 @@ export default function VoiceButton({
   };
 
   return (
-    <View>
+    <View style={styles.wrap}>
       <Pressable
         onPressIn={() => void pressIn()}
         onPressOut={() => void finishRef.current()}
@@ -166,16 +167,39 @@ export default function VoiceButton({
       >
         <Text style={styles.buttonText}>Hold to talk</Text>
       </Pressable>
-      {phase === "listening" ? <Text style={styles.status}>Listening…</Text> : null}
+      {phase === "listening" ? (
+        <View style={styles.listenRow}>
+          <Text style={styles.status}>Listening…</Text>
+          <View style={styles.bars}>
+            {LISTEN_BARS.map((h, i) => (
+              <View key={i} style={[styles.bar, { height: h }]} />
+            ))}
+          </View>
+        </View>
+      ) : null}
       {phase === "transcribing" ? <Text style={styles.status}>Transcribing…</Text> : null}
       {message ? <Text style={styles.status}>{message}</Text> : null}
     </View>
   );
 }
 
+// Decorative only: static bars next to "Listening…", no audio levels.
+const LISTEN_BARS = [8, 16, 24, 12, 28, 18, 10, 22, 14];
+
 const styles = StyleSheet.create({
-  button: { backgroundColor: "#2563eb", borderRadius: 8, paddingHorizontal: 14, paddingVertical: 10 },
-  pressed: { backgroundColor: "#1d4ed8" },
-  buttonText: { color: "#ffffff", fontWeight: "bold", fontSize: 14 },
-  status: { color: "#111827", marginTop: 4, fontSize: 12 },
+  wrap: { width: "100%" },
+  button: { backgroundColor: colors.red, borderRadius: 0, paddingHorizontal: 14, paddingVertical: 10 },
+  pressed: { backgroundColor: colors.darkRed },
+  buttonText: {
+    color: colors.paper,
+    fontWeight: "bold",
+    fontSize: 14,
+    fontFamily: mono,
+    textAlign: "center",
+    textTransform: "uppercase",
+  },
+  status: { color: colors.red, marginTop: 4, fontSize: 12, fontFamily: mono },
+  listenRow: { flexDirection: "row", alignItems: "center" },
+  bars: { flexDirection: "row", alignItems: "flex-end", gap: 3, marginLeft: 8 },
+  bar: { width: 3, backgroundColor: colors.ink },
 });
