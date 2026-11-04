@@ -11,7 +11,7 @@ mobility or time, and store staff picking orders.
 - Web: https://quickaisle.pages.dev — the sample stores work fully
   offline in the browser (bundled store, on-device matching and routing).
 - Android APK: GitHub Releases (link added at release).
-- Demo video: (link added Nov 4).
+- Demo video: https://youtu.be/wQ-Z9OLb3tE
 
 The demo is rate-limited: 40 AI units per hour per visitor, 400 units
 per day total across everyone. A map read costs 3–6 units, a list photo
